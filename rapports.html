@@ -1,0 +1,675 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Vendoza - Rapports</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-content {
+      width: 95%;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      opacity: 0.8;
+    }
+
+    .vendeur-info {
+      text-align: right;
+    }
+
+    .vendeur-nom {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .logout {
+      border: none;
+      background: #dc2626;
+      color: white;
+      padding: 9px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 25px auto;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    .top-actions a {
+      text-decoration: none;
+      background: #111827;
+      color: white;
+      padding: 11px 16px;
+      border-radius: 8px;
+    }
+
+    .top-actions a:hover {
+      background: #2563eb;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .icon {
+      font-size: 30px;
+    }
+
+    .card h3 {
+      margin: 10px 0 5px;
+      font-size: 15px;
+      color: #666;
+    }
+
+    .number {
+      font-size: 27px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 25px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .section h2 {
+      margin-top: 0;
+    }
+
+    .product-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .product-row:last-child {
+      border-bottom: none;
+    }
+
+    .product-name {
+      font-weight: bold;
+    }
+
+    .product-info {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .badge {
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 7px 10px;
+      border-radius: 7px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 20px;
+    }
+
+    @media (max-width: 800px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .vendeur-info {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .top-actions a {
+        width: 100%;
+        text-align: center;
+      }
+
+      .product-row {
+        align-items: flex-start;
+      }
+    }
+  </style></head><body><header>  <div class="header-content"><div>
+  <h1>📈 Vendoza Rapports</h1>
+  <p>Statistiques et performances de votre boutique</p>
+</div>
+
+<div class="vendeur-info">
+
+  <div class="vendeur-nom">
+    👤 <span id="vendeurNom">Vendeur</span>
+  </div>
+
+  <button
+    class="logout"
+    onclick="seDeconnecterVendeur()"
+  >
+    🚪 Déconnexion
+  </button>
+
+</div>
+
+  </div></header><div class="container">  <!-- MENU -->  <div class="top-actions"><a href="dashboard.html">
+  📊 Dashboard
+</a>
+
+<a href="produit.html">
+  🛍️ Produits
+</a>
+
+<a href="commandes.html">
+  📦 Commandes
+</a>
+
+<a href="clients.html">
+  👥 Clients
+</a>
+
+  </div>  <!-- STATISTIQUES -->  <div class="stats"><div class="card">
+
+  <div class="icon">💰</div>
+
+  <h3>Chiffre d'affaires</h3>
+
+  <div
+    class="number"
+    id="chiffreAffaires"
+  >
+    0 HTG
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="icon">📦</div>
+
+  <h3>Total commandes</h3>
+
+  <div
+    class="number"
+    id="totalCommandes"
+  >
+    0
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="icon">✅</div>
+
+  <h3>Commandes livrées</h3>
+
+  <div
+    class="number"
+    id="commandesLivrees"
+  >
+    0
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="icon">👥</div>
+
+  <h3>Clients</h3>
+
+  <div
+    class="number"
+    id="totalClients"
+  >
+    0
+  </div>
+
+</div>
+
+  </div>  <!-- PRODUITS LES PLUS VENDUS -->  <div class="section"><h2>🏆 Produits les plus vendus</h2>
+
+<div id="produitsVendus"></div>
+
+  </div>  <!-- INFORMATIONS GÉNÉRALES -->  <div class="section"><h2>📊 Résumé de la boutique</h2>
+
+<p>
+  <strong>🛍️ Produits disponibles :</strong>
+  <span id="totalProduits">0</span>
+</p>
+
+<p>
+  <strong>📦 Articles vendus :</strong>
+  <span id="articlesVendus">0</span>
+</p>
+
+<p>
+  <strong>🚚 Commandes en livraison :</strong>
+  <span id="enLivraison">0</span>
+</p>
+
+<p>
+  <strong>⏳ Commandes en attente :</strong>
+  <span id="enAttente">0</span>
+</p>
+
+<p>
+  <strong>❌ Commandes annulées :</strong>
+  <span id="annulees">0</span>
+</p>
+
+  </div></div><script>
+
+  // ==========================================
+  // PROTECTION VENDEUR
+  // ==========================================
+
+  const vendeurConnecte =
+    localStorage.getItem(
+      "vendozaVendeurConnecte"
+    );
+
+  if (vendeurConnecte !== "true") {
+
+    window.location.href =
+      "connexion-vendeur.html";
+
+  }
+
+
+  // ==========================================
+  // NOM DU VENDEUR
+  // ==========================================
+
+  const vendeurNom =
+    localStorage.getItem(
+      "vendozaVendeurNom"
+    ) || "Vendeur";
+
+  document.getElementById(
+    "vendeurNom"
+  ).textContent = vendeurNom;
+
+
+  // ==========================================
+  // DÉCONNEXION
+  // ==========================================
+
+  function seDeconnecterVendeur() {
+
+    const confirmer =
+      confirm(
+        "Voulez-vous vraiment vous déconnecter ?"
+      );
+
+    if (!confirmer) {
+      return;
+    }
+
+    localStorage.removeItem(
+      "vendozaVendeurConnecte"
+    );
+
+    localStorage.removeItem(
+      "vendozaVendeurNom"
+    );
+
+    window.location.href =
+      "connexion-vendeur.html";
+  }
+
+
+  // ==========================================
+  // DONNÉES
+  // ==========================================
+
+  const commandes =
+    JSON.parse(
+      localStorage.getItem(
+        "vendozaCommandes"
+      )
+    ) || [];
+
+
+  const produits =
+    JSON.parse(
+      localStorage.getItem(
+        "produitsVendoza"
+      )
+    ) || [];
+
+
+  const utilisateurs =
+    JSON.parse(
+      localStorage.getItem(
+        "vendozaUtilisateurs"
+      )
+    ) || [];
+
+
+  // ==========================================
+  // STATISTIQUES COMMANDES
+  // ==========================================
+
+  let chiffreAffaires = 0;
+  let commandesLivrees = 0;
+  let articlesVendus = 0;
+  let enLivraison = 0;
+  let enAttente = 0;
+  let annulees = 0;
+
+
+  const ventesProduits = {};
+
+
+  commandes.forEach(function(commande) {
+
+    const statut =
+      commande.statut || "En attente";
+
+
+    if (statut === "Livrée") {
+
+      commandesLivrees++;
+
+    }
+
+
+    if (statut === "En livraison") {
+
+      enLivraison++;
+
+    }
+
+
+    if (statut === "En attente") {
+
+      enAttente++;
+
+    }
+
+
+    if (statut === "Annulée") {
+
+      annulees++;
+
+    }
+
+
+    // Chiffre d'affaires
+    if (
+      statut === "Confirmée" ||
+      statut === "En livraison" ||
+      statut === "Livrée"
+    ) {
+
+      chiffreAffaires +=
+        Number(commande.total) || 0;
+
+    }
+
+
+    // Produits de la commande
+    let listeProduits = [];
+
+
+    if (
+      Array.isArray(commande.produits)
+    ) {
+
+      listeProduits =
+        commande.produits;
+
+    } else if (
+      commande.produit
+    ) {
+
+      listeProduits =
+        [commande.produit];
+
+    }
+
+
+    listeProduits.forEach(
+      function(article) {
+
+        const quantite =
+          Number(article.quantity) || 0;
+
+
+        if (
+          statut !== "Annulée"
+        ) {
+
+          articlesVendus +=
+            quantite;
+
+        }
+
+
+        const nom =
+          article.name ||
+          "Produit";
+
+
+        if (
+          !ventesProduits[nom]
+        ) {
+
+          ventesProduits[nom] = 0;
+
+        }
+
+
+        if (
+          statut !== "Annulée"
+        ) {
+
+          ventesProduits[nom] +=
+            quantite;
+
+        }
+
+      }
+    );
+
+  });
+
+
+  // ==========================================
+  // AFFICHAGE STATISTIQUES
+  // ==========================================
+
+  document.getElementById(
+    "chiffreAffaires"
+  ).textContent =
+    chiffreAffaires.toLocaleString() +
+    " HTG";
+
+
+  document.getElementById(
+    "totalCommandes"
+  ).textContent =
+    commandes.length;
+
+
+  document.getElementById(
+    "commandesLivrees"
+  ).textContent =
+    commandesLivrees;
+
+
+  document.getElementById(
+    "totalClients"
+  ).textContent =
+    utilisateurs.length;
+
+
+  document.getElementById(
+    "totalProduits"
+  ).textContent =
+    produits.length;
+
+
+  document.getElementById(
+    "articlesVendus"
+  ).textContent =
+    articlesVendus;
+
+
+  document.getElementById(
+    "enLivraison"
+  ).textContent =
+    enLivraison;
+
+
+  document.getElementById(
+    "enAttente"
+  ).textContent =
+    enAttente;
+
+
+  document.getElementById(
+    "annulees"
+  ).textContent =
+    annulees;
+
+
+  // ==========================================
+  // PRODUITS LES PLUS VENDUS
+  // ==========================================
+
+  const produitsVendus =
+    document.getElementById(
+      "produitsVendus"
+    );
+
+
+  const classement =
+    Object.entries(
+      ventesProduits
+    )
+    .sort(function(a, b) {
+
+      return b[1] - a[1];
+
+    })
+    .slice(0, 10);
+
+
+  if (
+    classement.length === 0
+  ) {
+
+    produitsVendus.innerHTML = `
+
+      <div class="empty">
+        📭 Aucun produit vendu pour le moment.
+      </div>
+
+    `;
+
+  } else {
+
+    classement.forEach(
+      function(item, index) {
+
+        const nom = item[0];
+        const quantite = item[1];
+
+        produitsVendus.innerHTML += `
+
+          <div class="product-row">
+
+            <div>
+
+              <div class="product-name">
+                ${index + 1}. ${nom}
+              </div>
+
+              <div class="product-info">
+                Quantité vendue :
+                ${quantite}
+              </div>
+
+            </div>
+
+            <div class="badge">
+              ${quantite} vendu(s)
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    );
+
+  }
+
+</script></body>
+</html>

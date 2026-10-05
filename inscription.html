@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Vendoza - Créer un compte Admin</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .box {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin: 8px 0 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 15px;
+      border: none;
+      border-radius: 9px;
+      background: #111;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .success {
+      background: #e8f8ee;
+      color: #18733a;
+    }
+
+    .error {
+      background: #ffe8e8;
+      color: #b00020;
+    }
+
+    .login {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #111;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+
+  <h1>Vendoza 🛍️</h1>
+
+  <div class="subtitle">
+    Créer votre compte Administrateur
+  </div>
+
+  <form id="registerForm">
+
+    <label for="username">
+      👤 Nom d'utilisateur
+    </label>
+
+    <input
+      type="text"
+      id="username"
+      placeholder="Choisissez un nom"
+      required
+    >
+
+
+    <label for="password">
+      🔑 Mot de passe
+    </label>
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Choisissez un mot de passe"
+      required
+    >
+
+
+    <label for="confirmPassword">
+      🔐 Confirmer le mot de passe
+    </label>
+
+    <input
+      type="password"
+      id="confirmPassword"
+      placeholder="Retapez le mot de passe"
+      required
+    >
+
+
+    <button type="submit">
+      ✅ Créer le compte
+    </button>
+
+  </form>
+
+
+  <div id="success" class="message success">
+    ✅ Compte créé avec succès !
+  </div>
+
+
+  <div id="error" class="message error">
+    ❌ Les mots de passe ne correspondent pas.
+  </div>
+
+
+  <a href="login.html" class="login">
+    🔐 J'ai déjà un compte
+  </a>
+
+</div>
+
+
+<script>
+
+document
+  .getElementById("registerForm")
+  .addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+
+    const username =
+      document.getElementById("username")
+      .value
+      .trim();
+
+    const password =
+      document.getElementById("password")
+      .value;
+
+    const confirmPassword =
+      document.getElementById("confirmPassword")
+      .value;
+
+
+    /* Vérifier le mot de passe */
+
+    if (password !== confirmPassword) {
+
+      document.getElementById("error")
+        .style.display = "block";
+
+      document.getElementById("success")
+        .style.display = "none";
+
+      return;
+    }
+
+
+    /* Vérifier la longueur */
+
+    if (password.length < 6) {
+
+      document.getElementById("error")
+        .textContent =
+        "❌ Le mot de passe doit avoir au moins 6 caractères.";
+
+      document.getElementById("error")
+        .style.display = "block";
+
+      return;
+    }
+
+
+    /* Créer le compte */
+
+    const admin = {
+
+      username: username,
+
+      password: password
+
+    };
+
+
+    localStorage.setItem(
+      "vendozaAdmin",
+      JSON.stringify(admin)
+    );
+
+
+    /* Message succès */
+
+    document.getElementById("error")
+      .style.display = "none";
+
+    document.getElementById("success")
+      .style.display = "block";
+
+
+    /* Aller au login après 1 seconde */
+
+    setTimeout(function() {
+
+      window.location.href =
+        "login.html";
+
+    }, 1000);
+
+  });
+
+</script>
+
+</body>
+</html>

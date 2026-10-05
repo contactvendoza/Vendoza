@@ -1,0 +1,624 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendoza - Commandes</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .top-bar h2 {
+      margin: 0;
+    }
+
+    .btn-retour {
+      text-decoration: none;
+      background: #111;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+    }
+
+    .commande {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .commande-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 12px;
+      margin-bottom: 15px;
+    }
+
+    .commande-id {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .date {
+      color: #777;
+      font-size: 14px;
+    }
+
+    .infos {
+      background: #f8f8f8;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .infos p {
+      margin: 6px 0;
+    }
+
+    .produits-titre {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 17px;
+    }
+
+    .produit {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .produit:last-child {
+      border-bottom: none;
+    }
+
+    .produit img {
+      width: 75px;
+      height: 75px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee;
+    }
+
+    .produit-info {
+      flex: 1;
+    }
+
+    .produit-nom {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .produit-details {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .sous-total {
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 2px solid #eee;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .actions select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      background: white;
+      font-size: 14px;
+    }
+
+    .btn-supprimer {
+      border: none;
+      background: #d32f2f;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .stock-ok {
+      display: inline-block;
+      margin-top: 8px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 5px 9px;
+      border-radius: 15px;
+      font-size: 12px;
+    }
+
+    .statut {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 15px;
+      font-size: 13px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .en-attente {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .confirmee {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .livraison {
+      background: #cce5ff;
+      color: #004085;
+    }
+
+    .livree {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .annulee {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .aucune {
+      background: white;
+      padding: 30px;
+      text-align: center;
+      border-radius: 12px;
+      color: #777;
+    }
+
+    @media (max-width: 600px) {
+      .produit {
+        align-items: flex-start;
+      }
+
+      .produit img {
+        width: 65px;
+        height: 65px;
+      }
+
+      .sous-total {
+        font-size: 14px;
+      }
+
+      .total {
+        font-size: 18px;
+      }
+    }
+  </style></head><body><header>
+  <h1>📦 Vendoza — Gestion des commandes</h1>
+</header><div class="container">  <div class="top-bar">
+    <h2>📋 Toutes les commandes</h2>
+    <a href="dashboard.html" class="btn-retour">← Dashboard</a>
+  </div>  <div id="listeCommandes"></div></div><script>
+  let commandes = JSON.parse(localStorage.getItem("vendozaCommandes")) || [];
+  let produits = JSON.parse(localStorage.getItem("produitsVendoza")) || [];
+
+  function sauvegarder() {
+    localStorage.setItem("vendozaCommandes", JSON.stringify(commandes));
+    localStorage.setItem("produitsVendoza", JSON.stringify(produits));
+  }
+
+  // Permet de gérer les anciennes commandes qui n'ont qu'un seul produit
+  function obtenirProduitsCommande(commande) {
+    if (Array.isArray(commande.produits) && commande.produits.length > 0) {
+      return commande.produits;
+    }
+
+    if (commande.produit) {
+      return [commande.produit];
+    }
+
+    return [];
+  }
+
+  function trouverProduit(id) {
+    return produits.find(p => String(p.id) === String(id));
+  }
+
+  function retirerStock(commande) {
+    const articles = obtenirProduitsCommande(commande);
+
+    // Vérification complète AVANT de modifier le stock
+    for (const article of articles) {
+      const produit = trouverProduit(article.id);
+
+      if (!produit) {
+        alert("Le produit « " + article.name + " » n'existe plus dans le stock.");
+        return false;
+      }
+
+      const quantite = Number(article.quantity) || 0;
+      const stock = Number(produit.stock) || 0;
+
+      if (stock < quantite) {
+        alert(
+          "Stock insuffisant pour « " + article.name +
+          " ». Stock disponible : " + stock +
+          " | Quantité demandée : " + quantite
+        );
+        return false;
+      }
+    }
+
+    // Tout est disponible : on retire le stock
+    for (const article of articles) {
+      const produit = trouverProduit(article.id);
+      const quantite = Number(article.quantity) || 0;
+
+      produit.stock = (Number(produit.stock) || 0) - quantite;
+    }
+
+    commande.stockDeduit = true;
+
+    return true;
+  }
+
+  function restaurerStock(commande) {
+    const articles = obtenirProduitsCommande(commande);
+    let tousRestaures = true;
+
+    for (const article of articles) {
+      const produit = trouverProduit(article.id);
+
+      if (!produit) {
+        tousRestaures = false;
+        continue;
+      }
+
+      const quantite = Number(article.quantity) || 0;
+
+      produit.stock = (Number(produit.stock) || 0) + quantite;
+    }
+
+    if (tousRestaures) {
+      commande.stockDeduit = false;
+    }
+
+    return tousRestaures;
+  }
+
+  function changerStatut(index, nouveauStatut) {
+    const commande = commandes[index];
+
+    if (!commande) return;
+
+    const ancienStatut = commande.statut;
+
+    // Confirmation = retrait du stock
+    if (nouveauStatut === "Confirmée" && commande.stockDeduit !== true) {
+
+      const succes = retirerStock(commande);
+
+      if (!succes) {
+        afficherCommandes();
+        return;
+      }
+    }
+
+    // Annulation = restauration du stock
+    if (nouveauStatut === "Annulée" && commande.stockDeduit === true) {
+
+      const succes = restaurerStock(commande);
+
+      if (!succes) {
+        alert(
+          "Attention : certains produits de cette commande " +
+          "n'existent plus dans le stock. Le stock disponible a été restauré pour les produits trouvés."
+        );
+      }
+    }
+
+    commande.statut = nouveauStatut;
+
+    sauvegarder();
+    afficherCommandes();
+
+    if (
+      ancienStatut !== nouveauStatut &&
+      nouveauStatut === "Confirmée"
+    ) {
+      alert("✅ Commande confirmée. Le stock de tous les produits a été déduit.");
+    }
+
+    if (
+      ancienStatut !== nouveauStatut &&
+      nouveauStatut === "Annulée"
+    ) {
+      alert("↩️ Commande annulée. Le stock a été restauré.");
+    }
+  }
+
+  function supprimerCommande(index) {
+    const commande = commandes[index];
+
+    if (!commande) return;
+
+    const confirmation = confirm(
+      "Voulez-vous vraiment supprimer la commande " + commande.id + " ?"
+    );
+
+    if (!confirmation) return;
+
+    // Si le stock avait déjà été déduit, on le restaure
+    if (commande.stockDeduit === true) {
+      const succes = restaurerStock(commande);
+
+      if (!succes) {
+        alert(
+          "⚠️ Certains produits n'existent plus dans le stock. " +
+          "Le stock des produits trouvés a été restauré."
+        );
+      }
+    }
+
+    commandes.splice(index, 1);
+
+    sauvegarder();
+    afficherCommandes();
+
+    alert("🗑️ Commande supprimée.");
+  }
+
+  function obtenirClasseStatut(statut) {
+    if (statut === "Confirmée") return "confirmee";
+    if (statut === "En livraison") return "livraison";
+    if (statut === "Livrée") return "livree";
+    if (statut === "Annulée") return "annulee";
+    return "en-attente";
+  }
+
+  function afficherCommandes() {
+
+    const container = document.getElementById("listeCommandes");
+
+    if (commandes.length === 0) {
+      container.innerHTML = `
+        <div class="aucune">
+          <h3>📭 Aucune commande</h3>
+          <p>Les nouvelles commandes apparaîtront ici.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = "";
+
+    // Les commandes les plus récentes apparaissent en premier
+    [...commandes].reverse().forEach((commande, affichageIndex) => {
+
+      const vraiIndex = commandes.length - 1 - affichageIndex;
+
+      const articles = obtenirProduitsCommande(commande);
+
+      let produitsHTML = "";
+
+      articles.forEach(article => {
+
+        const prix = Number(article.price) || 0;
+        const quantite = Number(article.quantity) || 0;
+        const sousTotal = prix * quantite;
+
+        produitsHTML += `
+          <div class="produit">
+
+            ${
+              article.image
+              ? `<img src="${article.image}" alt="${article.name}">`
+              : `<div style="
+                    width:75px;
+                    height:75px;
+                    background:#eee;
+                    border-radius:8px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:25px;
+                 ">📦</div>`
+            }
+
+            <div class="produit-info">
+
+              <div class="produit-nom">
+                ${article.name || "Produit sans nom"}
+              </div>
+
+              <div class="produit-details">
+                Prix : ${prix.toLocaleString("fr-FR")} G<br>
+                Quantité : ${quantite}
+              </div>
+
+            </div>
+
+            <div class="sous-total">
+              ${sousTotal.toLocaleString("fr-FR")} G
+            </div>
+
+          </div>
+        `;
+      });
+
+      const total = Number(commande.total) || 0;
+      const statut = commande.statut || "En attente";
+      const classeStatut = obtenirClasseStatut(statut);
+
+      container.innerHTML += `
+
+        <div class="commande">
+
+          <div class="commande-header">
+
+            <div>
+              <div class="commande-id">
+                ${commande.id}
+              </div>
+
+              <div class="date">
+                📅 ${commande.date || ""}
+              </div>
+
+              <span class="statut ${classeStatut}">
+                ${statut}
+              </span>
+
+              ${
+                commande.stockDeduit === true
+                ? `<div class="stock-ok">📉 Stock déduit</div>`
+                : ``
+              }
+
+            </div>
+
+          </div>
+
+          <div class="infos">
+
+            <p>
+              👤 <strong>Client :</strong>
+              ${commande.client?.nom || "Non indiqué"}
+            </p>
+
+            <p>
+              📞 <strong>Téléphone :</strong>
+              ${commande.client?.telephone || "Non indiqué"}
+            </p>
+
+            <p>
+              📍 <strong>Adresse :</strong>
+              ${commande.client?.adresse || "Non indiquée"}
+            </p>
+
+            <p>
+              💳 <strong>Paiement :</strong>
+              ${commande.client?.paiement || "Non indiqué"}
+            </p>
+
+          </div>
+
+          <div class="produits-titre">
+            🛍️ Produits commandés (${articles.length})
+          </div>
+
+          ${produitsHTML}
+
+          <div class="total">
+            Total : ${total.toLocaleString("fr-FR")} G
+          </div>
+
+          <div class="actions">
+
+            <select
+              onchange="changerStatut(${vraiIndex}, this.value)"
+            >
+
+              <option
+                value="En attente"
+                ${statut === "En attente" ? "selected" : ""}
+              >
+                En attente
+              </option>
+
+              <option
+                value="Confirmée"
+                ${statut === "Confirmée" ? "selected" : ""}
+              >
+                Confirmée
+              </option>
+
+              <option
+                value="En livraison"
+                ${statut === "En livraison" ? "selected" : ""}
+              >
+                En livraison
+              </option>
+
+              <option
+                value="Livrée"
+                ${statut === "Livrée" ? "selected" : ""}
+              >
+                Livrée
+              </option>
+
+              <option
+                value="Annulée"
+                ${statut === "Annulée" ? "selected" : ""}
+              >
+                Annulée
+              </option>
+
+            </select>
+
+            <button
+              class="btn-supprimer"
+              onclick="supprimerCommande(${vraiIndex})"
+            >
+              🗑️ Supprimer
+            </button>
+
+          </div>
+
+        </div>
+      `;
+    });
+  }
+
+  afficherCommandes();
+</script></body>
+</html>

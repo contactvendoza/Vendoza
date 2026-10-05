@@ -1,0 +1,1770 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Vendoza - Gestion des produits</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-content {
+      width: 95%;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 27px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      opacity: .8;
+    }
+
+    .vendeur {
+      text-align: right;
+    }
+
+    .vendeur strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .logout {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 9px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 25px auto;
+    }
+
+    .menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .menu a {
+      text-decoration: none;
+      background: #111827;
+      color: white;
+      padding: 11px 15px;
+      border-radius: 8px;
+    }
+
+    .menu a:hover {
+      background: #2563eb;
+    }
+
+    .section {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.07);
+    }
+
+    .section h2 {
+      margin-top: 0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.06);
+    }
+
+    .stat-icon {
+      font-size: 28px;
+    }
+
+    .stat-title {
+      color: #666;
+      margin-top: 7px;
+    }
+
+    .stat-number {
+      font-size: 26px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #2563eb;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .image-preview {
+      margin-top: 10px;
+      width: 150px;
+      height: 150px;
+      border: 1px dashed #aaa;
+      border-radius: 10px;
+      display: none;
+      overflow: hidden;
+      background: #f3f4f6;
+    }
+
+    .image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .form-buttons {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 12px 17px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-success {
+      background: #16a34a;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .message {
+      display: none;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .tools {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .product {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .product-image {
+      height: 190px;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .no-image {
+      color: #888;
+      font-size: 40px;
+    }
+
+    .product-info {
+      padding: 15px;
+    }
+
+    .product-name {
+      font-weight: bold;
+      font-size: 17px;
+      margin-bottom: 7px;
+    }
+
+    .category {
+      display: inline-block;
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 9px;
+    }
+
+    .price {
+      font-size: 19px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stock {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .stock-low {
+      color: #ea580c;
+      font-weight: bold;
+    }
+
+    .stock-out {
+      color: #dc2626;
+      font-weight: bold;
+    }
+
+    .stock-ok {
+      color: #16a34a;
+      font-weight: bold;
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .product-actions button {
+      flex: 1;
+      padding: 9px 5px;
+      font-size: 12px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 35px;
+      color: #777;
+    }
+
+    .badge-low {
+      background: #fff7ed;
+      color: #c2410c;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 950px) {
+      .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .vendeur {
+        text-align: left;
+      }
+
+      form,
+      .tools {
+        grid-template-columns: 1fr;
+      }
+
+      .full {
+        grid-column: auto;
+      }
+
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .menu a {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style></head><body><header>  <div class="header-content"><div>
+  <h1>🛍️ Vendoza — Produits</h1>
+  <p>Gestion complète de votre catalogue</p>
+</div>
+
+<div class="vendeur">
+  <strong>
+    👤 <span id="vendeurNom">Vendeur</span>
+  </strong>
+
+  <button
+    class="logout"
+    onclick="seDeconnecter()"
+  >
+    🚪 Déconnexion
+  </button>
+</div>
+
+  </div></header><div class="container">  <!-- MENU -->  <div class="menu"><a href="dashboard.html">📊 Dashboard</a>
+
+<a href="produit.html">🛍️ Produits</a>
+
+<a href="commandes.html">📦 Commandes</a>
+
+<a href="clients.html">👥 Clients</a>
+
+<a href="rapports.html">📈 Rapports</a>
+
+<a href="paiements.html">💳 Paiements</a>
+
+<a href="parametres.html">⚙️ Paramètres</a>
+
+<a href="notifications-vendeur.html">
+  🔔 Notifications
+</a>
+
+  </div>  <!-- STATISTIQUES -->  <div class="stats"><div class="stat">
+  <div class="stat-icon">🛍️</div>
+  <div class="stat-title">Produits</div>
+  <div
+    class="stat-number"
+    id="statProduits"
+  >
+    0
+  </div>
+</div>
+
+<div class="stat">
+  <div class="stat-icon">📦</div>
+  <div class="stat-title">Stock total</div>
+  <div
+    class="stat-number"
+    id="statStock"
+  >
+    0
+  </div>
+</div>
+
+<div class="stat">
+  <div class="stat-icon">⚠️</div>
+  <div class="stat-title">Stock faible</div>
+  <div
+    class="stat-number"
+    id="statFaible"
+  >
+    0
+  </div>
+</div>
+
+<div class="stat">
+  <div class="stat-icon">❌</div>
+  <div class="stat-title">Rupture</div>
+  <div
+    class="stat-number"
+    id="statRupture"
+  >
+    0
+  </div>
+</div>
+
+  </div>  <!-- FORMULAIRE -->  <div class="section"><h2 id="formTitle">
+  ➕ Ajouter un produit
+</h2>
+
+<div
+  id="message"
+  class="message"
+></div>
+
+
+<form
+  id="produitForm"
+  onsubmit="enregistrerProduit(event)"
+>
+
+  <div>
+
+    <label for="nom">
+      Nom du produit
+    </label>
+
+    <input
+      type="text"
+      id="nom"
+      placeholder="Ex : T-shirt Nike"
+      required
+    >
+
+  </div>
+
+
+  <div>
+
+    <label for="categorie">
+      Catégorie
+    </label>
+
+    <input
+      type="text"
+      id="categorie"
+      list="categoriesListe"
+      placeholder="Ex : Vêtements"
+      required
+    >
+
+    <datalist id="categoriesListe"></datalist>
+
+  </div>
+
+
+  <div>
+
+    <label for="prix">
+      Prix (HTG)
+    </label>
+
+    <input
+      type="number"
+      id="prix"
+      min="0"
+      step="0.01"
+      placeholder="Ex : 2500"
+      required
+    >
+
+  </div>
+
+
+  <div>
+
+    <label for="stock">
+      Stock disponible
+    </label>
+
+    <input
+      type="number"
+      id="stock"
+      min="0"
+      step="1"
+      placeholder="Ex : 20"
+      required
+    >
+
+  </div>
+
+
+  <div class="full">
+
+    <label for="image">
+      URL de l'image
+    </label>
+
+    <input
+      type="url"
+      id="image"
+      placeholder="https://exemple.com/image.jpg"
+      oninput="previewImage()"
+    >
+
+    <div
+      class="image-preview"
+      id="imagePreview"
+    >
+      <img
+        id="preview"
+        alt="Aperçu"
+      >
+    </div>
+
+  </div>
+
+
+  <div class="full">
+
+    <label for="description">
+      Description
+    </label>
+
+    <textarea
+      id="description"
+      placeholder="Description du produit..."
+    ></textarea>
+
+  </div>
+
+
+  <div class="form-buttons">
+
+    <button
+      type="submit"
+      class="btn-primary"
+      id="saveButton"
+    >
+      ➕ Ajouter le produit
+    </button>
+
+    <button
+      type="button"
+      class="btn-secondary"
+      id="cancelButton"
+      onclick="annulerModification()"
+      style="display:none;"
+    >
+      ❌ Annuler
+    </button>
+
+  </div>
+
+</form>
+
+  </div>  <!-- RECHERCHE -->  <div class="section"><h2>🔎 Rechercher des produits</h2>
+
+<div class="tools">
+
+  <input
+    type="search"
+    id="recherche"
+    placeholder="Rechercher par nom, catégorie..."
+    oninput="afficherProduits()"
+  >
+
+  <select
+    id="filtreCategorie"
+    onchange="afficherProduits()"
+  >
+    <option value="">
+      Toutes les catégories
+    </option>
+  </select>
+
+</div>
+
+
+<div
+  class="products-grid"
+  id="productsGrid"
+></div>
+
+  </div></div><script>
+
+  // ==========================================
+  // PROTECTION VENDEUR
+  // ==========================================
+
+  if (
+    localStorage.getItem(
+      "vendozaVendeurConnecte"
+    ) !== "true"
+  ) {
+
+    window.location.href =
+      "connexion-vendeur.html";
+
+  }
+
+
+  // ==========================================
+  // VARIABLES
+  // ==========================================
+
+  let produits =
+    JSON.parse(
+      localStorage.getItem(
+        "produitsVendoza"
+      )
+    ) || [];
+
+
+  let produitEnModification = null;
+
+
+  // ==========================================
+  // VENDEUR
+  // ==========================================
+
+  document.getElementById(
+    "vendeurNom"
+  ).textContent =
+    localStorage.getItem(
+      "vendozaVendeurNom"
+    ) || "Vendeur";
+
+
+  // ==========================================
+  // DÉCONNEXION
+  // ==========================================
+
+  function seDeconnecter() {
+
+    if (
+      !confirm(
+        "Voulez-vous vraiment vous déconnecter ?"
+      )
+    ) {
+      return;
+    }
+
+    localStorage.removeItem(
+      "vendozaVendeurConnecte"
+    );
+
+    localStorage.removeItem(
+      "vendozaVendeurNom"
+    );
+
+    window.location.href =
+      "connexion-vendeur.html";
+
+  }
+
+
+  // ==========================================
+  // SAUVEGARDER
+  // ==========================================
+
+  function sauvegarderProduits() {
+
+    localStorage.setItem(
+      "produitsVendoza",
+      JSON.stringify(produits)
+    );
+
+  }
+
+
+  // ==========================================
+  // ID UNIQUE
+  // ==========================================
+
+  function genererId() {
+
+    return (
+      "VZ" +
+      Date.now().toString(36) +
+      Math.random()
+        .toString(36)
+        .substring(2, 7)
+    );
+
+  }
+
+
+  // ==========================================
+  // MESSAGE
+  // ==========================================
+
+  function afficherMessage(
+    texte,
+    type = "success"
+  ) {
+
+    const message =
+      document.getElementById(
+        "message"
+      );
+
+    message.textContent =
+      texte;
+
+    message.className =
+      "message " + type;
+
+    message.style.display =
+      "block";
+
+
+    setTimeout(function() {
+
+      message.style.display =
+        "none";
+
+    }, 3000);
+
+  }
+
+
+  // ==========================================
+  // APERÇU IMAGE
+  // ==========================================
+
+  function previewImage() {
+
+    const url =
+      document.getElementById(
+        "image"
+      ).value.trim();
+
+    const box =
+      document.getElementById(
+        "imagePreview"
+      );
+
+    const img =
+      document.getElementById(
+        "preview"
+      );
+
+
+    if (!url) {
+
+      box.style.display =
+        "none";
+
+      img.src = "";
+
+      return;
+
+    }
+
+
+    img.onload =
+      function() {
+
+        box.style.display =
+          "block";
+
+      };
+
+
+    img.onerror =
+      function() {
+
+        box.style.display =
+          "none";
+
+      };
+
+
+    img.src = url;
+
+  }
+
+
+  // ==========================================
+  // ENREGISTRER PRODUIT
+  // ==========================================
+
+  function enregistrerProduit(event) {
+
+    event.preventDefault();
+
+
+    const nom =
+      document.getElementById(
+        "nom"
+      ).value.trim();
+
+
+    const categorie =
+      document.getElementById(
+        "categorie"
+      ).value.trim();
+
+
+    const prix =
+      Number(
+        document.getElementById(
+          "prix"
+        ).value
+      );
+
+
+    const stock =
+      Number(
+        document.getElementById(
+          "stock"
+        ).value
+      );
+
+
+    const image =
+      document.getElementById(
+        "image"
+      ).value.trim();
+
+
+    const description =
+      document.getElementById(
+        "description"
+      ).value.trim();
+
+
+    if (!nom) {
+
+      afficherMessage(
+        "Veuillez entrer le nom du produit.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if (!categorie) {
+
+      afficherMessage(
+        "Veuillez entrer une catégorie.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      isNaN(prix) ||
+      prix < 0
+    ) {
+
+      afficherMessage(
+        "Le prix n'est pas valide.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      isNaN(stock) ||
+      stock < 0
+    ) {
+
+      afficherMessage(
+        "Le stock n'est pas valide.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    // MODIFICATION
+
+    if (
+      produitEnModification !== null
+    ) {
+
+      const index =
+        produits.findIndex(
+          function(produit) {
+
+            return (
+              produit.id ===
+              produitEnModification
+            );
+
+          }
+        );
+
+
+      if (index !== -1) {
+
+        produits[index] = {
+
+          ...produits[index],
+
+          nom: nom,
+
+          prix: prix,
+
+          stock: stock,
+
+          image: image,
+
+          categorie: categorie,
+
+          description:
+            description
+
+        };
+
+
+        sauvegarderProduits();
+
+        afficherMessage(
+          "✅ Produit modifié avec succès."
+        );
+
+      }
+
+
+    } else {
+
+      // AJOUT
+
+      const nouveauProduit = {
+
+        id: genererId(),
+
+        nom: nom,
+
+        prix: prix,
+
+        stock: stock,
+
+        image: image,
+
+        categorie: categorie,
+
+        description:
+          description
+
+      };
+
+
+      produits.push(
+        nouveauProduit
+      );
+
+
+      sauvegarderProduits();
+
+
+      afficherMessage(
+        "✅ Produit ajouté avec succès."
+      );
+
+    }
+
+
+    annulerModification();
+
+    actualiserTout();
+
+  }
+
+
+  // ==========================================
+  // MODIFIER
+  // ==========================================
+
+  function modifierProduit(id) {
+
+    const produit =
+      produits.find(
+        function(item) {
+
+          return item.id === id;
+
+        }
+      );
+
+
+    if (!produit) {
+      return;
+    }
+
+
+    produitEnModification =
+      id;
+
+
+    document.getElementById(
+      "formTitle"
+    ).textContent =
+      "✏️ Modifier le produit";
+
+
+    document.getElementById(
+      "nom"
+    ).value =
+      produit.nom || "";
+
+
+    document.getElementById(
+      "categorie"
+    ).value =
+      produit.categorie || "";
+
+
+    document.getElementById(
+      "prix"
+    ).value =
+      produit.prix || 0;
+
+
+    document.getElementById(
+      "stock"
+    ).value =
+      produit.stock || 0;
+
+
+    document.getElementById(
+      "image"
+    ).value =
+      produit.image || "";
+
+
+    document.getElementById(
+      "description"
+    ).value =
+      produit.description || "";
+
+
+    document.getElementById(
+      "saveButton"
+    ).textContent =
+      "💾 Enregistrer les modifications";
+
+
+    document.getElementById(
+      "cancelButton"
+    ).style.display =
+      "inline-block";
+
+
+    previewImage();
+
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }
+
+
+  // ==========================================
+  // ANNULER MODIFICATION
+  // ==========================================
+
+  function annulerModification() {
+
+    produitEnModification =
+      null;
+
+
+    document.getElementById(
+      "produitForm"
+    ).reset();
+
+
+    document.getElementById(
+      "formTitle"
+    ).textContent =
+      "➕ Ajouter un produit";
+
+
+    document.getElementById(
+      "saveButton"
+    ).textContent =
+      "➕ Ajouter le produit";
+
+
+    document.getElementById(
+      "cancelButton"
+    ).style.display =
+      "none";
+
+
+    document.getElementById(
+      "imagePreview"
+    ).style.display =
+      "none";
+
+  }
+
+
+  // ==========================================
+  // SUPPRIMER
+  // ==========================================
+
+  function supprimerProduit(id) {
+
+    const produit =
+      produits.find(
+        function(item) {
+
+          return item.id === id;
+
+        }
+      );
+
+
+    if (!produit) {
+      return;
+    }
+
+
+    const confirmer =
+      confirm(
+        "Voulez-vous vraiment supprimer \"" +
+        produit.nom +
+        "\" ?"
+      );
+
+
+    if (!confirmer) {
+      return;
+    }
+
+
+    produits =
+      produits.filter(
+        function(item) {
+
+          return item.id !== id;
+
+        }
+      );
+
+
+    sauvegarderProduits();
+
+    afficherMessage(
+      "🗑️ Produit supprimé avec succès."
+    );
+
+    actualiserTout();
+
+  }
+
+
+  // ==========================================
+  // CATÉGORIES
+  // ==========================================
+
+  function chargerCategories() {
+
+    const categories = [
+      ...new Set(
+
+        produits
+          .map(function(produit) {
+
+            return (
+              produit.categorie ||
+              ""
+            ).trim();
+
+          })
+          .filter(Boolean)
+
+      )
+    ];
+
+
+    categories.sort();
+
+
+    const filtre =
+      document.getElementById(
+        "filtreCategorie"
+      );
+
+
+    const valeurActuelle =
+      filtre.value;
+
+
+    filtre.innerHTML = `
+
+      <option value="">
+        Toutes les catégories
+      </option>
+
+    `;
+
+
+    categories.forEach(
+      function(categorie) {
+
+        filtre.innerHTML += `
+
+          <option
+            value="${echapper(categorie)}"
+          >
+            ${echapper(categorie)}
+          </option>
+
+        `;
+
+      }
+    );
+
+
+    if (
+      categories.includes(
+        valeurActuelle
+      )
+    ) {
+
+      filtre.value =
+        valeurActuelle;
+
+    }
+
+
+    const datalist =
+      document.getElementById(
+        "categoriesListe"
+      );
+
+
+    datalist.innerHTML = "";
+
+
+    categories.forEach(
+      function(categorie) {
+
+        datalist.innerHTML += `
+
+          <option
+            value="${echapper(categorie)}"
+          >
+
+        `;
+
+      }
+    );
+
+  }
+
+
+  // ==========================================
+  // ÉCHAPPER TEXTE
+  // ==========================================
+
+  function echapper(texte) {
+
+    return String(texte)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  // ==========================================
+  // AFFICHER PRODUITS
+  // ==========================================
+
+  function afficherProduits() {
+
+    const recherche =
+      document.getElementById(
+        "recherche"
+      ).value
+        .trim()
+        .toLowerCase();
+
+
+    const categorie =
+      document.getElementById(
+        "filtreCategorie"
+      ).value;
+
+
+    const grid =
+      document.getElementById(
+        "productsGrid"
+      );
+
+
+    const resultats =
+      produits.filter(
+        function(produit) {
+
+          const nom =
+            (
+              produit.nom ||
+              ""
+            ).toLowerCase();
+
+
+          const cat =
+            (
+              produit.categorie ||
+              ""
+            ).toLowerCase();
+
+
+          const correspondRecherche =
+            !recherche ||
+            nom.includes(recherche) ||
+            cat.includes(recherche);
+
+
+          const correspondCategorie =
+            !categorie ||
+            produit.categorie === categorie;
+
+
+          return (
+            correspondRecherche &&
+            correspondCategorie
+          );
+
+        }
+      );
+
+
+    if (
+      resultats.length === 0
+    ) {
+
+      grid.innerHTML = `
+
+        <div
+          class="empty"
+          style="grid-column:1/-1;"
+        >
+
+          📭 Aucun produit trouvé.
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    grid.innerHTML = "";
+
+
+    resultats.forEach(
+      function(produit) {
+
+        const stock =
+          Number(
+            produit.stock
+          ) || 0;
+
+
+        let stockHTML = "";
+
+
+        if (stock <= 0) {
+
+          stockHTML = `
+
+            <span class="stock-out">
+              ❌ Rupture de stock
+            </span>
+
+          `;
+
+        } else if (
+          stock <= 5
+        ) {
+
+          stockHTML = `
+
+            <span class="stock-low">
+              ⚠️ Stock faible :
+              ${stock}
+            </span>
+
+          `;
+
+        } else {
+
+          stockHTML = `
+
+            <span class="stock-ok">
+              ✅ Stock :
+              ${stock}
+            </span>
+
+          `;
+
+        }
+
+
+        const imageHTML =
+          produit.image
+            ? `
+
+              <img
+                src="${echapper(produit.image)}"
+                alt="${echapper(produit.nom || "Produit")}"
+                onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;no-image&quot;>🛍️</div>';"
+              >
+
+            `
+            : `
+
+              <div class="no-image">
+                🛍️
+              </div>
+
+            `;
+
+
+        grid.innerHTML += `
+
+          <div class="product">
+
+            <div class="product-image">
+
+              ${imageHTML}
+
+            </div>
+
+
+            <div class="product-info">
+
+              <div class="product-name">
+                ${echapper(
+                  produit.nom ||
+                  "Produit sans nom"
+                )}
+              </div>
+
+
+              <div class="category">
+
+                ${echapper(
+                  produit.categorie ||
+                  "Autres"
+                )}
+
+              </div>
+
+
+              <div class="price">
+
+                ${
+                  Number(
+                    produit.prix
+                  ).toLocaleString()
+                }
+                HTG
+
+              </div>
+
+
+              <div class="stock">
+
+                ${stockHTML}
+
+              </div>
+
+
+              ${
+                produit.description
+                  ? `
+
+                    <div
+                      style="
+                        font-size:13px;
+                        color:#666;
+                        margin-bottom:12px;
+                      "
+                    >
+                      ${echapper(
+                        produit.description
+                      )}
+                    </div>
+
+                  `
+                  : ""
+              }
+
+
+              <div class="product-actions">
+
+                <button
+                  class="btn-primary"
+                  onclick="modifierProduit('${echapper(produit.id)}')"
+                >
+                  ✏️ Modifier
+                </button>
+
+                <button
+                  class="btn-danger"
+                  onclick="supprimerProduit('${echapper(produit.id)}')"
+                >
+                  🗑️
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    );
+
+  }
+
+
+  // ==========================================
+  // STATISTIQUES
+  // ==========================================
+
+  function chargerStats() {
+
+    let stockTotal = 0;
+
+    let faible = 0;
+
+    let rupture = 0;
+
+
+    produits.forEach(
+      function(produit) {
+
+        const stock =
+          Number(
+            produit.stock
+          ) || 0;
+
+
+        stockTotal += stock;
+
+
+        if (
+          stock > 0 &&
+          stock <= 5
+        ) {
+
+          faible++;
+
+        }
+
+
+        if (
+          stock <= 0
+        ) {
+
+          rupture++;
+
+        }
+
+      }
+    );
+
+
+    document.getElementById(
+      "statProduits"
+    ).textContent =
+      produits.length;
+
+
+    document.getElementById(
+      "statStock"
+    ).textContent =
+      stockTotal;
+
+
+    document.getElementById(
+      "statFaible"
+    ).textContent =
+      faible;
+
+
+    document.getElementById(
+      "statRupture"
+    ).textContent =
+      rupture;
+
+  }
+
+
+  // ==========================================
+  // ACTUALISER TOUT
+  // ==========================================
+
+  function actualiserTout() {
+
+    produits =
+      JSON.parse(
+        localStorage.getItem(
+          "produitsVendoza"
+        )
+      ) || [];
+
+
+    chargerStats();
+
+    chargerCategories();
+
+    afficherProduits();
+
+  }
+
+
+  // ==========================================
+  // INITIALISATION
+  // ==========================================
+
+  actualiserTout();
+
+
+  // ==========================================
+  // SYNCHRONISATION
+  // ==========================================
+
+  window.addEventListener(
+    "storage",
+    function(event) {
+
+      if (
+        event.key ===
+        "produitsVendoza"
+      ) {
+
+        actualiserTout();
+
+      }
+
+    }
+  );
+
+
+  // ==========================================
+  // ACTUALISATION AUTOMATIQUE
+  // ==========================================
+
+  setInterval(
+    function() {
+
+      const nouvellesDonnees =
+        localStorage.getItem(
+          "produitsVendoza"
+        ) || "[]";
+
+
+      const donneesActuelles =
+        JSON.stringify(
+          produits
+        );
+
+
+      if (
+        nouvellesDonnees !==
+        donneesActuelles
+      ) {
+
+        actualiserTout();
+
+      }
+
+    },
+    3000
+  );
+
+</script></body>
+</html>

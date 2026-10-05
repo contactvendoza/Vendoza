@@ -1,0 +1,1073 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Vendoza - Mes commandes</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 15px 20px;
+    }
+
+    .header-content {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      color: white;
+      text-decoration: none;
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 9px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      background: #374151;
+    }
+
+    .notification-link {
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: -5px;
+      right: -4px;
+      background: #ef4444;
+      color: white;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 11px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 15px 50px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .title h1 {
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .title p {
+      color: #6b7280;
+    }
+
+    .count {
+      background: white;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .commande {
+      background: white;
+      border-radius: 14px;
+      margin-bottom: 22px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0,0,0,.07);
+    }
+
+    .commande-header {
+      padding: 16px;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .commande-id {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .date {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .statut {
+      padding: 7px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .attente {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .confirmee {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .livraison {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .livree {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .annulee {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .commande-body {
+      padding: 18px;
+    }
+
+    .produits {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .produit {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .produit img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #f3f4f6;
+      flex-shrink: 0;
+    }
+
+    .produit-info {
+      flex: 1;
+    }
+
+    .produit-nom {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .categorie {
+      color: #6b7280;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .details {
+      color: #4b5563;
+      font-size: 13px;
+    }
+
+    .article-total {
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .infos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .info {
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 9px;
+    }
+
+    .label {
+      color: #6b7280;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .footer {
+      padding: 16px 18px;
+      border-top: 1px solid #e5e7eb;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .total-label {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .total {
+      font-size: 22px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .vide {
+      background: white;
+      text-align: center;
+      padding: 50px 20px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.07);
+    }
+
+    .vide-icon {
+      font-size: 55px;
+    }
+
+    .vide h2 {
+      margin: 12px 0;
+    }
+
+    .vide p {
+      color: #6b7280;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 11px 18px;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+    }
+
+    @media(max-width:700px) {
+
+      .header-content {
+        flex-direction: column;
+      }
+
+      nav a {
+        font-size: 12px;
+        padding: 7px;
+      }
+
+      .infos {
+        grid-template-columns: 1fr;
+      }
+
+      .produit {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .article-total {
+        width: 100%;
+        text-align: right;
+      }
+
+    }
+  </style></head><body><header>  <div class="header-content"><a href="accueil.html" class="logo">
+  Vendoza
+</a>
+
+<nav>
+
+  <a href="accueil.html">🏠 Accueil</a>
+
+  <a href="produits.html">🛍️ Produits</a>
+
+  <a href="panier.html">🛒 Panier</a>
+
+  <a href="commandes-client.html">
+    📦 Commandes
+  </a>
+
+  <a href="notifications.html" class="notification-link">
+    🔔 Notifications
+    <span id="badgeNotifications" class="badge">0</span>
+  </a>
+
+  <a id="compteLien" href="connexion.html">
+    🔐 Connexion
+  </a>
+
+</nav>
+
+  </div></header><div class="container">  <div class="title"><h1>📦 Mes commandes</h1>
+
+<p>
+  Consultez l'historique et le statut de vos commandes.
+</p>
+
+  </div>  <div id="commandesContainer"></div></div><script>
+
+  /* =========================
+     OUTILS
+  ========================= */
+
+  function lireJSON(cle, defaut) {
+
+    try {
+
+      const valeur = localStorage.getItem(cle);
+
+      if (!valeur) {
+        return defaut;
+      }
+
+      return JSON.parse(valeur);
+
+    } catch (erreur) {
+
+      console.error(erreur);
+
+      return defaut;
+
+    }
+
+  }
+
+
+  function normaliserId(id) {
+    return String(id ?? "");
+  }
+
+
+  function formatPrix(prix) {
+
+    return Number(prix || 0)
+      .toLocaleString("fr-FR") + " G";
+
+  }
+
+
+  function escapeHTML(texte) {
+
+    return String(texte ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  /* =========================
+     UTILISATEUR
+  ========================= */
+
+  function obtenirUtilisateur() {
+
+    return lireJSON(
+      "vendozaUtilisateurConnecte",
+      null
+    );
+
+  }
+
+
+  /* =========================
+     COMPTE
+  ========================= */
+
+  function afficherCompte() {
+
+    const utilisateur = obtenirUtilisateur();
+
+    const lien =
+      document.getElementById("compteLien");
+
+    if (!lien) return;
+
+    if (utilisateur) {
+
+      lien.href = "mon-compte.html";
+      lien.textContent = "👤 Mon compte";
+
+    } else {
+
+      lien.href = "connexion.html";
+      lien.textContent = "🔐 Connexion";
+
+    }
+
+  }
+
+
+  /* =========================
+     MES COMMANDES
+  ========================= */
+
+  function obtenirMesCommandes() {
+
+    const utilisateur = obtenirUtilisateur();
+
+    if (!utilisateur) {
+
+      window.location.href = "connexion.html";
+
+      return [];
+
+    }
+
+    const commandes =
+      lireJSON("vendozaCommandes", []);
+
+    const email =
+      String(utilisateur.email || "")
+        .trim()
+        .toLowerCase();
+
+    const telephone =
+      String(utilisateur.telephone || "")
+        .trim();
+
+
+    return commandes.filter(commande => {
+
+      if (!commande || !commande.client) {
+        return false;
+      }
+
+      const emailCommande =
+        String(commande.client.email || "")
+          .trim()
+          .toLowerCase();
+
+      const telephoneCommande =
+        String(commande.client.telephone || "")
+          .trim();
+
+
+      const memeEmail =
+        email &&
+        emailCommande === email;
+
+      const memeTelephone =
+        telephone &&
+        telephoneCommande === telephone;
+
+
+      return memeEmail || memeTelephone;
+
+    });
+
+  }
+
+
+  /* =========================
+     PRODUITS
+  ========================= */
+
+  function obtenirProduits(commande) {
+
+    if (
+      Array.isArray(commande.produits) &&
+      commande.produits.length > 0
+    ) {
+
+      return commande.produits;
+
+    }
+
+
+    if (commande.produit) {
+
+      return [commande.produit];
+
+    }
+
+
+    return [];
+
+  }
+
+
+  /* =========================
+     STATUT
+  ========================= */
+
+  function classeStatut(statut) {
+
+    if (statut === "Confirmée") {
+      return "confirmee";
+    }
+
+    if (statut === "En livraison") {
+      return "livraison";
+    }
+
+    if (statut === "Livrée") {
+      return "livree";
+    }
+
+    if (statut === "Annulée") {
+      return "annulee";
+    }
+
+    return "attente";
+
+  }
+
+
+  /* =========================
+     AFFICHER COMMANDE
+  ========================= */
+
+  function creerCommandeHTML(commande) {
+
+    const produits =
+      obtenirProduits(commande);
+
+    let produitsHTML = "";
+
+
+    produits.forEach(article => {
+
+      const nom =
+        article.name ||
+        article.nom ||
+        "Produit";
+
+      const categorie =
+        article.category ||
+        article.categorie ||
+        "Autres";
+
+      const prix =
+        Number(
+          article.price ??
+          article.prix ??
+          0
+        );
+
+      const quantite =
+        Number(
+          article.quantity ??
+          article.quantite ??
+          1
+        );
+
+      const totalArticle =
+        prix * quantite;
+
+      const image =
+        article.image ||
+        "https://via.placeholder.com/100x100?text=Produit";
+
+
+      produitsHTML += `
+
+        <div class="produit">
+
+          <img
+            src="${escapeHTML(image)}"
+            alt="${escapeHTML(nom)}"
+            onerror="
+              this.src='https://via.placeholder.com/100x100?text=Produit'
+            "
+          >
+
+          <div class="produit-info">
+
+            <div class="produit-nom">
+              ${escapeHTML(nom)}
+            </div>
+
+            <div class="categorie">
+              ${escapeHTML(categorie)}
+            </div>
+
+            <div class="details">
+              ${formatPrix(prix)} × ${quantite}
+            </div>
+
+          </div>
+
+          <div class="article-total">
+            ${formatPrix(totalArticle)}
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+
+    if (!produitsHTML) {
+
+      produitsHTML = `
+        <p style="color:#6b7280;">
+          Aucun produit trouvé dans cette commande.
+        </p>
+      `;
+
+    }
+
+
+    const client =
+      commande.client || {};
+
+
+    const statut =
+      commande.statut ||
+      "En attente";
+
+
+    const total =
+      Number(commande.total || 0);
+
+
+    return `
+
+      <div class="commande">
+
+        <div class="commande-header">
+
+          <div>
+
+            <div class="commande-id">
+              Commande #${escapeHTML(
+                commande.id || "N/A"
+              )}
+            </div>
+
+            <div class="date">
+              📅 ${escapeHTML(
+                commande.date || "Date inconnue"
+              )}
+            </div>
+
+          </div>
+
+
+          <div class="statut ${classeStatut(statut)}">
+
+            ${escapeHTML(statut)}
+
+          </div>
+
+        </div>
+
+
+        <div class="commande-body">
+
+          <div class="produits">
+
+            ${produitsHTML}
+
+          </div>
+
+
+          <div class="infos">
+
+            <div class="info">
+
+              <div class="label">
+                👤 Client
+              </div>
+
+              <div class="value">
+                ${escapeHTML(
+                  client.nom || "Non renseigné"
+                )}
+              </div>
+
+            </div>
+
+
+            <div class="info">
+
+              <div class="label">
+                📞 Téléphone
+              </div>
+
+              <div class="value">
+                ${escapeHTML(
+                  client.telephone ||
+                  "Non renseigné"
+                )}
+              </div>
+
+            </div>
+
+
+            <div class="info">
+
+              <div class="label">
+                💳 Mode de paiement
+              </div>
+
+              <div class="value">
+                ${escapeHTML(
+                  client.paiement ||
+                  "Non renseigné"
+                )}
+              </div>
+
+            </div>
+
+
+            <div class="info">
+
+              <div class="label">
+                📍 Adresse de livraison
+              </div>
+
+              <div class="value">
+                ${escapeHTML(
+                  client.adresse ||
+                  "Non renseignée"
+                )}
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="footer">
+
+          <div>
+
+            <div class="total-label">
+              Total de la commande
+            </div>
+
+            <div class="total">
+              ${formatPrix(total)}
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* =========================
+     AFFICHAGE
+  ========================= */
+
+  function afficherCommandes() {
+
+    const container =
+      document.getElementById(
+        "commandesContainer"
+      );
+
+    if (!container) return;
+
+
+    const utilisateur =
+      obtenirUtilisateur();
+
+
+    if (!utilisateur) {
+
+      window.location.href =
+        "connexion.html";
+
+      return;
+
+    }
+
+
+    let commandes =
+      obtenirMesCommandes();
+
+
+    if (commandes.length === 0) {
+
+      container.innerHTML = `
+
+        <div class="vide">
+
+          <div class="vide-icon">
+            📦
+          </div>
+
+          <h2>
+            Vous n'avez encore aucune commande
+          </h2>
+
+          <p>
+            Passez votre première commande
+            pour la retrouver ici.
+          </p>
+
+          <a
+            href="produits.html"
+            class="btn"
+          >
+            🛍️ Voir les produits
+          </a>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    /* Plus récente en premier */
+
+    commandes.reverse();
+
+
+    let html = `
+
+      <div class="count">
+
+        📦
+        <strong>${commandes.length}</strong>
+
+        commande${commandes.length > 1 ? "s" : ""}
+
+      </div>
+
+    `;
+
+
+    commandes.forEach(commande => {
+
+      html += creerCommandeHTML(
+        commande
+      );
+
+    });
+
+
+    container.innerHTML = html;
+
+  }
+
+
+  /* =========================
+     NOTIFICATIONS
+  ========================= */
+
+  function mettreAJourNotifications() {
+
+    const utilisateur =
+      obtenirUtilisateur();
+
+    const badge =
+      document.getElementById(
+        "badgeNotifications"
+      );
+
+    if (!badge) return;
+
+
+    if (!utilisateur) {
+
+      badge.style.display = "none";
+
+      return;
+
+    }
+
+
+    const commandes =
+      lireJSON(
+        "vendozaCommandes",
+        []
+      );
+
+
+    const lues =
+      lireJSON(
+        "vendozaNotificationsLues",
+        []
+      );
+
+
+    const email =
+      String(
+        utilisateur.email || ""
+      ).toLowerCase();
+
+
+    const telephone =
+      String(
+        utilisateur.telephone || ""
+      );
+
+
+    let nombre = 0;
+
+
+    commandes.forEach(commande => {
+
+      const client =
+        commande.client || {};
+
+
+      const memeEmail =
+        email &&
+        String(
+          client.email || ""
+        ).toLowerCase() === email;
+
+
+      const memeTelephone =
+        telephone &&
+        String(
+          client.telephone || ""
+        ) === telephone;
+
+
+      if (!memeEmail && !memeTelephone) {
+        return;
+      }
+
+
+      const idNotification =
+        normaliserId(commande.id) +
+        "-" +
+        String(
+          commande.statut ||
+          "En attente"
+        );
+
+
+      if (
+        !lues.includes(idNotification)
+      ) {
+
+        nombre++;
+
+      }
+
+    });
+
+
+    if (nombre > 0) {
+
+      badge.textContent =
+        nombre > 99 ? "99+" : nombre;
+
+      badge.style.display = "flex";
+
+    } else {
+
+      badge.style.display = "none";
+
+    }
+
+  }
+
+
+  /* =========================
+     DÉMARRAGE
+  ========================= */
+
+  afficherCompte();
+
+  afficherCommandes();
+
+  mettreAJourNotifications();
+
+
+  /* =========================
+     ACTUALISATION AUTOMATIQUE
+  ========================= */
+
+  window.addEventListener(
+    "storage",
+    function() {
+
+      afficherCompte();
+
+      afficherCommandes();
+
+      mettreAJourNotifications();
+
+    }
+  );
+
+
+  setInterval(
+    function() {
+
+      afficherCommandes();
+
+      mettreAJourNotifications();
+
+    },
+    3000
+  );
+
+</script></body>
+</html>

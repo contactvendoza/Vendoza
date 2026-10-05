@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Vendoza - Passer la commande</title>
+
+<style>
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f5f7fb;
+color:#222;
+}
+
+header{
+background:#111827;
+color:white;
+padding:15px 20px;
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.header-content{
+max-width:1200px;
+margin:auto;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+}
+
+.logo{
+color:white;
+text-decoration:none;
+font-size:25px;
+font-weight:bold;
+white-space:nowrap;
+}
+
+nav{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+justify-content:flex-end;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+padding:9px 11px;
+border-radius:8px;
+font-size:13px;
+}
+
+nav a:hover,
+nav a.active{
+background:#2563eb;
+}
+
+.notification-link{
+position:relative;
+}
+
+.notification-badge{
+position:absolute;
+top:-5px;
+right:-4px;
+min-width:18px;
+height:18px;
+padding:0 5px;
+border-radius:20px;
+background:#ef4444;
+color:white;
+font-size:10px;
+font-weight:bold;
+display:none;
+align-items:center;
+justify-content:center;
+border:2px solid #111827;
+}
+
+.container{
+max-width:1050px;
+margin:35px auto;
+padding:0 20px;
+}
+
+h1{
+margin-bottom:8px;
+}
+
+.intro{
+color:#666;
+margin-bottom:25px;
+}
+
+.checkout-layout{
+display:grid;
+grid-template-columns:1fr 340px;
+gap:25px;
+align-items:start;
+}
+
+.card{
+background:white;
+border-radius:15px;
+padding:22px;
+box-shadow:0 5px 18px rgba(0,0,0,.06);
+margin-bottom:20px;
+}
+
+.card h2{
+margin-top:0;
+font-size:20px;
+}
+
+.customer-info{
+background:#eff6ff;
+border-left:4px solid #2563eb;
+padding:14px;
+border-radius:8px;
+line-height:1.7;
+}
+
+label{
+display:block;
+margin-top:16px;
+margin-bottom:7px;
+font-weight:bold;
+}
+
+textarea,
+input{
+width:100%;
+border:1px solid #d1d5db;
+border-radius:8px;
+padding:12px;
+font-family:Arial,sans-serif;
+font-size:14px;
+outline:none;
+}
+
+textarea{
+min-height:110px;
+resize:vertical;
+}
+
+textarea:focus,
+input:focus{
+border-color:#2563eb;
+}
+
+.payment-option{
+display:flex;
+align-items:center;
+gap:10px;
+border:1px solid #ddd;
+padding:13px;
+border-radius:9px;
+margin-top:10px;
+cursor:pointer;
+}
+
+.payment-option:hover{
+background:#f9fafb;
+}
+
+.payment-option input{
+width:auto;
+margin:0;
+}
+
+.order-product{
+display:flex;
+gap:12px;
+padding:12px 0;
+border-bottom:1px solid #eee;
+}
+
+.order-product:last-child{
+border-bottom:none;
+}
+
+.product-image{
+width:70px;
+height:70px;
+object-fit:cover;
+border-radius:9px;
+background:#eee;
+flex-shrink:0;
+}
+
+.product-info{
+flex:1;
+}
+
+.product-name{
+font-weight:bold;
+margin-bottom:5px;
+}
+
+.product-details{
+color:#666;
+font-size:13px;
+line-height:1.6;
+}
+
+.product-total{
+font-weight:bold;
+white-space:nowrap;
+}
+
+.summary{
+background:white;
+border-radius:15px;
+padding:22px;
+box-shadow:0 5px 18px rgba(0,0,0,.06);
+position:sticky;
+top:90px;
+}
+
+.summary h2{
+margin-top:0;
+}
+
+.summary-line{
+display:flex;
+justify-content:space-between;
+gap:15px;
+margin:14px 0;
+color:#555;
+}
+
+.summary-total{
+border-top:2px solid #eee;
+margin-top:18px;
+padding-top:16px;
+display:flex;
+justify-content:space-between;
+font-size:20px;
+font-weight:bold;
+}
+
+.submit-btn{
+width:100%;
+border:none;
+background:#2563eb;
+color:white;
+padding:14px;
+border-radius:9px;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+margin-top:20px;
+}
+
+.submit-btn:hover{
+background:#1d4ed8;
+}
+
+.empty{
+background:white;
+padding:50px 20px;
+border-radius:15px;
+text-align:center;
+box-shadow:0 5px 18px rgba(0,0,0,.06);
+}
+
+.empty-icon{
+font-size:55px;
+margin-bottom:15px;
+}
+
+.btn{
+display:inline-block;
+background:#2563eb;
+color:white;
+text-decoration:none;
+padding:12px 20px;
+border-radius:9px;
+font-weight:bold;
+}
+
+@media(max-width:850px){
+
+.header-content{
+flex-direction:column;
+align-items:stretch;
+}
+
+nav{
+justify-content:center;
+}
+
+nav a{
+font-size:11px;
+padding:8px;
+}
+
+.checkout-layout{
+grid-template-columns:1fr;
+}
+
+.summary{
+position:static;
+}
+
+}
+
+@media(max-width:600px){
+
+.container{
+padding:0 12px;
+}
+
+.order-product{
+flex-wrap:wrap;
+}
+
+.product-total{
+margin-left:82px;
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="header-content">
+
+<a href="accueil.html" class="logo">
+🛍️ Vendoza
+</a>
+
+<nav>
+
+<a href="accueil.html">
+🏠 Accueil
+</a>
+
+<a href="produits.html">
+🛍️ Produits
+</a>
+
+<a href="panier.html">
+🛒 Panier
+</a>
+
+<!-- LIEN CORRIGÉ -->
+<a href="commandes-client.html">
+📦 Commandes
+</a>
+
+<a href="notifications.html" class="notification-link">
+🔔 Notifications
+<span id="notificationBadge" class="notification-badge"></span>
+</a>
+
+<a id="compteLien" href="connexion.html">
+🔐 Connexion
+</a>
+
+</nav>
+
+</div>
+
+</header>
+
+
+<div class="container">
+
+<h1>📦 Passer la commande</h1>
+
+<p class="intro">
+Vérifiez vos informations et confirmez votre commande.
+</p>
+
+<div id="contenuCommande"></div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   OUTILS
+===================================================== */
+
+function normaliserId(id){
+
+return String(id);
+
+}
+
+
+function lireJSON(cle,defaut){
+
+try{
+
+const data=
+localStorage.getItem(cle);
+
+if(!data){
+
+return defaut;
+
+}
+
+return JSON.parse(data);
+
+}catch(e){
+
+return defaut;
+
+}
+
+}
+
+
+function formatPrix(prix){
+
+return Number(prix||0)
+.toLocaleString("fr-FR")+" HTG";
+
+}
+
+
+/* =====================================================
+   UTILISATEUR CONNECTÉ
+===================================================== */
+
+const utilisateur=
+lireJSON(
+"vendozaUtilisateurConnecte",
+null
+);
+
+
+if(!utilisateur){
+
+alert(
+"Veuillez vous connecter pour continuer."
+);
+
+window.location.href=
+"connexion.html";
+
+}
+
+
+const compteLien=
+document.getElementById(
+"compteLien"
+);
+
+
+if(utilisateur){
+
+compteLien.href=
+"mon-compte.html";
+
+compteLien.textContent=
+"👤 Mon compte";
+
+}
+
+
+/* =====================================================
+   PANIER
+===================================================== */
+
+let panier=
+lireJSON(
+"vendozaCart",
+[]
+);
+
+
+const contenu=
+document.getElementById(
+"contenuCommande"
+);
+
+
+/* =====================================================
+   LIRE LES PRODUITS
+===================================================== */
+
+function lireProduits(){
+
+const produits=
+lireJSON(
+"produitsVendoza",
+[]
+);
+
+return Array.isArray(produits)
+?produits
+:[];
+
+}
+
+
+/* =====================================================
+   TROUVER UN PRODUIT
+===================================================== */
+
+function trouverProduit(id){
+
+const produits=
+lireProduits();
+
+const idRecherche=
+normaliserId(id);
+
+return produits.find(function(produit){
+
+return normaliserId(produit.id)
+===
+idRecherche;
+
+});
+
+}
+
+
+/* =====================================================
+   SYNCHRONISER LE PANIER
+===================================================== */
+
+function synchroniserPanier(){
+
+panier=
+panier.map(function(article){
+
+const produit=
+trouverProduit(article.id);
+
+
+if(!produit){
+
+return{
+
+...article,
+
+id:
+normaliserId(article.id),
+
+name:
+article.name||"Produit",
+
+price:
+Number(article.price)||0,
+
+quantity:
+Number(article.quantity)||1,
+
+image:
+article.image||"",
+
+category:
+article.category||"Autres"
+
+};
+
+}
+
+
+return{
+
+...article,
+
+id:
+normaliserId(produit.id),
+
+name:
+produit.nom||
+article.name||
+"Produit",
+
+price:
+Number(produit.prix)||0,
+
+quantity:
+Number(article.quantity)||1,
+
+image:
+produit.image||
+article.image||
+"",
+
+category:
+produit.categorie||
+article.category||
+"Autres"
+
+};
+
+});
+
+
+localStorage.setItem(
+"vendozaCart",
+JSON.stringify(panier)
+);
+
+}
+
+
+/* =====================================================
+   PANIER VIDE
+===================================================== */
+
+if(
+!Array.isArray(panier) ||
+panier.length===0
+){
+
+contenu.innerHTML=`
+
+<div class="empty">
+
+<div class="empty-icon">
+🛒
+</div>
+
+<h2>
+Votre panier est vide
+</h2>
+
+<p>
+Ajoutez des produits avant
+de passer une commande.
+</p>
+
+<a
+href="produits.html"
+class="btn"
+>
+🛍️ Voir les produits
+</a>
+
+</div>
+
+`;
+
+}else{
+
+synchroniserPanier();
+
+afficherCommande();
+
+}
+
+
+/* =====================================================
+   AFFICHER LA COMMANDE
+===================================================== */
+
+function afficherCommande(){
+
+let total=0;
+
+
+const produitsHTML=
+panier.map(function(article){
+
+const prix=
+Number(article.price)||0;
+
+const quantite=
+Number(article.quantity)||1;
+
+const sousTotal=
+prix*quantite;
+
+
+total+=sousTotal;
+
+
+return`
+
+<div class="order-product">
+
+<img
+class="product-image"
+src="${article.image||""}"
+alt="${article.name||"Produit"}"
+onerror="this.style.display='none'"
+>
+
+<div class="product-info">
+
+<div class="product-name">
+${article.name||"Produit"}
+</div>
+
+<div class="product-details">
+
+Prix unitaire :
+${formatPrix(prix)}
+
+<br>
+
+Quantité :
+${quantite}
+
+</div>
+
+</div>
+
+<div class="product-total">
+${formatPrix(sousTotal)}
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+
+contenu.innerHTML=`
+
+<div class="checkout-layout">
+
+<div>
+
+<div class="card">
+
+<h2>
+👤 Informations client
+</h2>
+
+<div class="customer-info">
+
+<strong>Nom :</strong>
+${utilisateur.nom||""}
+
+<br>
+
+<strong>Téléphone :</strong>
+${utilisateur.telephone||""}
+
+<br>
+
+<strong>Email :</strong>
+${utilisateur.email||""}
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+📍 Adresse de livraison
+</h2>
+
+<label for="adresse">
+Adresse complète
+</label>
+
+<textarea
+id="adresse"
+placeholder="Entrez votre adresse complète..."
+></textarea>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+💳 Mode de paiement
+</h2>
+
+
+<label class="payment-option">
+
+<input
+type="radio"
+name="paiement"
+value="MonCash"
+>
+
+<span>
+📱 MonCash
+</span>
+
+</label>
+
+
+<label class="payment-option">
+
+<input
+type="radio"
+name="paiement"
+value="NatCash"
+>
+
+<span>
+📱 NatCash
+</span>
+
+</label>
+
+
+<label class="payment-option">
+
+<input
+type="radio"
+name="paiement"
+value="Paiement à la livraison"
+>
+
+<span>
+💵 Paiement à la livraison
+</span>
+
+</label>
+
+</div>
+
+</div>
+
+
+<div class="summary">
+
+<h2>
+🧾 Résumé
+</h2>
+
+<div id="produitsResume">
+
+${produitsHTML}
+
+</div>
+
+
+<div class="summary-line">
+
+<span>
+Sous-total
+</span>
+
+<strong>
+${formatPrix(total)}
+</strong>
+
+</div>
+
+
+<div class="summary-line">
+
+<span>
+Livraison
+</span>
+
+<strong>
+À confirmer
+</strong>
+
+</div>
+
+
+<div class="summary-total">
+
+<span>
+Total
+</span>
+
+<span>
+${formatPrix(total)}
+</span>
+
+</div>
+
+
+<button
+class="submit-btn"
+id="confirmerBtn"
+>
+✅ Confirmer la commande
+</button>
+
+</div>
+
+</div>
+
+`;
+
+
+document
+.getElementById("confirmerBtn")
+.addEventListener(
+"click",
+confirmerCommande
+);
+
+}
+
+
+/* =====================================================
+   CONFIRMER COMMANDE
+===================================================== */
+
+function confirmerCommande(){
+
+const adresseElement=
+document.getElementById("adresse");
+
+
+const adresse=
+adresseElement
+?adresseElement.value.trim()
+:"";
+
+
+const paiement=
+document.querySelector(
+'input[name="paiement"]:checked'
+);
+
+
+if(!adresse){
+
+alert(
+"Veuillez entrer votre adresse de livraison."
+);
+
+return;
+
+}
+
+
+if(!paiement){
+
+alert(
+"Veuillez choisir un mode de paiement."
+);
+
+return;
+
+}
+
+
+/*
+ Recharger les produits
+*/
+
+const produitsActuels=
+lireProduits();
+
+
+/*
+ Vérification des produits
+*/
+
+for(
+const article of panier
+){
+
+const produit=
+produitsActuels.find(
+function(p){
+
+return normaliserId(p.id)
+===
+normaliserId(article.id);
+
+});
+
+
+if(!produit){
+
+alert(
+`Le produit "${article.name||"Produit"}" n'existe plus dans le catalogue.`
+);
+
+return;
+
+}
+
+
+const stock=
+Number(produit.stock);
+
+
+const quantite=
+Number(article.quantity)||1;
+
+
+/*
+ Vérifier seulement si le stock
+ est réellement renseigné.
+*/
+
+if(
+!Number.isNaN(stock) &&
+stock<quantite
+){
+
+alert(
+`Stock insuffisant pour "${produit.nom||article.name||"Produit"}". Stock disponible : ${stock}.`
+);
+
+return;
+
+}
+
+}
+
+
+/* =====================================================
+   CALCUL TOTAL
+===================================================== */
+
+let total=0;
+
+
+panier.forEach(function(article){
+
+total+=
+(Number(article.price)||0)*
+(Number(article.quantity)||1);
+
+});
+
+
+/* =====================================================
+   CRÉER LA COMMANDE
+===================================================== */
+
+const commande={
+
+id:
+"CMD-"+Date.now(),
+
+date:
+new Date().toLocaleString("fr-FR"),
+
+
+client:{
+
+nom:
+utilisateur.nom||"",
+
+telephone:
+utilisateur.telephone||"",
+
+email:
+utilisateur.email||"",
+
+adresse:
+adresse,
+
+paiement:
+paiement.value
+
+},
+
+
+produits:
+panier.map(function(article){
+
+return{
+
+id:
+normaliserId(article.id),
+
+name:
+article.name||"Produit",
+
+price:
+Number(article.price)||0,
+
+quantity:
+Number(article.quantity)||1,
+
+image:
+article.image||"",
+
+category:
+article.category||
+"Autres"
+
+};
+
+}),
+
+
+produit:{
+
+id:
+normaliserId(
+panier[0].id
+),
+
+name:
+panier[0].name||
+"Produit",
+
+price:
+Number(panier[0].price)||
+0,
+
+quantity:
+Number(panier[0].quantity)||
+1,
+
+image:
+panier[0].image||
+"",
+
+category:
+panier[0].category||
+"Autres"
+
+},
+
+
+total:
+total,
+
+statut:
+"En attente",
+
+stockDeduit:
+false
+
+};
+
+
+/* =====================================================
+   SAUVEGARDER LA COMMANDE
+===================================================== */
+
+const commandes=
+lireJSON(
+"vendozaCommandes",
+[]
+);
+
+
+commandes.push(
+commande
+);
+
+
+localStorage.setItem(
+"vendozaCommandes",
+JSON.stringify(commandes)
+);
+
+
+/* =====================================================
+   NETTOYER
+===================================================== */
+
+localStorage.removeItem(
+"vendozaCart"
+);
+
+localStorage.removeItem(
+"vendozaAchatDirect"
+);
+
+
+alert(
+"✅ Votre commande a été enregistrée avec succès !"
+);
+
+
+/* REDIRECTION CORRIGÉE */
+window.location.href=
+"commandes-client.html";
+
+}
+
+
+/* =====================================================
+   NOTIFICATIONS
+===================================================== */
+
+const badge=
+document.getElementById(
+"notificationBadge"
+);
+
+
+function getNotificationId(commande){
+
+return(
+normaliserId(commande.id)+
+"-"+
+(commande.statut||
+"En attente")
+);
+
+}
+
+
+function mettreAJourBadge(){
+
+if(!utilisateur){
+
+badge.style.display=
+"none";
+
+return;
+
+}
+
+
+const commandes=
+lireJSON(
+"vendozaCommandes",
+[]
+);
+
+
+const lues=
+lireJSON(
+"vendozaNotificationsLues",
+[]
+);
+
+
+const luesNormalisees=
+Array.isArray(lues)
+?lues.map(normaliserId)
+:[];
+
+
+let nonLues=0;
+
+
+commandes.forEach(
+function(commande){
+
+const client=
+commande.client||{};
+
+
+const emailCommande=
+String(
+client.email||""
+).toLowerCase();
+
+
+const emailUtilisateur=
+String(
+utilisateur.email||""
+).toLowerCase();
+
+
+const telephoneCommande=
+String(
+client.telephone||""
+);
+
+
+const telephoneUtilisateur=
+String(
+utilisateur.telephone||""
+);
+
+
+const appartient=
+
+(
+emailCommande &&
+emailUtilisateur &&
+emailCommande===
+emailUtilisateur
+)
+
+||
+
+(
+telephoneCommande &&
+telephoneUtilisateur &&
+telephoneCommande===
+telephoneUtilisateur
+);
+
+
+if(!appartient){
+
+return;
+
+}
+
+
+const notificationId=
+getNotificationId(
+commande
+);
+
+
+if(
+!luesNormalisees.includes(
+normaliserId(
+notificationId
+)
+)
+){
+
+nonLues++;
+
+}
+
+});
+
+
+if(nonLues>0){
+
+badge.textContent=
+nonLues>99
+?"99+"
+:nonLues;
+
+badge.style.display=
+"flex";
+
+}else{
+
+badge.textContent="";
+badge.style.display=
+"none";
+
+}
+
+}
+
+
+mettreAJourBadge();
+
+
+window.addEventListener(
+"storage",
+function(event){
+
+if(
+event.key===
+"vendozaCommandes" ||
+event.key===
+"vendozaNotificationsLues"
+){
+
+mettreAJourBadge();
+
+}
+
+}
+);
+
+</script>
+
+</body>
+</html>

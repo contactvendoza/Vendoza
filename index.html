@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendoza - Boutique</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+
+body{
+background:#f5f7fb;
+color:#222;
+}
+
+header{
+background:#111827;
+color:white;
+padding:15px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
+}
+
+.logo{
+font-size:26px;
+font-weight:bold;
+}
+
+nav{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+font-weight:bold;
+padding:8px;
+}
+
+.hero{
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+color:white;
+text-align:center;
+padding:50px 20px;
+}
+
+.hero h1{
+font-size:38px;
+margin-bottom:10px;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:25px 15px;
+}
+
+.categories{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+
+.categories button{
+border:0;
+background:white;
+padding:11px 15px;
+border-radius:20px;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 2px 8px #ddd;
+}
+
+.categories button.active{
+background:#2563eb;
+color:white;
+}
+
+.filtres{
+background:white;
+padding:18px;
+border-radius:15px;
+margin-bottom:25px;
+}
+
+.filtres input{
+padding:12px;
+border:1px solid #ddd;
+border-radius:8px;
+margin:5px;
+width:220px;
+}
+
+.reset{
+padding:12px 16px;
+border:0;
+border-radius:8px;
+background:#ef4444;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.produits{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+gap:20px;
+}
+
+.carte{
+background:white;
+border-radius:16px;
+overflow:hidden;
+box-shadow:0 4px 15px #ddd;
+}
+
+.photo-lien{
+display:block;
+}
+
+.carte img{
+width:100%;
+height:220px;
+object-fit:cover;
+background:#eee;
+}
+
+.infos{
+padding:15px;
+}
+
+.nom-produit{
+display:block;
+color:#111827;
+font-size:19px;
+font-weight:bold;
+text-decoration:none;
+margin-bottom:8px;
+}
+
+.nom-produit:hover{
+color:#2563eb;
+}
+
+.categorie{
+display:inline-block;
+background:#e0e7ff;
+color:#3730a3;
+padding:5px 9px;
+border-radius:15px;
+font-size:12px;
+margin-bottom:10px;
+}
+
+.prix{
+color:#16a34a;
+font-size:20px;
+font-weight:bold;
+margin-bottom:7px;
+}
+
+.stock{
+color:#555;
+margin-bottom:12px;
+}
+
+.actions{
+display:flex;
+gap:8px;
+}
+
+.panier-btn{
+flex:1;
+border:0;
+background:#2563eb;
+color:white;
+padding:11px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.favori-btn{
+width:45px;
+border:0;
+background:#fee2e2;
+color:#dc2626;
+border-radius:8px;
+font-size:20px;
+cursor:pointer;
+}
+
+.vide{
+background:white;
+padding:35px;
+text-align:center;
+border-radius:15px;
+}
+
+@media(max-width:600px){
+
+.hero h1{
+font-size:30px;
+}
+
+.filtres input{
+width:100%;
+margin:5px 0;
+}
+
+nav{
+width:100%;
+justify-content:center;
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">🛍️ Vendoza</div>
+
+<nav>
+
+<a href="index.html">🏠 Boutique</a>
+
+<a href="produits.html">🛍️ Produits</a>
+
+<a href="panier.html">
+🛒 Panier (<span id="compteurPanier">0</span>)
+</a>
+
+<a href="favoris.html">
+❤️ Favoris (<span id="compteurFavoris">0</span>)
+</a>
+
+<a href="commandes-client.html">
+📦 Commandes
+</a>
+
+<a href="notifications.html">
+🔔 Notifications
+</a>
+
+<a href="connexion.html" id="lienCompte">
+👤 Connexion
+</a>
+
+</nav>
+
+</header>
+
+<section class="hero">
+
+<h1>Bienvenue sur Vendoza 🛍️</h1>
+
+<p>
+Découvrez nos produits et commandez facilement en ligne.
+</p>
+
+</section>
+
+<div class="container">
+
+<div class="categories">
+
+<button class="active"
+onclick="choisirCategorie('Tous',this)">
+🛍️ Tous les produits
+</button>
+
+<button onclick="choisirCategorie('Téléphones',this)">
+📱 Téléphones
+</button>
+
+<button onclick="choisirCategorie('Informatique',this)">
+💻 Informatique
+</button>
+
+<button onclick="choisirCategorie('Mode',this)">
+👕 Mode
+</button>
+
+<button onclick="choisirCategorie('Maison',this)">
+🏠 Maison
+</button>
+
+<button onclick="choisirCategorie('Électronique',this)">
+🎧 Électronique
+</button>
+
+<button onclick="choisirCategorie('Beauté',this)">
+🧴 Beauté
+</button>
+
+<button onclick="choisirCategorie('Autres',this)">
+📦 Autres
+</button>
+
+</div>
+
+<div class="filtres">
+
+<input
+id="recherche"
+type="text"
+placeholder="🔎 Rechercher un produit..."
+oninput="filtrerProduits()"
+>
+
+<input
+id="prixMin"
+type="number"
+placeholder="Prix minimum"
+oninput="filtrerProduits()"
+>
+
+<input
+id="prixMax"
+type="number"
+placeholder="Prix maximum"
+oninput="filtrerProduits()"
+>
+
+<button class="reset" onclick="effacerFiltres()">
+Réinitialiser
+</button>
+
+</div>
+
+<div id="listeProduits" class="produits"></div>
+
+</div>
+
+<script>
+
+let categorieSelectionnee="Tous";
+
+/* =========================
+   OUTILS
+========================= */
+
+function normaliserId(id){
+return String(id);
+}
+
+function obtenirProduits(){
+
+try{
+
+return JSON.parse(
+localStorage.getItem("produitsVendoza")
+)||[];
+
+}catch(e){
+
+return [];
+
+}
+
+}
+
+function obtenirPanier(){
+
+try{
+
+return JSON.parse(
+localStorage.getItem("vendozaCart")
+)||[];
+
+}catch(e){
+
+return [];
+
+}
+
+}
+
+function obtenirFavoris(){
+
+try{
+
+return JSON.parse(
+localStorage.getItem("vendozaFavoris")
+)||[];
+
+}catch(e){
+
+return [];
+
+}
+
+}
+
+/* =========================
+   OUVRIR PRODUIT
+========================= */
+
+function ouvrirProduit(id){
+
+localStorage.setItem(
+"vendozaProduitSelectionne",
+normaliserId(id)
+);
+
+window.location.href="produit.html";
+
+}
+
+/* =========================
+   COMPTEUR PANIER
+========================= */
+
+function mettreAJourCompteur(){
+
+let panier=obtenirPanier();
+
+let total=panier.reduce(
+(s,p)=>s+Number(p.quantity||0),
+0
+);
+
+let compteur=document.getElementById("compteurPanier");
+
+if(compteur){
+compteur.textContent=total;
+}
+
+}
+
+/* =========================
+   COMPTEUR FAVORIS
+========================= */
+
+function mettreAJourFavoris(){
+
+let compteur=document.getElementById("compteurFavoris");
+
+if(compteur){
+compteur.textContent=obtenirFavoris().length;
+}
+
+}
+
+/* =========================
+   VERIFIER FAVORI
+========================= */
+
+function estFavori(id){
+
+let idNormalise=normaliserId(id);
+
+return obtenirFavoris().some(
+p=>normaliserId(p.id)===idNormalise
+);
+
+}
+
+/* =========================
+   AJOUT / RETRAIT FAVORI
+========================= */
+
+function basculerFavori(id){
+
+let idNormalise=normaliserId(id);
+
+let produit=obtenirProduits().find(
+p=>normaliserId(p.id)===idNormalise
+);
+
+if(!produit)return;
+
+let favoris=obtenirFavoris();
+
+let index=favoris.findIndex(
+p=>normaliserId(p.id)===idNormalise
+);
+
+if(index!==-1){
+
+favoris.splice(index,1);
+
+}else{
+
+favoris.push({
+
+id:produit.id,
+
+nom:produit.nom,
+
+prix:Number(produit.prix)||0,
+
+stock:Number(produit.stock)||0,
+
+image:produit.image||"",
+
+categorie:produit.categorie||"Autres"
+
+});
+
+}
+
+localStorage.setItem(
+"vendozaFavoris",
+JSON.stringify(favoris)
+);
+
+mettreAJourFavoris();
+
+afficherProduits();
+
+}
+
+/* =========================
+   AFFICHER PRODUITS
+========================= */
+
+function afficherProduits(liste=null){
+
+let produits=liste||obtenirProduits();
+
+let zone=document.getElementById("listeProduits");
+
+if(produits.length===0){
+
+zone.innerHTML=`
+
+<div class="vide">
+
+<h2>📦 Aucun produit trouvé</h2>
+
+<p>
+Essayez une autre recherche ou catégorie.
+</p>
+
+</div>
+
+`;
+
+return;
+
+}
+
+zone.innerHTML=produits.map(produit=>{
+
+let categorie=produit.categorie||"Autres";
+
+let image=produit.image||
+"https://via.placeholder.com/500x500?text=Vendoza";
+
+let id=normaliserId(produit.id);
+
+return`
+
+<div class="carte">
+
+<a
+href="#"
+class="photo-lien"
+onclick="ouvrirProduit('${id}');return false;"
+>
+
+<img
+src="${image}"
+alt="${produit.nom||"Produit"}"
+>
+
+</a>
+
+<div class="infos">
+
+<span class="categorie">
+${categorie}
+</span>
+
+<a
+href="#"
+class="nom-produit"
+onclick="ouvrirProduit('${id}');return false;"
+>
+
+${produit.nom||"Produit"}
+
+</a>
+
+<div class="prix">
+
+${Number(produit.prix||0).toLocaleString()} HTG
+
+</div>
+
+<div class="stock">
+
+📦 Stock : ${Number(produit.stock||0)}
+
+</div>
+
+<div class="actions">
+
+<button
+class="panier-btn"
+onclick="ajouterAuPanier('${id}')"
+>
+
+🛒 Ajouter
+
+</button>
+
+<button
+class="favori-btn"
+onclick="basculerFavori('${id}')"
+>
+
+${estFavori(id)?"❤️":"🤍"}
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+/* =========================
+   AJOUTER AU PANIER
+========================= */
+
+function ajouterAuPanier(id){
+
+let idNormalise=normaliserId(id);
+
+let produit=obtenirProduits().find(
+p=>normaliserId(p.id)===idNormalise
+);
+
+if(!produit)return;
+
+let stock=Number(produit.stock)||0;
+
+if(stock<=0){
+
+alert(
+"❌ Ce produit est en rupture de stock."
+);
+
+return;
+
+}
+
+let panier=obtenirPanier();
+
+let existant=panier.find(
+p=>normaliserId(p.id)===idNormalise
+);
+
+if(existant){
+
+if(Number(existant.quantity)>=stock){
+
+alert(
+"❌ Stock maximum atteint."
+);
+
+return;
+
+}
+
+existant.quantity++;
+
+}else{
+
+panier.push({
+
+id:produit.id,
+
+name:produit.nom,
+
+price:Number(produit.prix)||0,
+
+stock:stock,
+
+image:produit.image||"",
+
+category:produit.categorie||"Autres",
+
+quantity:1
+
+});
+
+}
+
+localStorage.setItem(
+"vendozaCart",
+JSON.stringify(panier)
+);
+
+mettreAJourCompteur();
+
+alert(
+"✅ Produit ajouté au panier !"
+);
+
+}
+
+/* =========================
+   CATEGORIE
+========================= */
+
+function choisirCategorie(categorie,bouton){
+
+categorieSelectionnee=categorie;
+
+document
+.querySelectorAll(".categories button")
+.forEach(b=>b.classList.remove("active"));
+
+bouton.classList.add("active");
+
+filtrerProduits();
+
+}
+
+/* =========================
+   FILTRES
+========================= */
+
+function filtrerProduits(){
+
+let recherche=
+document.getElementById("recherche")
+.value
+.toLowerCase()
+.trim();
+
+let min=
+Number(
+document.getElementById("prixMin").value
+)||0;
+
+let maxInput=
+document.getElementById("prixMax").value;
+
+let max=
+maxInput===""?
+Infinity:
+Number(maxInput);
+
+let produits=obtenirProduits().filter(produit=>{
+
+let nom=
+String(produit.nom||"")
+.toLowerCase();
+
+let categorie=
+produit.categorie||"Autres";
+
+let prix=
+Number(produit.prix)||0;
+
+return (
+
+nom.includes(recherche)&&
+
+(
+categorieSelectionnee==="Tous"||
+categorie===categorieSelectionnee
+)&&
+
+prix>=min&&
+prix<=max
+
+);
+
+});
+
+afficherProduits(produits);
+
+}
+
+/* =========================
+   EFFACER FILTRES
+========================= */
+
+function effacerFiltres(){
+
+document.getElementById("recherche").value="";
+document.getElementById("prixMin").value="";
+document.getElementById("prixMax").value="";
+
+categorieSelectionnee="Tous";
+
+document
+.querySelectorAll(".categories button")
+.forEach(b=>b.classList.remove("active"));
+
+document
+.querySelector(".categories button")
+.classList.add("active");
+
+afficherProduits();
+
+}
+
+/* =========================
+   COMPTE CLIENT
+========================= */
+
+function verifierCompteClient(){
+
+let client=localStorage.getItem(
+"vendozaUtilisateurConnecte"
+);
+
+let lien=document.getElementById("lienCompte");
+
+if(!lien)return;
+
+if(client){
+
+lien.href="mon-compte.html";
+
+lien.textContent="👤 Mon compte";
+
+}else{
+
+lien.href="connexion.html";
+
+lien.textContent="👤 Connexion";
+
+}
+
+}
+
+/* =========================
+   ACTUALISATION AUTOMATIQUE
+========================= */
+
+function actualiserPage(){
+
+mettreAJourCompteur();
+
+mettreAJourFavoris();
+
+verifierCompteClient();
+
+filtrerProduits();
+
+}
+
+/* =========================
+   INITIALISATION
+========================= */
+
+mettreAJourCompteur();
+
+mettreAJourFavoris();
+
+verifierCompteClient();
+
+afficherProduits();
+
+/* Mise à jour si une autre page
+   modifie le localStorage */
+
+window.addEventListener(
+"storage",
+actualiserPage
+);
+
+setInterval(
+actualiserPage,
+3000
+);
+
+</script>
+
+</body>
+</html>

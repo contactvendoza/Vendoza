@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Notifications - Vendoza</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      color: white;
+      text-decoration: none;
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+
+    nav a:hover {
+      background: #374151;
+    }
+
+    .notification-link {
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: -5px;
+      right: -4px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      min-width: 19px;
+      height: 19px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+
+    .top {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .top h1 {
+      margin: 0 0 5px;
+      font-size: 25px;
+    }
+
+    .top p {
+      margin: 0;
+      color: #666;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 9px;
+      padding: 10px 15px;
+      font-weight: bold;
+    }
+
+    .read-all {
+      background: #111827;
+      color: white;
+    }
+
+    .read-all:hover {
+      background: #374151;
+    }
+
+    .notification {
+      background: white;
+      border-radius: 15px;
+      padding: 18px;
+      margin-bottom: 13px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      border-left: 5px solid #9ca3af;
+      transition: 0.2s;
+    }
+
+    .notification.unread {
+      background: #eef6ff;
+      border-left-color: #2563eb;
+    }
+
+    .icon {
+      width: 45px;
+      height: 45px;
+      min-width: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      background: #e5e7eb;
+    }
+
+    .notification.confirmed {
+      border-left-color: #16a34a;
+    }
+
+    .notification.confirmed .icon {
+      background: #dcfce7;
+    }
+
+    .notification.delivery {
+      border-left-color: #2563eb;
+    }
+
+    .notification.delivery .icon {
+      background: #dbeafe;
+    }
+
+    .notification.delivered {
+      border-left-color: #7c3aed;
+    }
+
+    .notification.delivered .icon {
+      background: #ede9fe;
+    }
+
+    .notification.cancelled {
+      border-left-color: #dc2626;
+    }
+
+    .notification.cancelled .icon {
+      background: #fee2e2;
+    }
+
+    .notification.pending {
+      border-left-color: #f59e0b;
+    }
+
+    .notification.pending .icon {
+      background: #fef3c7;
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .content h3 {
+      margin: 0 0 7px;
+      font-size: 17px;
+    }
+
+    .content p {
+      margin: 0 0 7px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .date {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .order-number {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #f3f4f6;
+      font-size: 12px;
+      color: #374151;
+    }
+
+    .mark-read {
+      background: #e5e7eb;
+      color: #111827;
+      padding: 7px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .mark-read:hover {
+      background: #d1d5db;
+    }
+
+    .empty {
+      background: white;
+      border-radius: 15px;
+      padding: 50px 20px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .empty .empty-icon {
+      font-size: 50px;
+      margin-bottom: 10px;
+    }
+
+    .empty h2 {
+      margin: 10px 0;
+    }
+
+    .empty p {
+      color: #777;
+    }
+
+    .empty a {
+      display: inline-block;
+      margin-top: 10px;
+      background: #111827;
+      color: white;
+      text-decoration: none;
+      padding: 11px 18px;
+      border-radius: 9px;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .notification {
+        padding: 14px;
+      }
+
+      .mark-read {
+        font-size: 11px;
+        padding: 6px 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <a href="accueil.html" class="logo">Vendoza</a>
+
+  <nav>
+    <a href="accueil.html">🏠 Accueil</a>
+    <a href="produits.html">🛍️ Produits</a>
+    <a href="panier.html">🛒 Panier</a>
+    <a href="commandes-client.html">📦 Commandes</a>
+
+    <a href="notifications.html" class="notification-link">
+      🔔 Notifications
+      <span id="badge" class="badge" style="display:none;">0</span>
+    </a>
+
+    <a href="mon-compte.html">👤 Mon compte</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="top">
+    <div>
+      <h1>🔔 Mes notifications</h1>
+      <p id="notificationCount">Aucune nouvelle notification</p>
+    </div>
+
+    <button class="read-all" onclick="marquerToutCommeLu()">
+      ✓ Tout marquer comme lu
+    </button>
+  </div>
+
+  <div id="notificationsContainer"></div>
+
+</main>
+
+<script>
+
+  function lireJSON(cle, valeurParDefaut) {
+    try {
+      const valeur = localStorage.getItem(cle);
+
+      if (!valeur) {
+        return valeurParDefaut;
+      }
+
+      const resultat = JSON.parse(valeur);
+
+      return resultat ?? valeurParDefaut;
+
+    } catch (erreur) {
+      console.error("Erreur JSON :", erreur);
+      return valeurParDefaut;
+    }
+  }
+
+
+  function normaliserId(id) {
+    return String(id ?? "");
+  }
+
+
+  function utilisateurConnecte() {
+    return lireJSON("vendozaUtilisateurConnecte", null);
+  }
+
+
+  function obtenirIdNotification(commande) {
+    return normaliserId(commande.id) + "-" + normaliserId(commande.statut);
+  }
+
+
+  function obtenirNotificationsLues() {
+    const liste = lireJSON("vendozaNotificationsLues", []);
+
+    return Array.isArray(liste) ? liste.map(normaliserId) : [];
+  }
+
+
+  function sauvegarderNotificationsLues(liste) {
+    localStorage.setItem(
+      "vendozaNotificationsLues",
+      JSON.stringify(liste)
+    );
+  }
+
+
+  function commandeAppartientAuClient(commande, utilisateur) {
+
+    if (!commande || !commande.client || !utilisateur) {
+      return false;
+    }
+
+    const emailCommande = normaliserId(commande.client.email)
+      .trim()
+      .toLowerCase();
+
+    const emailUtilisateur = normaliserId(utilisateur.email)
+      .trim()
+      .toLowerCase();
+
+    const telephoneCommande = normaliserId(commande.client.telephone)
+      .replace(/\s+/g, "");
+
+    const telephoneUtilisateur = normaliserId(utilisateur.telephone)
+      .replace(/\s+/g, "");
+
+    if (
+      emailCommande &&
+      emailUtilisateur &&
+      emailCommande === emailUtilisateur
+    ) {
+      return true;
+    }
+
+    if (
+      telephoneCommande &&
+      telephoneUtilisateur &&
+      telephoneCommande === telephoneUtilisateur
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+
+  function informationsNotification(statut) {
+
+    switch (statut) {
+
+      case "Confirmée":
+        return {
+          classe: "confirmed",
+          icone: "✅",
+          titre: "Commande confirmée",
+          message: "Votre commande a été confirmée par Vendoza."
+        };
+
+      case "En livraison":
+        return {
+          classe: "delivery",
+          icone: "🚚",
+          titre: "Commande en livraison",
+          message: "Votre commande est maintenant en cours de livraison."
+        };
+
+      case "Livrée":
+        return {
+          classe: "delivered",
+          icone: "📦",
+          titre: "Commande livrée",
+          message: "Votre commande a été livrée avec succès. Merci d'avoir choisi Vendoza !"
+        };
+
+      case "Annulée":
+        return {
+          classe: "cancelled",
+          icone: "❌",
+          titre: "Commande annulée",
+          message: "Votre commande a été annulée."
+        };
+
+      case "En attente":
+      default:
+        return {
+          classe: "pending",
+          icone: "⏳",
+          titre: "Commande reçue",
+          message: "Votre commande est bien enregistrée et attend sa confirmation."
+        };
+    }
+  }
+
+
+  function formaterDate(date) {
+
+    if (!date) {
+      return "";
+    }
+
+    return String(date);
+  }
+
+
+  function afficherNotifications() {
+
+    const utilisateur = utilisateurConnecte();
+
+    const container = document.getElementById("notificationsContainer");
+    const badge = document.getElementById("badge");
+    const compteur = document.getElementById("notificationCount");
+
+    if (!utilisateur) {
+
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">🔐</div>
+          <h2>Connexion nécessaire</h2>
+          <p>Connectez-vous pour consulter vos notifications.</p>
+          <a href="connexion.html">Se connecter</a>
+        </div>
+      `;
+
+      badge.style.display = "none";
+      compteur.textContent = "Connectez-vous pour voir vos notifications.";
+
+      return;
+    }
+
+
+    const commandes = lireJSON("vendozaCommandes", []);
+
+    const commandesClient = Array.isArray(commandes)
+      ? commandes.filter(commande =>
+          commandeAppartientAuClient(commande, utilisateur)
+        )
+      : [];
+
+
+    const notifications = [];
+
+    commandesClient.forEach(commande => {
+
+      const statut = commande.statut || "En attente";
+
+      const info = informationsNotification(statut);
+
+      const id = obtenirIdNotification(commande);
+
+      notifications.push({
+        id: id,
+        commande: commande,
+        statut: statut,
+        classe: info.classe,
+        icone: info.icone,
+        titre: info.titre,
+        message: info.message
+      });
+
+    });
+
+
+    notifications.sort((a, b) => {
+
+      const dateA = a.commande.date
+        ? new Date(a.commande.date).getTime()
+        : 0;
+
+      const dateB = b.commande.date
+        ? new Date(b.commande.date).getTime()
+        : 0;
+
+      return dateB - dateA;
+
+    });
+
+
+    const lues = obtenirNotificationsLues();
+
+    const nonLues = notifications.filter(
+      notification => !lues.includes(notification.id)
+    );
+
+
+    badge.textContent = nonLues.length;
+
+    badge.style.display =
+      nonLues.length > 0 ? "flex" : "none";
+
+
+    if (nonLues.length === 0) {
+
+      compteur.textContent = "Aucune nouvelle notification";
+
+    } else {
+
+      compteur.textContent =
+        nonLues.length === 1
+          ? "1 nouvelle notification"
+          : `${nonLues.length} nouvelles notifications`;
+
+    }
+
+
+    if (notifications.length === 0) {
+
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">🔔</div>
+          <h2>Aucune notification</h2>
+          <p>
+            Vous n'avez pas encore de notification concernant vos commandes.
+          </p>
+          <a href="produits.html">Découvrir les produits</a>
+        </div>
+      `;
+
+      return;
+    }
+
+
+    container.innerHTML = notifications.map(notification => {
+
+      const estLue = lues.includes(notification.id);
+
+      const commande = notification.commande;
+
+      return `
+        <div class="notification ${notification.classe} ${estLue ? "" : "unread"}">
+
+          <div class="icon">
+            ${notification.icone}
+          </div>
+
+          <div class="content">
+
+            <h3>${notification.titre}</h3>
+
+            <p>${notification.message}</p>
+
+            <span class="order-number">
+              Commande : ${commande.id || "N/A"}
+            </span>
+
+            <div class="date">
+              ${formaterDate(commande.date)}
+            </div>
+
+          </div>
+
+          ${
+            !estLue
+            ? `
+              <button
+                class="mark-read"
+                onclick="marquerCommeLu('${notification.id.replace(/'/g, "\\'")}')">
+                ✓ Lu
+              </button>
+            `
+            : ""
+          }
+
+        </div>
+      `;
+
+    }).join("");
+
+  }
+
+
+  function marquerCommeLu(id) {
+
+    const lues = obtenirNotificationsLues();
+
+    const notificationId = normaliserId(id);
+
+    if (!lues.includes(notificationId)) {
+      lues.push(notificationId);
+    }
+
+    sauvegarderNotificationsLues(lues);
+
+    afficherNotifications();
+  }
+
+
+  function marquerToutCommeLu() {
+
+    const utilisateur = utilisateurConnecte();
+
+    if (!utilisateur) {
+      return;
+    }
+
+    const commandes = lireJSON("vendozaCommandes", []);
+
+    const commandesClient = Array.isArray(commandes)
+      ? commandes.filter(commande =>
+          commandeAppartientAuClient(commande, utilisateur)
+        )
+      : [];
+
+
+    const lues = obtenirNotificationsLues();
+
+    commandesClient.forEach(commande => {
+
+      const id = obtenirIdNotification(commande);
+
+      if (!lues.includes(id)) {
+        lues.push(id);
+      }
+
+    });
+
+
+    sauvegarderNotificationsLues(lues);
+
+    afficherNotifications();
+  }
+
+
+  // Première affichage
+  afficherNotifications();
+
+
+  // Actualisation automatique
+  setInterval(() => {
+    afficherNotifications();
+  }, 3000);
+
+
+  // Actualisation si une autre page modifie le localStorage
+  window.addEventListener("storage", () => {
+    afficherNotifications();
+  });
+
+</script>
+
+</body>
+</html>

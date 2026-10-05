@@ -1,0 +1,665 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Vendoza - Notifications vendeur</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-content {
+      width: 95%;
+      max-width: 900px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .vendeur {
+      text-align: right;
+    }
+
+    .vendeur-nom {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .logout {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 9px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      margin: 25px auto;
+    }
+
+    .menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .menu a {
+      background: #111827;
+      color: white;
+      text-decoration: none;
+      padding: 11px 15px;
+      border-radius: 8px;
+    }
+
+    .menu a:hover {
+      background: #2563eb;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .actions h2 {
+      margin: 0;
+    }
+
+    .read-button {
+      border: none;
+      background: #2563eb;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .notification {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+      border-left: 5px solid #2563eb;
+    }
+
+    .notification.unread {
+      border-left-color: #dc2626;
+      background: #fff;
+    }
+
+    .notification.read {
+      opacity: 0.7;
+    }
+
+    .notification-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .notification-title {
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .new {
+      background: #dc2626;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .notification p {
+      margin: 9px 0;
+    }
+
+    .date {
+      color: #777;
+      font-size: 13px;
+    }
+
+    .empty {
+      background: white;
+      padding: 35px;
+      text-align: center;
+      border-radius: 12px;
+      color: #777;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    @media (max-width: 600px) {
+
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .vendeur {
+        text-align: left;
+      }
+
+      .menu a {
+        width: 100%;
+        text-align: center;
+      }
+
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .read-button {
+        width: 100%;
+      }
+
+      .notification-top {
+        align-items: flex-start;
+      }
+    }
+  </style></head><body><header>  <div class="header-content"><div>
+  <h1>🔔 Notifications vendeur</h1>
+  <div>Suivi des activités de votre boutique</div>
+</div>
+
+<div class="vendeur">
+
+  <div class="vendeur-nom">
+    👤 <span id="vendeurNom">Vendeur</span>
+  </div>
+
+  <button
+    class="logout"
+    onclick="seDeconnecter()"
+  >
+    🚪 Déconnexion
+  </button>
+
+</div>
+
+  </div></header><div class="container">  <div class="menu"><a href="dashboard.html">
+  📊 Dashboard
+</a>
+
+<a href="produit.html">
+  🛍️ Produits
+</a>
+
+<a href="commandes.html">
+  📦 Commandes
+</a>
+
+<a href="clients.html">
+  👥 Clients
+</a>
+
+<a href="rapports.html">
+  📈 Rapports
+</a>
+
+<a href="paiements.html">
+  💳 Paiements
+</a>
+
+<a href="parametres.html">
+  ⚙️ Paramètres
+</a>
+
+  </div>  <div class="actions"><h2>
+  🔔 Notifications
+  <span id="nombreNonLues">0</span>
+</h2>
+
+<button
+  class="read-button"
+  onclick="marquerToutCommeLu()"
+>
+  ✓ Tout marquer comme lu
+</button>
+
+  </div>  <div id="listeNotifications"></div></div><script>
+
+  // ==========================================
+  // PROTECTION VENDEUR
+  // ==========================================
+
+  const vendeurConnecte =
+    localStorage.getItem(
+      "vendozaVendeurConnecte"
+    );
+
+  if (vendeurConnecte !== "true") {
+
+    window.location.href =
+      "connexion-vendeur.html";
+
+  }
+
+
+  // ==========================================
+  // NOM VENDEUR
+  // ==========================================
+
+  const vendeurNom =
+    localStorage.getItem(
+      "vendozaVendeurNom"
+    ) || "Vendeur";
+
+  document.getElementById(
+    "vendeurNom"
+  ).textContent = vendeurNom;
+
+
+  // ==========================================
+  // NOTIFICATIONS LUES
+  // ==========================================
+
+  function obtenirNotificationsLues() {
+
+    return JSON.parse(
+      localStorage.getItem(
+        "vendozaNotificationsVendeurLues"
+      )
+    ) || [];
+
+  }
+
+
+  // ==========================================
+  // STATUT → NOTIFICATION
+  // ==========================================
+
+  function obtenirNotification(commande) {
+
+    switch (commande.statut) {
+
+      case "En attente":
+        return {
+          titre: "🛒 Nouvelle commande",
+          message:
+            "Une nouvelle commande a été reçue."
+        };
+
+      case "Confirmée":
+        return {
+          titre: "✅ Commande confirmée",
+          message:
+            "La commande a été confirmée."
+        };
+
+      case "En livraison":
+        return {
+          titre: "🚚 Commande en livraison",
+          message:
+            "La commande est maintenant en livraison."
+        };
+
+      case "Livrée":
+        return {
+          titre: "📦 Commande livrée",
+          message:
+            "La commande a été livrée au client."
+        };
+
+      case "Annulée":
+        return {
+          titre: "❌ Commande annulée",
+          message:
+            "Une commande a été annulée."
+        };
+
+      default:
+        return {
+          titre: "🔔 Mise à jour commande",
+          message:
+            "Le statut d'une commande a été modifié."
+        };
+
+    }
+
+  }
+
+
+  // ==========================================
+  // AFFICHER NOTIFICATIONS
+  // ==========================================
+
+  function afficherNotifications() {
+
+    const commandes =
+      JSON.parse(
+        localStorage.getItem(
+          "vendozaCommandes"
+        )
+      ) || [];
+
+
+    const liste =
+      document.getElementById(
+        "listeNotifications"
+      );
+
+
+    const notificationsLues =
+      obtenirNotificationsLues();
+
+
+    const notifications = [];
+
+
+    commandes.forEach(function(commande) {
+
+      const notification =
+        obtenirNotification(commande);
+
+
+      const notificationId =
+        commande.id +
+        "-" +
+        commande.statut;
+
+
+      notifications.push({
+
+        id: notificationId,
+
+        commande: commande,
+
+        titre: notification.titre,
+
+        message: notification.message,
+
+        lue:
+          notificationsLues.includes(
+            notificationId
+          )
+
+      });
+
+    });
+
+
+    notifications.reverse();
+
+
+    const nonLues =
+      notifications.filter(function(notification) {
+
+        return !notification.lue;
+
+      }).length;
+
+
+    document.getElementById(
+      "nombreNonLues"
+    ).textContent =
+      nonLues;
+
+
+    if (
+      notifications.length === 0
+    ) {
+
+      liste.innerHTML = `
+
+        <div class="empty">
+
+          🔔 Aucune notification
+          pour le moment.
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    liste.innerHTML = "";
+
+
+    notifications.forEach(
+      function(notification) {
+
+        const commande =
+          notification.commande;
+
+
+        liste.innerHTML += `
+
+          <div
+            class="notification ${
+              notification.lue
+                ? "read"
+                : "unread"
+            }"
+            onclick="marquerCommeLu('${notification.id}')"
+          >
+
+            <div class="notification-top">
+
+              <div class="notification-title">
+
+                ${notification.titre}
+
+              </div>
+
+              ${
+                notification.lue
+                  ? ""
+                  : `<span class="new">NOUVEAU</span>`
+              }
+
+            </div>
+
+
+            <p>
+              ${notification.message}
+            </p>
+
+
+            <p>
+
+              <strong>
+                Commande :
+              </strong>
+
+              ${commande.id || "N/A"}
+
+              <br>
+
+              <strong>
+                Client :
+              </strong>
+
+              ${
+                commande.client?.nom ||
+                "N/A"
+              }
+
+              <br>
+
+              <strong>
+                Total :
+              </strong>
+
+              ${
+                (
+                  Number(commande.total) || 0
+                ).toLocaleString()
+              }
+              HTG
+
+            </p>
+
+
+            <div class="date">
+
+              ${
+                commande.date ||
+                "Date inconnue"
+              }
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    );
+
+  }
+
+
+  // ==========================================
+  // MARQUER UNE NOTIFICATION COMME LUE
+  // ==========================================
+
+  function marquerCommeLu(id) {
+
+    const lues =
+      obtenirNotificationsLues();
+
+
+    if (!lues.includes(id)) {
+
+      lues.push(id);
+
+
+      localStorage.setItem(
+        "vendozaNotificationsVendeurLues",
+        JSON.stringify(lues)
+      );
+
+    }
+
+
+    afficherNotifications();
+
+  }
+
+
+  // ==========================================
+  // MARQUER TOUT COMME LU
+  // ==========================================
+
+  function marquerToutCommeLu() {
+
+    const commandes =
+      JSON.parse(
+        localStorage.getItem(
+          "vendozaCommandes"
+        )
+      ) || [];
+
+
+    const lues =
+      obtenirNotificationsLues();
+
+
+    commandes.forEach(function(commande) {
+
+      const id =
+        commande.id +
+        "-" +
+        commande.statut;
+
+
+      if (!lues.includes(id)) {
+
+        lues.push(id);
+
+      }
+
+    });
+
+
+    localStorage.setItem(
+      "vendozaNotificationsVendeurLues",
+      JSON.stringify(lues)
+    );
+
+
+    afficherNotifications();
+
+  }
+
+
+  // ==========================================
+  // DÉCONNEXION
+  // ==========================================
+
+  function seDeconnecter() {
+
+    const confirmer =
+      confirm(
+        "Voulez-vous vraiment vous déconnecter ?"
+      );
+
+
+    if (!confirmer) {
+      return;
+    }
+
+
+    localStorage.removeItem(
+      "vendozaVendeurConnecte"
+    );
+
+    localStorage.removeItem(
+      "vendozaVendeurNom"
+    );
+
+
+    window.location.href =
+      "connexion-vendeur.html";
+
+  }
+
+
+  // ==========================================
+  // CHARGEMENT
+  // ==========================================
+
+  afficherNotifications();
+
+
+  // Actualisation automatique
+  window.addEventListener(
+    "storage",
+    afficherNotifications
+  );
+
+</script></body>
+</html>

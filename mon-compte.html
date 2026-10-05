@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Vendoza - Mon compte</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 15px 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      color: white;
+      text-decoration: none;
+
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+
+      padding: 9px 12px;
+
+      border-radius: 7px;
+
+      font-size: 14px;
+
+      position: relative;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: #2563eb;
+    }
+
+    .notification-link {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 5px;
+    }
+
+    .notification-badge {
+      display: none;
+
+      min-width: 19px;
+      height: 19px;
+
+      padding: 2px 5px;
+
+      border-radius: 50px;
+
+      background: #ef4444;
+      color: white;
+
+      font-size: 11px;
+      font-weight: bold;
+
+      text-align: center;
+      line-height: 15px;
+    }
+
+    main {
+      max-width: 900px;
+
+      margin: 35px auto;
+
+      padding: 0 20px;
+    }
+
+    .account-card {
+      background: white;
+
+      border-radius: 18px;
+
+      padding: 30px;
+
+      box-shadow:
+        0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .profile {
+      text-align: center;
+
+      margin-bottom: 30px;
+    }
+
+    .avatar {
+      width: 95px;
+      height: 95px;
+
+      margin: 0 auto 15px;
+
+      border-radius: 50%;
+
+      background: #2563eb;
+
+      color: white;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      font-size: 40px;
+
+      font-weight: bold;
+    }
+
+    .profile h1 {
+      margin: 5px 0;
+
+      font-size: 28px;
+    }
+
+    .profile p {
+      margin: 7px 0;
+
+      color: #666;
+    }
+
+    .info {
+      background: #f8fafc;
+
+      border-radius: 12px;
+
+      padding: 20px;
+
+      margin-bottom: 25px;
+    }
+
+    .info-title {
+      margin-top: 0;
+
+      margin-bottom: 15px;
+
+      font-size: 19px;
+    }
+
+    .info-row {
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 15px;
+
+      padding: 12px 0;
+
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: bold;
+
+      color: #374151;
+    }
+
+    .info-value {
+      color: #111827;
+
+      text-align: right;
+
+      word-break: break-word;
+    }
+
+    .stats {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 15px;
+
+      margin-bottom: 25px;
+    }
+
+    .stat {
+      background: #eff6ff;
+
+      border-radius: 12px;
+
+      padding: 20px;
+
+      text-align: center;
+    }
+
+    .stat-number {
+      display: block;
+
+      font-size: 30px;
+
+      font-weight: bold;
+
+      color: #2563eb;
+
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      color: #555;
+
+      font-size: 14px;
+    }
+
+    .actions {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 12px;
+    }
+
+    .action {
+      display: block;
+
+      text-decoration: none;
+
+      text-align: center;
+
+      padding: 14px 10px;
+
+      border-radius: 10px;
+
+      background: #2563eb;
+
+      color: white;
+
+      font-weight: bold;
+
+      transition: 0.2s;
+
+      border: none;
+
+      cursor: pointer;
+
+      font-size: 14px;
+    }
+
+    .action:hover {
+      background: #1d4ed8;
+
+      transform: translateY(-2px);
+    }
+
+    .logout {
+      background: #dc2626;
+
+      grid-column: 1 / -1;
+    }
+
+    .logout:hover {
+      background: #b91c1c;
+    }
+
+    .edit-section {
+      display: none;
+
+      margin-top: 25px;
+
+      padding: 20px;
+
+      background: #f8fafc;
+
+      border-radius: 12px;
+    }
+
+    .edit-section h2 {
+      margin-top: 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+
+      margin-bottom: 7px;
+
+      font-weight: bold;
+
+      color: #374151;
+    }
+
+    .form-group input {
+      width: 100%;
+
+      padding: 12px;
+
+      border: 1px solid #d1d5db;
+
+      border-radius: 8px;
+
+      font-size: 15px;
+
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: #2563eb;
+    }
+
+    .save-btn {
+      background: #16a34a;
+
+      color: white;
+
+      border: none;
+
+      padding: 12px 18px;
+
+      border-radius: 8px;
+
+      cursor: pointer;
+
+      font-weight: bold;
+    }
+
+    .cancel-btn {
+      background: #6b7280;
+
+      color: white;
+
+      border: none;
+
+      padding: 12px 18px;
+
+      border-radius: 8px;
+
+      cursor: pointer;
+
+      font-weight: bold;
+
+      margin-left: 8px;
+    }
+
+    .message {
+      display: none;
+
+      margin-top: 15px;
+
+      padding: 12px;
+
+      border-radius: 8px;
+
+      font-weight: bold;
+    }
+
+    .success {
+      background: #dcfce7;
+
+      color: #166534;
+    }
+
+    .error {
+      background: #fee2e2;
+
+      color: #991b1b;
+    }
+
+    footer {
+      text-align: center;
+
+      padding: 25px 15px;
+
+      color: #777;
+
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+
+      header {
+        align-items: flex-start;
+      }
+
+      nav {
+        width: 100%;
+      }
+
+      nav a {
+        font-size: 13px;
+
+        padding: 8px 9px;
+      }
+
+      .account-card {
+        padding: 20px;
+      }
+
+      .stats,
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .logout {
+        grid-column: auto;
+      }
+
+      .info-row {
+        flex-direction: column;
+
+        gap: 5px;
+      }
+
+      .info-value {
+        text-align: left;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+  <a href="accueil.html" class="logo">
+    🛍️ Vendoza
+  </a>
+
+
+  <nav>
+
+    <a href="accueil.html">
+      🏠 Accueil
+    </a>
+
+    <a href="produits.html">
+      🛍️ Produits
+    </a>
+
+    <a href="panier.html">
+      🛒 Panier
+    </a>
+
+    <a href="commandes-client.html">
+      📦 Commandes
+    </a>
+
+    <a
+      href="notifications.html"
+      class="notification-link"
+    >
+      🔔 Notifications
+
+      <span
+        id="notificationBadge"
+        class="notification-badge"
+      ></span>
+
+    </a>
+
+    <a
+      href="mon-compte.html"
+      class="active"
+    >
+      👤 Mon compte
+    </a>
+
+  </nav>
+
+</header>
+
+
+<main>
+
+  <div class="account-card">
+
+
+    <!-- PROFIL -->
+
+    <div class="profile">
+
+      <div
+        class="avatar"
+        id="avatar"
+      >
+        U
+      </div>
+
+      <h1 id="nomUtilisateur">
+        Mon compte
+      </h1>
+
+      <p id="emailUtilisateur"></p>
+
+    </div>
+
+
+    <!-- INFORMATIONS -->
+
+    <div class="info">
+
+      <h2 class="info-title">
+        👤 Mes informations
+      </h2>
+
+
+      <div class="info-row">
+
+        <span class="info-label">
+          Nom
+        </span>
+
+        <span
+          class="info-value"
+          id="infoNom"
+        >
+          -
+        </span>
+
+      </div>
+
+
+      <div class="info-row">
+
+        <span class="info-label">
+          Email
+        </span>
+
+        <span
+          class="info-value"
+          id="infoEmail"
+        >
+          -
+        </span>
+
+      </div>
+
+
+      <div class="info-row">
+
+        <span class="info-label">
+          Téléphone
+        </span>
+
+        <span
+          class="info-value"
+          id="infoTelephone"
+        >
+          -
+        </span>
+
+      </div>
+
+
+      <div class="info-row">
+
+        <span class="info-label">
+          Adresse
+        </span>
+
+        <span
+          class="info-value"
+          id="infoAdresse"
+        >
+          -
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- STATISTIQUES -->
+
+    <div class="stats">
+
+      <div class="stat">
+
+        <span
+          class="stat-number"
+          id="nombreCommandes"
+        >
+          0
+        </span>
+
+        <span class="stat-label">
+          Commandes
+        </span>
+
+      </div>
+
+
+      <div class="stat">
+
+        <span
+          class="stat-number"
+          id="nombreLivrees"
+        >
+          0
+        </span>
+
+        <span class="stat-label">
+          Commandes livrées
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- ACTIONS -->
+
+    <div class="actions">
+
+      <a
+        href="commandes-client.html"
+        class="action"
+      >
+        📦 Voir mes commandes
+      </a>
+
+
+      <a
+        href="produits.html"
+        class="action"
+      >
+        🛍️ Continuer mes achats
+      </a>
+
+
+      <button
+        class="action"
+        onclick="afficherModification()"
+      >
+        ✏️ Modifier mon compte
+      </button>
+
+
+      <a
+        href="notifications.html"
+        class="action"
+      >
+        🔔 Mes notifications
+      </a>
+
+
+      <button
+        class="action logout"
+        onclick="seDeconnecter()"
+      >
+        🚪 Se déconnecter
+      </button>
+
+    </div>
+
+
+    <!-- MODIFICATION -->
+
+    <div
+      class="edit-section"
+      id="editSection"
+    >
+
+      <h2>
+        ✏️ Modifier mes informations
+      </h2>
+
+
+      <div class="form-group">
+
+        <label for="editNom">
+          Nom
+        </label>
+
+        <input
+          type="text"
+          id="editNom"
+          placeholder="Votre nom"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="editEmail">
+          Email
+        </label>
+
+        <input
+          type="email"
+          id="editEmail"
+          placeholder="Votre email"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="editTelephone">
+          Téléphone
+        </label>
+
+        <input
+          type="tel"
+          id="editTelephone"
+          placeholder="Votre téléphone"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="editAdresse">
+          Adresse
+        </label>
+
+        <input
+          type="text"
+          id="editAdresse"
+          placeholder="Votre adresse"
+        >
+
+      </div>
+
+
+      <button
+        class="save-btn"
+        onclick="sauvegarderModifications()"
+      >
+        💾 Enregistrer
+      </button>
+
+
+      <button
+        class="cancel-btn"
+        onclick="annulerModification()"
+      >
+        Annuler
+      </button>
+
+
+      <div
+        id="message"
+        class="message"
+      ></div>
+
+    </div>
+
+
+  </div>
+
+</main>
+
+
+<footer>
+
+  © 2026 Vendoza — Tous droits réservés.
+
+</footer>
+
+
+<script>
+
+
+  // ==========================================
+  // LIRE LES DONNÉES
+  // ==========================================
+
+  function lireJSON(cle, valeurDefaut) {
+
+    try {
+
+      const valeur =
+        localStorage.getItem(cle);
+
+      if (!valeur) {
+        return valeurDefaut;
+      }
+
+      return JSON.parse(valeur);
+
+    } catch (erreur) {
+
+      console.error(erreur);
+
+      return valeurDefaut;
+
+    }
+
+  }
+
+
+  // ==========================================
+  // UTILISATEUR CONNECTÉ
+  // ==========================================
+
+  let utilisateurConnecte =
+    lireJSON(
+      "vendozaUtilisateurConnecte",
+      null
+    );
+
+
+  if (!utilisateurConnecte) {
+
+    window.location.href =
+      "connexion.html";
+
+  }
+
+
+  // ==========================================
+  // AFFICHER LE COMPTE
+  // ==========================================
+
+  function afficherCompte() {
+
+    utilisateurConnecte =
+      lireJSON(
+        "vendozaUtilisateurConnecte",
+        null
+      );
+
+
+    if (!utilisateurConnecte) {
+
+      window.location.href =
+        "connexion.html";
+
+      return;
+
+    }
+
+
+    const nom =
+      utilisateurConnecte.nom ||
+      "Utilisateur";
+
+
+    const email =
+      utilisateurConnecte.email ||
+      "";
+
+
+    const telephone =
+      utilisateurConnecte.telephone ||
+      "";
+
+
+    const adresse =
+      utilisateurConnecte.adresse ||
+      "";
+
+
+    document.getElementById(
+      "nomUtilisateur"
+    ).textContent = nom;
+
+
+    document.getElementById(
+      "emailUtilisateur"
+    ).textContent = email;
+
+
+    document.getElementById(
+      "infoNom"
+    ).textContent = nom || "-";
+
+
+    document.getElementById(
+      "infoEmail"
+    ).textContent = email || "-";
+
+
+    document.getElementById(
+      "infoTelephone"
+    ).textContent = telephone || "-";
+
+
+    document.getElementById(
+      "infoAdresse"
+    ).textContent = adresse || "-";
+
+
+    // Avatar
+
+    const premiereLettre =
+      nom.trim()
+        .charAt(0)
+        .toUpperCase() || "U";
+
+
+    document.getElementById(
+      "avatar"
+    ).textContent =
+      premiereLettre;
+
+
+    afficherStatistiques();
+
+    mettreAJourBadgeNotifications();
+
+  }
+
+
+  // ==========================================
+  // STATISTIQUES
+  // ==========================================
+
+  function afficherStatistiques() {
+
+    const commandes =
+      lireJSON(
+        "vendozaCommandes",
+        []
+      );
+
+
+    if (!Array.isArray(commandes)) {
+      return;
+    }
+
+
+    const email =
+      String(
+        utilisateurConnecte.email || ""
+      )
+      .trim()
+      .toLowerCase();
+
+
+    const telephone =
+      String(
+        utilisateurConnecte.telephone || ""
+      )
+      .replace(/\s+/g, "");
+
+
+    const mesCommandes =
+      commandes.filter(commande => {
+
+        const emailCommande =
+          String(
+            commande.client?.email || ""
+          )
+          .trim()
+          .toLowerCase();
+
+
+        const telephoneCommande =
+          String(
+            commande.client?.telephone || ""
+          )
+          .replace(/\s+/g, "");
+
+
+        return (
+
+          (
+            email &&
+            emailCommande &&
+            email === emailCommande
+          )
+
+          ||
+
+          (
+            telephone &&
+            telephoneCommande &&
+            telephone === telephoneCommande
+          )
+
+        );
+
+      });
+
+
+    document.getElementById(
+      "nombreCommandes"
+    ).textContent =
+      mesCommandes.length;
+
+
+    const commandesLivrees =
+      mesCommandes.filter(
+        commande =>
+          commande.statut === "Livrée"
+      );
+
+
+    document.getElementById(
+      "nombreLivrees"
+    ).textContent =
+      commandesLivrees.length;
+
+  }
+
+
+  // ==========================================
+  // MODIFICATION DU COMPTE
+  // ==========================================
+
+  function afficherModification() {
+
+    const section =
+      document.getElementById(
+        "editSection"
+      );
+
+
+    section.style.display = "block";
+
+
+    document.getElementById(
+      "editNom"
+    ).value =
+      utilisateurConnecte.nom || "";
+
+
+    document.getElementById(
+      "editEmail"
+    ).value =
+      utilisateurConnecte.email || "";
+
+
+    document.getElementById(
+      "editTelephone"
+    ).value =
+      utilisateurConnecte.telephone || "";
+
+
+    document.getElementById(
+      "editAdresse"
+    ).value =
+      utilisateurConnecte.adresse || "";
+
+
+    section.scrollIntoView({
+      behavior: "smooth"
+    });
+
+  }
+
+
+  // ==========================================
+  // ANNULER
+  // ==========================================
+
+  function annulerModification() {
+
+    document.getElementById(
+      "editSection"
+    ).style.display = "none";
+
+  }
+
+
+  // ==========================================
+  // SAUVEGARDER MODIFICATIONS
+  // ==========================================
+
+  function sauvegarderModifications() {
+
+    const nom =
+      document.getElementById(
+        "editNom"
+      ).value.trim();
+
+
+    const email =
+      document.getElementById(
+        "editEmail"
+      ).value.trim();
+
+
+    const telephone =
+      document.getElementById(
+        "editTelephone"
+      ).value.trim();
+
+
+    const adresse =
+      document.getElementById(
+        "editAdresse"
+      ).value.trim();
+
+
+    if (!nom) {
+
+      afficherMessage(
+        "Veuillez entrer votre nom.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if (!email) {
+
+      afficherMessage(
+        "Veuillez entrer votre email.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if (!telephone) {
+
+      afficherMessage(
+        "Veuillez entrer votre téléphone.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    // Sauvegarde utilisateur connecté
+
+    const ancienEmail =
+      utilisateurConnecte.email || "";
+
+
+    utilisateurConnecte.nom =
+      nom;
+
+    utilisateurConnecte.email =
+      email;
+
+    utilisateurConnecte.telephone =
+      telephone;
+
+    utilisateurConnecte.adresse =
+      adresse;
+
+
+    localStorage.setItem(
+      "vendozaUtilisateurConnecte",
+      JSON.stringify(
+        utilisateurConnecte
+      )
+    );
+
+
+    // ==========================================
+    // METTRE À JOUR LA LISTE DES UTILISATEURS
+    // ==========================================
+
+    const utilisateurs =
+      lireJSON(
+        "vendozaUtilisateurs",
+        []
+      );
+
+
+    if (Array.isArray(utilisateurs)) {
+
+      const index =
+        utilisateurs.findIndex(
+          utilisateur => {
+
+            const emailUtilisateur =
+              String(
+                utilisateur.email || ""
+              )
+              .trim()
+              .toLowerCase();
+
+
+            const emailAvant =
+              String(
+                ancienEmail
+              )
+              .trim()
+              .toLowerCase();
+
+
+            return (
+              emailAvant &&
+              emailUtilisateur === emailAvant
+            );
+
+          }
+        );
+
+
+      if (index !== -1) {
+
+        utilisateurs[index] = {
+
+          ...utilisateurs[index],
+
+          nom: nom,
+
+          email: email,
+
+          telephone: telephone,
+
+          adresse: adresse
+
+        };
+
+
+        localStorage.setItem(
+          "vendozaUtilisateurs",
+          JSON.stringify(
+            utilisateurs
+          )
+        );
+
+      }
+
+    }
+
+
+    afficherMessage(
+      "✓ Vos informations ont été enregistrées.",
+      "success"
+    );
+
+
+    setTimeout(() => {
+
+      afficherCompte();
+
+      document.getElementById(
+        "editSection"
+      ).style.display = "none";
+
+    }, 1000);
+
+  }
+
+
+  // ==========================================
+  // MESSAGE
+  // ==========================================
+
+  function afficherMessage(
+    texte,
+    type
+  ) {
+
+    const message =
+      document.getElementById(
+        "message"
+      );
+
+
+    message.textContent =
+      texte;
+
+
+    message.className =
+      "message " + type;
+
+
+    message.style.display =
+      "block";
+
+
+    setTimeout(() => {
+
+      message.style.display =
+        "none";
+
+    }, 3500);
+
+  }
+
+
+  // ==========================================
+  // NOTIFICATIONS
+  // ==========================================
+
+  function getNotificationId(
+    commande
+  ) {
+
+    return String(
+      commande.id || ""
+    )
+    + "-"
+    + String(
+      commande.statut ||
+      "En attente"
+    );
+
+  }
+
+
+  function mettreAJourBadgeNotifications() {
+
+    const commandes =
+      lireJSON(
+        "vendozaCommandes",
+        []
+      );
+
+
+    const lues =
+      lireJSON(
+        "vendozaNotificationsLues",
+        []
+      );
+
+
+    if (
+      !Array.isArray(commandes) ||
+      !Array.isArray(lues)
+    ) {
+
+      return;
+
+    }
+
+
+    const email =
+      String(
+        utilisateurConnecte.email || ""
+      )
+      .trim()
+      .toLowerCase();
+
+
+    const telephone =
+      String(
+        utilisateurConnecte.telephone || ""
+      )
+      .replace(/\s+/g, "");
+
+
+    let nonLues = 0;
+
+
+    commandes.forEach(
+      commande => {
+
+        if (
+          !commande ||
+          !commande.client
+        ) {
+
+          return;
+
+        }
+
+
+        const emailCommande =
+          String(
+            commande.client.email || ""
+          )
+          .trim()
+          .toLowerCase();
+
+
+        const telephoneCommande =
+          String(
+            commande.client.telephone || ""
+          )
+          .replace(/\s+/g, "");
+
+
+        const appartient =
+
+          (
+            email &&
+            emailCommande &&
+            email === emailCommande
+          )
+
+          ||
+
+          (
+            telephone &&
+            telephoneCommande &&
+            telephone === telephoneCommande
+          );
+
+
+        if (!appartient) {
+          return;
+        }
+
+
+        const notificationId =
+          getNotificationId(
+            commande
+          );
+
+
+        if (
+          !lues
+            .map(String)
+            .includes(
+              String(notificationId)
+            )
+        ) {
+
+          nonLues++;
+
+        }
+
+      }
+    );
+
+
+    const badge =
+      document.getElementById(
+        "notificationBadge"
+      );
+
+
+    if (nonLues > 0) {
+
+      badge.textContent =
+        nonLues > 99
+          ? "99+"
+          : nonLues;
+
+
+      badge.style.display =
+        "inline-flex";
+
+    } else {
+
+      badge.textContent = "";
+
+      badge.style.display =
+        "none";
+
+    }
+
+  }
+
+
+  // ==========================================
+  // DÉCONNEXION
+  // ==========================================
+
+  function seDeconnecter() {
+
+    const confirmer =
+      confirm(
+        "Voulez-vous vraiment vous déconnecter ?"
+      );
+
+
+    if (!confirmer) {
+      return;
+    }
+
+
+    localStorage.removeItem(
+      "vendozaUtilisateurConnecte"
+    );
+
+
+    window.location.href =
+      "connexion.html";
+
+  }
+
+
+  // ==========================================
+  // INITIALISATION
+  // ==========================================
+
+  afficherCompte();
+
+
+  // Actualisation automatique
+
+  setInterval(() => {
+
+    afficherCompte();
+
+  }, 3000);
+
+
+  // Synchronisation entre les pages
+
+  window.addEventListener(
+    "storage",
+    function(event) {
+
+      if (
+
+        event.key ===
+        "vendozaCommandes"
+
+        ||
+
+        event.key ===
+        "vendozaNotificationsLues"
+
+        ||
+
+        event.key ===
+        "vendozaUtilisateurConnecte"
+
+      ) {
+
+        afficherCompte();
+
+      }
+
+    }
+  );
+
+
+</script>
+
+</body>
+</html>

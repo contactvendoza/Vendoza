@@ -1,0 +1,835 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Vendoza - Dashboard</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-content {
+      width: 95%;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      opacity: 0.8;
+    }
+
+    .vendeur-info {
+      text-align: right;
+    }
+
+    .vendeur-nom {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .logout {
+      border: none;
+      background: #dc2626;
+      color: white;
+      padding: 9px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout:hover {
+      background: #b91c1c;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 25px auto;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    .top-actions a {
+      text-decoration: none;
+      background: #111827;
+      color: white;
+      padding: 11px 16px;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .top-actions a:hover {
+      background: #2563eb;
+    }
+
+    .notification-badge {
+      display: none;
+      position: absolute;
+      top: -8px;
+      right: -7px;
+      min-width: 22px;
+      height: 22px;
+      padding: 2px 6px;
+      border-radius: 50%;
+      background: #dc2626;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      text-align: center;
+      line-height: 18px;
+      border: 2px solid white;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .card .icon {
+      font-size: 30px;
+    }
+
+    .card h3 {
+      margin: 10px 0 5px;
+      font-size: 16px;
+      color: #666;
+    }
+
+    .card .number {
+      font-size: 28px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 25px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .section h2 {
+      margin-top: 0;
+    }
+
+    .warning {
+      background: #fff7ed;
+      border-left: 5px solid #f97316;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .warning strong {
+      color: #c2410c;
+    }
+
+    .order {
+      border: 1px solid #eee;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .order:last-child {
+      margin-bottom: 0;
+    }
+
+    .order strong {
+      color: #111827;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 15px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #eef2ff;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .products-list {
+      margin-top: 6px;
+      padding-left: 18px;
+    }
+
+    @media (max-width: 800px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .vendeur-info {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 24px;
+      }
+
+      .top-actions a {
+        width: 100%;
+        text-align: center;
+      }
+
+      .notification-badge {
+        right: 10px;
+      }
+    }
+  </style></head><body><header>  <div class="header-content"><div>
+  <h1>🛍️ Vendoza Dashboard</h1>
+  <p>Gestion de votre boutique en ligne</p>
+</div>
+
+<div class="vendeur-info">
+
+  <div class="vendeur-nom">
+    👤 <span id="vendeurNom">Vendeur</span>
+  </div>
+
+  <button
+    class="logout"
+    onclick="seDeconnecterVendeur()"
+  >
+    🚪 Déconnexion
+  </button>
+
+</div>
+
+  </div></header><div class="container">  <!-- MENU -->  <div class="top-actions"><a href="produit.html">
+  🛍️ Produits
+</a>
+
+<a href="commandes.html">
+  📦 Commandes
+</a>
+
+<a href="clients.html">
+  👥 Clients
+</a>
+
+<a href="rapports.html">
+  📈 Rapports
+</a>
+
+<a href="paiements.html">
+  💳 Paiements
+</a>
+
+<a href="parametres.html">
+  ⚙️ Paramètres
+</a>
+
+<a href="notifications-vendeur.html">
+  🔔 Notifications
+
+  <span
+    id="notificationBadge"
+    class="notification-badge"
+  >
+    0
+  </span>
+
+</a>
+
+  </div>  <!-- STATISTIQUES -->  <div class="stats"><div class="card">
+  <div class="icon">📦</div>
+  <h3>Produits</h3>
+  <div class="number" id="nombreProduits">0</div>
+</div>
+
+<div class="card">
+  <div class="icon">🛒</div>
+  <h3>Commandes</h3>
+  <div class="number" id="nombreCommandes">0</div>
+</div>
+
+<div class="card">
+  <div class="icon">✅</div>
+  <h3>Confirmées</h3>
+  <div class="number" id="commandesConfirmees">0</div>
+</div>
+
+<div class="card">
+  <div class="icon">💰</div>
+  <h3>Chiffre d'affaires</h3>
+  <div class="number" id="chiffreAffaires">0 HTG</div>
+</div>
+
+  </div>  <!-- STOCK -->  <div class="section"><h2>📊 Stock</h2>
+
+<p>
+  <strong>
+    Nombre total d'articles en stock :
+  </strong>
+
+  <span id="stockTotal">
+    0
+  </span>
+</p>
+
+  </div>  <!-- STOCK FAIBLE -->  <div class="section"><h2>⚠️ Produits presque finis</h2>
+
+<div id="stockFaible"></div>
+
+  </div>  <!-- COMMANDES RÉCENTES -->  <div class="section"><h2>🕒 Commandes récentes</h2>
+
+<div id="commandesRecentes"></div>
+
+  </div></div><script>
+
+  // ==========================================
+  // PROTECTION
+  // ==========================================
+
+  const vendeurConnecte =
+    localStorage.getItem(
+      "vendozaVendeurConnecte"
+    );
+
+  if (vendeurConnecte !== "true") {
+
+    window.location.href =
+      "connexion-vendeur.html";
+
+  }
+
+
+  // ==========================================
+  // NOM VENDEUR
+  // ==========================================
+
+  const vendeurNom =
+    localStorage.getItem(
+      "vendozaVendeurNom"
+    ) || "Vendeur";
+
+
+  document.getElementById(
+    "vendeurNom"
+  ).textContent = vendeurNom;
+
+
+  // ==========================================
+  // DÉCONNEXION
+  // ==========================================
+
+  function seDeconnecterVendeur() {
+
+    const confirmer =
+      confirm(
+        "Voulez-vous vraiment vous déconnecter ?"
+      );
+
+    if (!confirmer) {
+      return;
+    }
+
+    localStorage.removeItem(
+      "vendozaVendeurConnecte"
+    );
+
+    localStorage.removeItem(
+      "vendozaVendeurNom"
+    );
+
+    window.location.href =
+      "connexion-vendeur.html";
+
+  }
+
+
+  // ==========================================
+  // NOTIFICATIONS
+  // ==========================================
+
+  function chargerBadgeNotifications() {
+
+    const commandes =
+      JSON.parse(
+        localStorage.getItem(
+          "vendozaCommandes"
+        )
+      ) || [];
+
+
+    const notificationsLues =
+      JSON.parse(
+        localStorage.getItem(
+          "vendozaNotificationsVendeurLues"
+        )
+      ) || [];
+
+
+    let nonLues = 0;
+
+
+    commandes.forEach(function(commande) {
+
+      const notificationId =
+        commande.id +
+        "-" +
+        commande.statut;
+
+
+      if (
+        !notificationsLues.includes(
+          notificationId
+        )
+      ) {
+
+        nonLues++;
+
+      }
+
+    });
+
+
+    const badge =
+      document.getElementById(
+        "notificationBadge"
+      );
+
+
+    if (nonLues > 0) {
+
+      badge.textContent =
+        nonLues > 99
+          ? "99+"
+          : nonLues;
+
+      badge.style.display =
+        "block";
+
+    } else {
+
+      badge.style.display =
+        "none";
+
+    }
+
+  }
+
+
+  // ==========================================
+  // CHARGER LE DASHBOARD
+  // ==========================================
+
+  function chargerDashboard() {
+
+    const produits =
+      JSON.parse(
+        localStorage.getItem(
+          "produitsVendoza"
+        )
+      ) || [];
+
+
+    const commandes =
+      JSON.parse(
+        localStorage.getItem(
+          "vendozaCommandes"
+        )
+      ) || [];
+
+
+    // Produits
+
+    document.getElementById(
+      "nombreProduits"
+    ).textContent =
+      produits.length;
+
+
+    // Commandes
+
+    document.getElementById(
+      "nombreCommandes"
+    ).textContent =
+      commandes.length;
+
+
+    // Commandes confirmées
+
+    const confirmees =
+      commandes.filter(function(commande) {
+
+        return (
+          commande.statut === "Confirmée" ||
+          commande.statut === "En livraison" ||
+          commande.statut === "Livrée"
+        );
+
+      });
+
+
+    document.getElementById(
+      "commandesConfirmees"
+    ).textContent =
+      confirmees.length;
+
+
+    // Chiffre d'affaires
+
+    let chiffreAffaires = 0;
+
+
+    confirmees.forEach(function(commande) {
+
+      chiffreAffaires +=
+        Number(commande.total) || 0;
+
+    });
+
+
+    document.getElementById(
+      "chiffreAffaires"
+    ).textContent =
+      chiffreAffaires.toLocaleString() +
+      " HTG";
+
+
+    // Stock total
+
+    let stockTotal = 0;
+
+
+    produits.forEach(function(produit) {
+
+      stockTotal +=
+        Number(produit.stock) || 0;
+
+    });
+
+
+    document.getElementById(
+      "stockTotal"
+    ).textContent =
+      stockTotal;
+
+
+    // Stock faible
+
+    const stockFaible =
+      document.getElementById(
+        "stockFaible"
+      );
+
+
+    const produitsFaibles =
+      produits.filter(function(produit) {
+
+        return (
+          Number(produit.stock) || 0
+        ) <= 5;
+
+      });
+
+
+    if (
+      produitsFaibles.length === 0
+    ) {
+
+      stockFaible.innerHTML = `
+
+        <div class="empty">
+          ✅ Aucun produit n'est presque épuisé.
+        </div>
+
+      `;
+
+    } else {
+
+      stockFaible.innerHTML = "";
+
+
+      produitsFaibles.forEach(
+        function(produit) {
+
+          const stock =
+            Number(produit.stock) || 0;
+
+
+          stockFaible.innerHTML += `
+
+            <div class="warning">
+
+              <strong>
+                ${
+                  produit.nom ||
+                  "Produit sans nom"
+                }
+              </strong>
+
+              <br>
+
+              Stock restant :
+
+              <strong>
+                ${stock}
+              </strong>
+
+            </div>
+
+          `;
+
+        }
+      );
+
+    }
+
+
+    // Commandes récentes
+
+    const commandesRecentes =
+      document.getElementById(
+        "commandesRecentes"
+      );
+
+
+    const recentes =
+      commandes
+        .slice()
+        .reverse()
+        .slice(0, 5);
+
+
+    if (
+      recentes.length === 0
+    ) {
+
+      commandesRecentes.innerHTML = `
+
+        <div class="empty">
+          📭 Aucune commande pour le moment.
+        </div>
+
+      `;
+
+    } else {
+
+      commandesRecentes.innerHTML = "";
+
+
+      recentes.forEach(
+        function(commande) {
+
+          let produitsHTML = "";
+
+
+          if (
+            Array.isArray(
+              commande.produits
+            ) &&
+            commande.produits.length > 0
+          ) {
+
+            produitsHTML = `
+
+              <ul class="products-list">
+
+                ${
+                  commande.produits
+                    .map(function(article) {
+
+                      return `
+
+                        <li>
+                          ${
+                            article.name ||
+                            "Produit"
+                          }
+
+                          ×
+
+                          ${
+                            Number(
+                              article.quantity
+                            ) || 0
+                          }
+
+                        </li>
+
+                      `;
+
+                    })
+                    .join("")
+                }
+
+              </ul>
+
+            `;
+
+          } else {
+
+            produitsHTML = `
+
+              <div>
+                ${
+                  commande.produit?.name ||
+                  "N/A"
+                }
+              </div>
+
+            `;
+
+          }
+
+
+          commandesRecentes.innerHTML += `
+
+            <div class="order">
+
+              <strong>
+                ${
+                  commande.id ||
+                  "Commande"
+                }
+              </strong>
+
+              <br><br>
+
+              Client :
+              ${
+                commande.client?.nom ||
+                "N/A"
+              }
+
+              <br>
+
+              Téléphone :
+              ${
+                commande.client?.telephone ||
+                "N/A"
+              }
+
+              <br><br>
+
+              Produits :
+
+              ${produitsHTML}
+
+              Total :
+
+              <strong>
+                ${
+                  (
+                    Number(
+                      commande.total
+                    ) || 0
+                  ).toLocaleString()
+                }
+                HTG
+              </strong>
+
+              <br><br>
+
+              Statut :
+
+              <span class="status">
+                ${
+                  commande.statut ||
+                  "En attente"
+                }
+              </span>
+
+            </div>
+
+          `;
+
+        }
+      );
+
+    }
+
+  }
+
+
+  // ==========================================
+  // PREMIER CHARGEMENT
+  // ==========================================
+
+  chargerDashboard();
+  chargerBadgeNotifications();
+
+
+  // ==========================================
+  // ACTUALISATION AUTOMATIQUE
+  // ==========================================
+
+  setInterval(function() {
+
+    chargerDashboard();
+    chargerBadgeNotifications();
+
+  }, 3000);
+
+
+  // ==========================================
+  // ACTUALISATION ENTRE ONGLETS
+  // ==========================================
+
+  window.addEventListener(
+    "storage",
+    function() {
+
+      chargerDashboard();
+      chargerBadgeNotifications();
+
+    }
+  );
+
+</script></body>
+</html>

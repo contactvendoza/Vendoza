@@ -1,0 +1,901 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Vendoza - Paiements</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-content {
+      width: 95%;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      opacity: 0.8;
+    }
+
+    .vendeur-info {
+      text-align: right;
+    }
+
+    .vendeur-nom {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .logout {
+      border: none;
+      background: #dc2626;
+      color: white;
+      padding: 9px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 25px auto;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    .top-actions a {
+      text-decoration: none;
+      background: #111827;
+      color: white;
+      padding: 11px 16px;
+      border-radius: 8px;
+    }
+
+    .top-actions a:hover {
+      background: #2563eb;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .icon {
+      font-size: 30px;
+    }
+
+    .card h3 {
+      margin: 10px 0 5px;
+      font-size: 15px;
+      color: #666;
+    }
+
+    .number {
+      font-size: 26px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .filters {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .payments {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .payment-card {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      border-left: 5px solid #2563eb;
+    }
+
+    .payment-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .order-id {
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    .amount {
+      font-size: 19px;
+      font-weight: bold;
+    }
+
+    .info {
+      color: #555;
+      line-height: 1.7;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .received {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .method {
+      display: inline-block;
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 5px 9px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .empty {
+      background: white;
+      padding: 30px;
+      text-align: center;
+      color: #777;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 800px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+      }
+
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .vendeur-info {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .top-actions a {
+        width: 100%;
+        text-align: center;
+      }
+
+      .payment-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style></head><body><header>  <div class="header-content"><div>
+  <h1>💳 Vendoza Paiements</h1>
+  <p>Gestion des paiements de votre boutique</p>
+</div>
+
+<div class="vendeur-info">
+
+  <div class="vendeur-nom">
+    👤 <span id="vendeurNom">Vendeur</span>
+  </div>
+
+  <button
+    class="logout"
+    onclick="seDeconnecterVendeur()"
+  >
+    🚪 Déconnexion
+  </button>
+
+</div>
+
+  </div></header><div class="container">  <!-- MENU -->  <div class="top-actions"><a href="dashboard.html">
+  📊 Dashboard
+</a>
+
+<a href="produit.html">
+  🛍️ Produits
+</a>
+
+<a href="commandes.html">
+  📦 Commandes
+</a>
+
+<a href="clients.html">
+  👥 Clients
+</a>
+
+<a href="rapports.html">
+  📈 Rapports
+</a>
+
+  </div>  <!-- STATISTIQUES -->  <div class="stats"><div class="card">
+
+  <div class="icon">💰</div>
+
+  <h3>Total des ventes</h3>
+
+  <div
+    class="number"
+    id="totalVentes"
+  >
+    0 HTG
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="icon">✅</div>
+
+  <h3>Paiements reçus</h3>
+
+  <div
+    class="number"
+    id="paiementsRecus"
+  >
+    0 HTG
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="icon">⏳</div>
+
+  <h3>Paiements en attente</h3>
+
+  <div
+    class="number"
+    id="paiementsAttente"
+  >
+    0 HTG
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="icon">📦</div>
+
+  <h3>Commandes</h3>
+
+  <div
+    class="number"
+    id="nombreCommandes"
+  >
+    0
+  </div>
+
+</div>
+
+  </div>  <!-- FILTRES -->  <div class="filters"><input
+  type="text"
+  id="recherche"
+  placeholder="🔎 Rechercher une commande, un client..."
+>
+
+<select id="filtreMethode">
+
+  <option value="tous">
+    💳 Toutes les méthodes
+  </option>
+
+  <option value="MonCash">
+    MonCash
+  </option>
+
+  <option value="NatCash">
+    NatCash
+  </option>
+
+  <option value="Paiement à la livraison">
+    Paiement à la livraison
+  </option>
+
+</select>
+
+
+<select id="filtreStatut">
+
+  <option value="tous">
+    📊 Tous les paiements
+  </option>
+
+  <option value="recu">
+    ✅ Reçus
+  </option>
+
+  <option value="attente">
+    ⏳ En attente
+  </option>
+
+  <option value="annule">
+    ❌ Annulés
+  </option>
+
+</select>
+
+  </div>  <!-- LISTE DES PAIEMENTS -->  <div
+    class="payments"
+    id="listePaiements"
+  ></div></div><script>
+
+  // ==========================================
+  // PROTECTION VENDEUR
+  // ==========================================
+
+  const vendeurConnecte =
+    localStorage.getItem(
+      "vendozaVendeurConnecte"
+    );
+
+  if (vendeurConnecte !== "true") {
+
+    window.location.href =
+      "connexion-vendeur.html";
+
+  }
+
+
+  // ==========================================
+  // NOM VENDEUR
+  // ==========================================
+
+  const vendeurNom =
+    localStorage.getItem(
+      "vendozaVendeurNom"
+    ) || "Vendeur";
+
+  document.getElementById(
+    "vendeurNom"
+  ).textContent = vendeurNom;
+
+
+  // ==========================================
+  // DÉCONNEXION
+  // ==========================================
+
+  function seDeconnecterVendeur() {
+
+    const confirmer =
+      confirm(
+        "Voulez-vous vraiment vous déconnecter ?"
+      );
+
+    if (!confirmer) {
+      return;
+    }
+
+    localStorage.removeItem(
+      "vendozaVendeurConnecte"
+    );
+
+    localStorage.removeItem(
+      "vendozaVendeurNom"
+    );
+
+    window.location.href =
+      "connexion-vendeur.html";
+  }
+
+
+  // ==========================================
+  // COMMANDES
+  // ==========================================
+
+  let commandes =
+    JSON.parse(
+      localStorage.getItem(
+        "vendozaCommandes"
+      )
+    ) || [];
+
+
+  // ==========================================
+  // DÉTERMINER L'ÉTAT DU PAIEMENT
+  // ==========================================
+
+  function etatPaiement(commande) {
+
+    if (
+      commande.statut === "Annulée"
+    ) {
+
+      return "annule";
+
+    }
+
+
+    /*
+      Pour cette première version :
+      - Confirmée
+      - En livraison
+      - Livrée
+
+      = paiement considéré comme reçu.
+
+      - En attente
+      = paiement en attente.
+    */
+
+    if (
+      commande.statut === "Confirmée" ||
+      commande.statut === "En livraison" ||
+      commande.statut === "Livrée"
+    ) {
+
+      return "recu";
+
+    }
+
+
+    return "attente";
+
+  }
+
+
+  // ==========================================
+  // MÉTHODE DE PAIEMENT
+  // ==========================================
+
+  function obtenirMethode(commande) {
+
+    return (
+      commande.client?.paiement ||
+      "Paiement à la livraison"
+    );
+
+  }
+
+
+  // ==========================================
+  // STATISTIQUES
+  // ==========================================
+
+  function afficherStatistiques() {
+
+    let totalVentes = 0;
+    let paiementsRecus = 0;
+    let paiementsAttente = 0;
+
+
+    commandes.forEach(
+      function(commande) {
+
+        const montant =
+          Number(commande.total) || 0;
+
+        const etat =
+          etatPaiement(commande);
+
+
+        if (
+          etat !== "annule"
+        ) {
+
+          totalVentes += montant;
+
+        }
+
+
+        if (
+          etat === "recu"
+        ) {
+
+          paiementsRecus += montant;
+
+        }
+
+
+        if (
+          etat === "attente"
+        ) {
+
+          paiementsAttente += montant;
+
+        }
+
+      }
+    );
+
+
+    document.getElementById(
+      "totalVentes"
+    ).textContent =
+      totalVentes.toLocaleString() +
+      " HTG";
+
+
+    document.getElementById(
+      "paiementsRecus"
+    ).textContent =
+      paiementsRecus.toLocaleString() +
+      " HTG";
+
+
+    document.getElementById(
+      "paiementsAttente"
+    ).textContent =
+      paiementsAttente.toLocaleString() +
+      " HTG";
+
+
+    document.getElementById(
+      "nombreCommandes"
+    ).textContent =
+      commandes.length;
+
+  }
+
+
+  // ==========================================
+  // AFFICHER LES PAIEMENTS
+  // ==========================================
+
+  function afficherPaiements() {
+
+    const recherche =
+      document.getElementById(
+        "recherche"
+      ).value
+      .toLowerCase()
+      .trim();
+
+
+    const methode =
+      document.getElementById(
+        "filtreMethode"
+      ).value;
+
+
+    const statut =
+      document.getElementById(
+        "filtreStatut"
+      ).value;
+
+
+    const liste =
+      document.getElementById(
+        "listePaiements"
+      );
+
+
+    const resultats =
+      commandes.filter(
+        function(commande) {
+
+          const id =
+            String(
+              commande.id || ""
+            ).toLowerCase();
+
+
+          const client =
+            String(
+              commande.client?.nom || ""
+            ).toLowerCase();
+
+
+          const telephone =
+            String(
+              commande.client?.telephone || ""
+            ).toLowerCase();
+
+
+          const methodeCommande =
+            obtenirMethode(
+              commande
+            );
+
+
+          const etat =
+            etatPaiement(
+              commande
+            );
+
+
+          const rechercheOK =
+            !recherche ||
+            id.includes(recherche) ||
+            client.includes(recherche) ||
+            telephone.includes(recherche);
+
+
+          const methodeOK =
+            methode === "tous" ||
+            methodeCommande === methode;
+
+
+          const statutOK =
+            statut === "tous" ||
+            etat === statut;
+
+
+          return (
+            rechercheOK &&
+            methodeOK &&
+            statutOK
+          );
+
+        }
+      );
+
+
+    if (
+      resultats.length === 0
+    ) {
+
+      liste.innerHTML = `
+
+        <div class="empty">
+          📭 Aucun paiement trouvé.
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    liste.innerHTML = "";
+
+
+    resultats
+      .slice()
+      .reverse()
+      .forEach(
+        function(commande) {
+
+          const montant =
+            Number(
+              commande.total
+            ) || 0;
+
+
+          const methode =
+            obtenirMethode(
+              commande
+            );
+
+
+          const etat =
+            etatPaiement(
+              commande
+            );
+
+
+          let texteEtat =
+            "⏳ En attente";
+
+          let classeEtat =
+            "pending";
+
+
+          if (
+            etat === "recu"
+          ) {
+
+            texteEtat =
+              "✅ Paiement reçu";
+
+            classeEtat =
+              "received";
+
+          }
+
+
+          if (
+            etat === "annule"
+          ) {
+
+            texteEtat =
+              "❌ Commande annulée";
+
+            classeEtat =
+              "cancelled";
+
+          }
+
+
+          liste.innerHTML += `
+
+            <div class="payment-card">
+
+              <div class="payment-top">
+
+                <div class="order-id">
+                  📦 ${commande.id || "Commande"}
+                </div>
+
+                <div class="amount">
+                  ${montant.toLocaleString()} HTG
+                </div>
+
+              </div>
+
+
+              <div class="info">
+
+                👤 Client :
+                <strong>
+                  ${commande.client?.nom || "N/A"}
+                </strong>
+
+                <br>
+
+                📞 Téléphone :
+                ${commande.client?.telephone || "N/A"}
+
+                <br>
+
+                📅 Date :
+                ${commande.date || "N/A"}
+
+                <br><br>
+
+                💳 Méthode :
+                <span class="method">
+                  ${methode}
+                </span>
+
+                <br>
+
+                <span class="status ${classeEtat}">
+                  ${texteEtat}
+                </span>
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
+      );
+
+  }
+
+
+  // ==========================================
+  // ÉVÉNEMENTS DES FILTRES
+  // ==========================================
+
+  document.getElementById(
+    "recherche"
+  ).addEventListener(
+    "input",
+    afficherPaiements
+  );
+
+
+  document.getElementById(
+    "filtreMethode"
+  ).addEventListener(
+    "change",
+    afficherPaiements
+  );
+
+
+  document.getElementById(
+    "filtreStatut"
+  ).addEventListener(
+    "change",
+    afficherPaiements
+  );
+
+
+  // ==========================================
+  // CHARGEMENT
+  // ==========================================
+
+  afficherStatistiques();
+
+  afficherPaiements();
+
+
+  // ==========================================
+  // ACTUALISATION AUTOMATIQUE
+  // ==========================================
+
+  window.addEventListener(
+    "storage",
+    function() {
+
+      commandes =
+        JSON.parse(
+          localStorage.getItem(
+            "vendozaCommandes"
+          )
+        ) || [];
+
+
+      afficherStatistiques();
+      afficherPaiements();
+
+    }
+  );
+
+</script></body>
+</html>

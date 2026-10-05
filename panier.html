@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendoza - Mon Panier</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f5f6fa;
+color:#222
+}
+
+header{
+background:#111827;
+color:white;
+padding:14px 18px;
+position:sticky;
+top:0;
+z-index:1000;
+box-shadow:0 2px 10px rgba(0,0,0,.15)
+}
+
+.header-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px
+}
+
+.logo{
+font-size:25px;
+font-weight:bold;
+cursor:pointer
+}
+
+.logo span{color:#f59e0b}
+
+.menu{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+justify-content:center
+}
+
+.menu a{
+color:white;
+text-decoration:none;
+font-size:14px;
+padding:8px 10px;
+border-radius:7px
+}
+
+.menu a:hover{background:#374151}
+
+.badge{
+background:#ef4444;
+color:white;
+border-radius:50%;
+min-width:19px;
+height:19px;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+font-size:11px;
+margin-left:3px
+}
+
+.container{
+max-width:1150px;
+margin:auto;
+padding:25px 15px 50px
+}
+
+h1{
+text-align:center;
+margin:5px 0 8px
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:25px
+}
+
+.cart-layout{
+display:grid;
+grid-template-columns:1fr 340px;
+gap:20px;
+align-items:start
+}
+
+.cart-list{
+display:grid;
+gap:15px
+}
+
+.cart-item{
+background:white;
+border-radius:13px;
+padding:14px;
+display:grid;
+grid-template-columns:110px 1fr auto;
+gap:15px;
+align-items:center;
+box-shadow:0 3px 12px rgba(0,0,0,.07)
+}
+
+.cart-image{
+width:110px;
+height:110px;
+object-fit:cover;
+border-radius:10px;
+background:#eee
+}
+
+.item-name{
+font-size:18px;
+font-weight:bold;
+margin-bottom:6px
+}
+
+.item-category{
+color:#777;
+font-size:13px;
+margin-bottom:8px
+}
+
+.item-price{
+font-weight:bold;
+font-size:17px;
+margin-bottom:8px
+}
+
+.item-stock{
+font-size:13px;
+margin-bottom:10px
+}
+
+.stock-ok{color:#15803d}
+.stock-low{color:#d97706}
+.stock-out{color:#dc2626}
+
+.quantity{
+display:flex;
+align-items:center;
+gap:8px
+}
+
+.quantity button{
+width:34px;
+height:34px;
+border:none;
+border-radius:7px;
+background:#111827;
+color:white;
+font-size:18px;
+cursor:pointer
+}
+
+.quantity button:disabled{
+background:#ccc;
+cursor:not-allowed
+}
+
+.quantity span{
+min-width:30px;
+text-align:center;
+font-weight:bold
+}
+
+.delete-btn{
+margin-top:10px;
+border:none;
+background:#fee2e2;
+color:#b91c1c;
+padding:8px 12px;
+border-radius:7px;
+cursor:pointer;
+font-weight:bold
+}
+
+.summary{
+background:white;
+border-radius:13px;
+padding:20px;
+box-shadow:0 3px 12px rgba(0,0,0,.08);
+position:sticky;
+top:100px
+}
+
+.summary h2{margin-top:0}
+
+.summary-line{
+display:flex;
+justify-content:space-between;
+gap:15px;
+padding:10px 0;
+border-bottom:1px solid #eee
+}
+
+.total{
+display:flex;
+justify-content:space-between;
+font-size:21px;
+font-weight:bold;
+padding:16px 0
+}
+
+.checkout-btn,
+.continue-btn,
+.clear-btn{
+width:100%;
+border:none;
+border-radius:8px;
+padding:13px;
+margin-top:9px;
+cursor:pointer;
+font-size:15px;
+font-weight:bold
+}
+
+.checkout-btn{
+background:#f59e0b;
+color:#111
+}
+
+.continue-btn{
+background:#111827;
+color:white
+}
+
+.clear-btn{
+background:#fee2e2;
+color:#b91c1c
+}
+
+.empty{
+background:white;
+padding:50px 20px;
+border-radius:13px;
+text-align:center;
+box-shadow:0 3px 12px rgba(0,0,0,.07)
+}
+
+.empty-icon{
+font-size:60px;
+margin-bottom:10px
+}
+
+.shop-btn{
+display:inline-block;
+margin-top:15px;
+padding:12px 20px;
+background:#111827;
+color:white;
+text-decoration:none;
+border-radius:8px;
+font-weight:bold
+}
+
+.message{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+background:#111827;
+color:white;
+padding:13px 20px;
+border-radius:8px;
+display:none;
+z-index:3000;
+box-shadow:0 3px 12px rgba(0,0,0,.2);
+text-align:center;
+max-width:90%
+}
+
+@media(max-width:800px){
+.header-top{flex-direction:column}
+.menu{width:100%}
+.cart-layout{grid-template-columns:1fr}
+.summary{position:static}
+}
+
+@media(max-width:600px){
+.cart-item{
+grid-template-columns:80px 1fr
+}
+
+.cart-image{
+width:80px;
+height:80px
+}
+
+.item-name{font-size:16px}
+
+.cart-actions{
+grid-column:1/-1
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="header-top">
+
+<div class="logo" onclick="window.location.href='accueil.html'">
+Ven<span>doza</span>
+</div>
+
+<nav class="menu">
+
+<a href="accueil.html">🏠 Accueil</a>
+
+<a href="produits.html">🛍️ Produits</a>
+
+<a href="panier.html">🛒 Panier</a>
+
+<a href="favoris.html">❤️ Favoris</a>
+
+<!-- CORRECTION : Commandes -->
+<a href="commandes-client.html">📦 Commandes</a>
+
+<a href="notifications.html">
+🔔 Notifications
+<span id="notificationBadge" class="badge" style="display:none">0</span>
+</a>
+
+<a id="accountLink" href="connexion.html">
+🔐 Connexion
+</a>
+
+</nav>
+</div>
+</header>
+
+<div class="container">
+
+<h1>🛒 Mon Panier</h1>
+
+<div class="subtitle">
+Vérifiez vos produits avant de passer votre commande.
+</div>
+
+<div id="mainContent"></div>
+
+</div>
+
+<div id="message" class="message"></div>
+
+<script>
+
+function normaliserId(id){
+return String(id);
+}
+
+function lireProduits(){
+
+try{
+
+const data=localStorage.getItem("produitsVendoza");
+
+if(!data) return [];
+
+const produits=JSON.parse(data);
+
+return Array.isArray(produits)?produits:[];
+
+}catch(e){
+
+return [];
+
+}
+
+}
+
+function lirePanier(){
+
+try{
+
+const data=localStorage.getItem("vendozaCart");
+
+if(!data) return [];
+
+const panier=JSON.parse(data);
+
+return Array.isArray(panier)?panier:[];
+
+}catch(e){
+
+return [];
+
+}
+
+}
+
+function afficherMessage(message){
+
+const box=document.getElementById("message");
+
+box.textContent=message;
+box.style.display="block";
+
+setTimeout(function(){
+
+box.style.display="none";
+
+},2500);
+
+}
+
+function utilisateurConnecte(){
+
+try{
+
+const data=
+localStorage.getItem("vendozaUtilisateurConnecte");
+
+return data?JSON.parse(data):null;
+
+}catch(e){
+
+return null;
+
+}
+
+}
+
+function actualiserCompte(){
+
+const utilisateur=utilisateurConnecte();
+
+const link=document.getElementById("accountLink");
+
+if(utilisateur){
+
+link.href="mon-compte.html";
+link.textContent="👤 Mon compte";
+
+}else{
+
+link.href="connexion.html";
+link.textContent="🔐 Connexion";
+
+}
+
+}
+
+function actualiserNotifications(){
+
+const utilisateur=utilisateurConnecte();
+
+const badge=document.getElementById("notificationBadge");
+
+if(!utilisateur){
+
+badge.style.display="none";
+return;
+
+}
+
+let commandes=[];
+
+try{
+
+commandes=
+JSON.parse(
+localStorage.getItem("vendozaCommandes")
+)||[];
+
+}catch(e){
+
+commandes=[];
+
+}
+
+let lues=[];
+
+try{
+
+lues=
+JSON.parse(
+localStorage.getItem("vendozaNotificationsLues")
+)||[];
+
+}catch(e){
+
+lues=[];
+
+}
+
+const email=
+String(utilisateur.email||"").toLowerCase();
+
+const telephone=
+String(utilisateur.telephone||"");
+
+let nombre=0;
+
+commandes.forEach(function(commande){
+
+const client=commande.client||{};
+
+const emailCommande=
+String(client.email||"").toLowerCase();
+
+const telephoneCommande=
+String(client.telephone||"");
+
+const appartient=
+
+(email &&
+emailCommande &&
+email===emailCommande)
+
+||
+
+(telephone &&
+telephoneCommande &&
+telephone===telephoneCommande);
+
+if(!appartient) return;
+
+const id=
+normaliserId(
+commande.id+"-"+commande.statut
+);
+
+if(!lues.map(String).includes(id)){
+
+nombre++;
+
+}
+
+});
+
+if(nombre>0){
+
+badge.textContent=nombre;
+badge.style.display="inline-flex";
+
+}else{
+
+badge.style.display="none";
+
+}
+
+}
+
+function sauvegarderPanier(panier){
+
+const panierPropre=panier.map(function(article){
+
+return{
+
+id:normaliserId(article.id),
+
+name:article.name||"Produit",
+
+price:Number(article.price)||0,
+
+stock:Number(article.stock)||0,
+
+image:article.image||"",
+
+category:article.category||"Autres",
+
+quantity:Number(article.quantity)||1
+
+};
+
+});
+
+localStorage.setItem(
+"vendozaCart",
+JSON.stringify(panierPropre)
+);
+
+}
+
+function synchroniserArticle(article){
+
+const produits=lireProduits();
+
+const produit=produits.find(function(item){
+
+return normaliserId(item.id) ===
+normaliserId(article.id);
+
+});
+
+if(!produit){
+
+return{
+
+...article,
+
+id:normaliserId(article.id),
+
+price:Number(article.price)||0,
+
+stock:Number(article.stock)||0,
+
+quantity:Number(article.quantity)||1
+
+};
+
+}
+
+return{
+
+...article,
+
+id:normaliserId(produit.id),
+
+name:produit.nom||article.name||"Produit",
+
+price:Number(produit.prix)||0,
+
+stock:Number(produit.stock)||0,
+
+image:produit.image||article.image||"",
+
+category:produit.categorie||article.category||"Autres",
+
+quantity:Number(article.quantity)||1
+
+};
+
+}
+
+function changerQuantite(id,variation){
+
+id=normaliserId(id);
+
+let panier=lirePanier();
+
+const index=panier.findIndex(function(article){
+
+return normaliserId(article.id)===id;
+
+});
+
+if(index===-1){
+
+afficherMessage("Produit introuvable dans le panier.");
+
+return;
+
+}
+
+const article=synchroniserArticle(panier[index]);
+
+let quantite=
+Number(article.quantity)||1;
+
+let stock=
+Number(article.stock)||0;
+
+quantite+=Number(variation);
+
+if(quantite<1){
+
+quantite=1;
+
+}
+
+if(stock>0 && quantite>stock){
+
+quantite=stock;
+
+afficherMessage(
+"Vous avez atteint le stock disponible."
+);
+
+}
+
+article.quantity=quantite;
+
+article.stock=stock;
+
+panier[index]=article;
+
+sauvegarderPanier(panier);
+
+afficherPanier();
+
+}
+
+function supprimerProduit(id){
+
+id=normaliserId(id);
+
+let panier=lirePanier();
+
+panier=panier.filter(function(article){
+
+return normaliserId(article.id)!==id;
+
+});
+
+sauvegarderPanier(panier);
+
+afficherMessage("Produit retiré du panier 🗑️");
+
+afficherPanier();
+
+}
+
+function viderPanier(){
+
+const panier=lirePanier();
+
+if(panier.length===0) return;
+
+if(!confirm(
+"Voulez-vous vraiment vider votre panier ?"
+)){
+
+return;
+
+}
+
+localStorage.removeItem("vendozaCart");
+localStorage.removeItem("vendozaAchatDirect");
+
+afficherMessage("Panier vidé 🧹");
+
+afficherPanier();
+
+}
+
+function passerCommande(){
+
+let panier=lirePanier();
+
+if(panier.length===0){
+
+afficherMessage(
+"Votre panier est vide."
+);
+
+return;
+
+}
+
+const utilisateur=utilisateurConnecte();
+
+if(!utilisateur){
+
+afficherMessage(
+"Connectez-vous pour passer votre commande."
+);
+
+setTimeout(function(){
+
+window.location.href="connexion.html";
+
+},1200);
+
+return;
+
+}
+
+const produits=lireProduits();
+
+const panierFinal=[];
+
+for(let i=0;i<panier.length;i++){
+
+const article=panier[i];
+
+const id=normaliserId(article.id);
+
+const produit=produits.find(function(item){
+
+return normaliserId(item.id)===id;
+
+});
+
+if(produit){
+
+const stockActuel=
+Number(produit.stock);
+
+const quantite=
+Number(article.quantity)||1;
+
+if(!Number.isNaN(stockActuel) &&
+stockActuel<quantite){
+
+afficherMessage(
+"Stock insuffisant pour : "+
+(produit.nom||article.name||"Produit")
+);
+
+return;
+
+}
+
+panierFinal.push({
+
+id:id,
+
+name:produit.nom||article.name||"Produit",
+
+price:Number(produit.prix)||0,
+
+stock:
+Number.isNaN(stockActuel)
+?Number(article.stock)||0
+:stockActuel,
+
+image:produit.image||article.image||"",
+
+category:
+produit.categorie||
+article.category||
+"Autres",
+
+quantity:quantite
+
+});
+
+}else{
+
+panierFinal.push({
+
+id:id,
+
+name:article.name||"Produit",
+
+price:Number(article.price)||0,
+
+stock:Number(article.stock)||0,
+
+image:article.image||"",
+
+category:article.category||"Autres",
+
+quantity:Number(article.quantity)||1
+
+});
+
+}
+
+}
+
+sauvegarderPanier(panierFinal);
+
+localStorage.setItem(
+"vendozaAchatDirect",
+JSON.stringify(panierFinal[0])
+);
+
+window.location.href="commande.html";
+
+}
+
+function afficherPanier(){
+
+const container=
+document.getElementById("mainContent");
+
+let panier=lirePanier();
+
+if(panier.length===0){
+
+container.innerHTML=`
+
+<div class="empty">
+
+<div class="empty-icon">🛒</div>
+
+<h2>Votre panier est vide</h2>
+
+<p>
+Ajoutez des produits à votre panier
+pour commencer vos achats.
+</p>
+
+<a
+href="produits.html"
+class="shop-btn"
+>
+🛍️ Voir les produits
+</a>
+
+</div>
+
+`;
+
+return;
+
+}
+
+panier=panier.map(function(article){
+
+return synchroniserArticle(article);
+
+});
+
+sauvegarderPanier(panier);
+
+let total=0;
+let nombreArticles=0;
+
+const cartList=
+document.createElement("div");
+
+cartList.className="cart-list";
+
+panier.forEach(function(article){
+
+const id=normaliserId(article.id);
+
+const prix=Number(article.price)||0;
+
+const quantite=
+Number(article.quantity)||1;
+
+const stock=
+Number(article.stock)||0;
+
+const sousTotal=
+prix*quantite;
+
+total+=sousTotal;
+
+nombreArticles+=quantite;
+
+let stockClass="stock-ok";
+let stockText="Stock disponible : "+stock;
+
+if(stock<=0){
+
+stockClass="stock-out";
+stockText="Stock non renseigné";
+
+}else if(stock<=5){
+
+stockClass="stock-low";
+stockText="Stock faible : "+stock;
+
+}
+
+const item=
+document.createElement("div");
+
+item.className="cart-item";
+
+const image=
+document.createElement("img");
+
+image.className="cart-image";
+
+image.src=article.image||"";
+
+image.alt=article.name||"Produit";
+
+image.onerror=function(){
+
+this.style.display="none";
+
+};
+
+const info=
+document.createElement("div");
+
+const name=
+document.createElement("div");
+
+name.className="item-name";
+
+name.textContent=
+article.name||"Produit";
+
+const category=
+document.createElement("div");
+
+category.className="item-category";
+
+category.textContent=
+article.category||"Autres";
+
+const price=
+document.createElement("div");
+
+price.className="item-price";
+
+price.textContent=
+prix.toLocaleString("fr-FR")+
+" G × "+quantite;
+
+const stockDiv=
+document.createElement("div");
+
+stockDiv.className=
+"item-stock "+stockClass;
+
+stockDiv.textContent=
+stockText;
+
+info.appendChild(name);
+info.appendChild(category);
+info.appendChild(price);
+info.appendChild(stockDiv);
+
+const actions=
+document.createElement("div");
+
+actions.className="cart-actions";
+
+const quantityBox=
+document.createElement("div");
+
+quantityBox.className="quantity";
+
+const minus=
+document.createElement("button");
+
+minus.type="button";
+minus.textContent="−";
+
+minus.disabled=
+quantite<=1;
+
+minus.onclick=function(){
+
+changerQuantite(id,-1);
+
+};
+
+const number=
+document.createElement("span");
+
+number.textContent=quantite;
+
+const plus=
+document.createElement("button");
+
+plus.type="button";
+plus.textContent="+";
+
+plus.disabled=
+stock>0 && quantite>=stock;
+
+plus.onclick=function(){
+
+changerQuantite(id,1);
+
+};
+
+quantityBox.appendChild(minus);
+quantityBox.appendChild(number);
+quantityBox.appendChild(plus);
+
+const subtotal=
+document.createElement("div");
+
+subtotal.style.fontWeight="bold";
+subtotal.style.marginTop="10px";
+
+subtotal.textContent=
+"Sous-total : "+
+sousTotal.toLocaleString("fr-FR")+
+" G";
+
+const deleteButton=
+document.createElement("button");
+
+deleteButton.className="delete-btn";
+
+deleteButton.type="button";
+
+deleteButton.textContent=
+"🗑️ Retirer";
+
+deleteButton.onclick=function(){
+
+supprimerProduit(id);
+
+};
+
+actions.appendChild(quantityBox);
+actions.appendChild(subtotal);
+actions.appendChild(deleteButton);
+
+item.appendChild(image);
+item.appendChild(info);
+item.appendChild(actions);
+
+cartList.appendChild(item);
+
+});
+
+const summary=
+document.createElement("div");
+
+summary.className="summary";
+
+summary.innerHTML=`
+
+<h2>Résumé de la commande</h2>
+
+<div class="summary-line">
+<span>Articles</span>
+<strong>${nombreArticles}</strong>
+</div>
+
+<div class="summary-line">
+<span>Produits</span>
+<strong>${panier.length}</strong>
+</div>
+
+<div class="total">
+<span>Total</span>
+<span>
+${total.toLocaleString("fr-FR")} G
+</span>
+</div>
+
+<button
+class="checkout-btn"
+id="checkoutButton"
+>
+✅ Passer la commande
+</button>
+
+<button
+class="continue-btn"
+id="continueButton"
+>
+🛍️ Continuer mes achats
+</button>
+
+<button
+class="clear-btn"
+id="clearButton"
+>
+🧹 Vider le panier
+</button>
+
+`;
+
+const layout=
+document.createElement("div");
+
+layout.className="cart-layout";
+
+layout.appendChild(cartList);
+layout.appendChild(summary);
+
+container.innerHTML="";
+container.appendChild(layout);
+
+document
+.getElementById("checkoutButton")
+.onclick=passerCommande;
+
+document
+.getElementById("continueButton")
+.onclick=function(){
+
+window.location.href="produits.html";
+
+};
+
+document
+.getElementById("clearButton")
+.onclick=viderPanier;
+
+}
+
+function initialiser(){
+
+actualiserCompte();
+
+actualiserNotifications();
+
+afficherPanier();
+
+}
+
+initialiser();
+
+window.addEventListener("storage",function(){
+
+actualiserCompte();
+
+actualiserNotifications();
+
+afficherPanier();
+
+});
+
+setInterval(function(){
+
+actualiserCompte();
+
+actualiserNotifications();
+
+},3000);
+
+</script>
+
+</body>
+</html>

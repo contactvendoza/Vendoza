@@ -1,0 +1,697 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Vendoza - Clients</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-content {
+      width: 95%;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 27px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      opacity: 0.8;
+    }
+
+    .vendeur-info {
+      text-align: right;
+    }
+
+    .vendeur-nom {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .logout {
+      border: none;
+      background: #dc2626;
+      color: white;
+      padding: 9px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout:hover {
+      background: #b91c1c;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 25px auto;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .top-actions a {
+      text-decoration: none;
+      background: #111827;
+      color: white;
+      padding: 11px 16px;
+      border-radius: 8px;
+    }
+
+    .top-actions a:hover {
+      background: #2563eb;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .summary-card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .summary-icon {
+      font-size: 28px;
+    }
+
+    .summary-title {
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .summary-number {
+      font-size: 27px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    .search-box:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .client {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .client:last-child {
+      margin-bottom: 0;
+    }
+
+    .client-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .client-name {
+      font-size: 19px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .client-badge {
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .client-info {
+      color: #555;
+      line-height: 1.8;
+    }
+
+    .client-total {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 25px;
+    }
+
+    @media (max-width: 800px) {
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .vendeur-info {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .top-actions a {
+        width: 100%;
+        text-align: center;
+      }
+
+      .client-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style></head><body><header>  <div class="header-content"><div>
+  <h1>👥 Vendoza - Clients</h1>
+  <p>Gestion des clients de votre boutique</p>
+</div>
+
+<div class="vendeur-info">
+
+  <div class="vendeur-nom">
+    👤 <span id="vendeurNom">Vendeur</span>
+  </div>
+
+  <button
+    class="logout"
+    onclick="seDeconnecterVendeur()"
+  >
+    🚪 Déconnexion
+  </button>
+
+</div>
+
+  </div></header><div class="container">  <div class="top-actions"><a href="dashboard.html">
+  📊 Dashboard
+</a>
+
+<a href="produit.html">
+  🛍️ Produits
+</a>
+
+<a href="commandes.html">
+  📦 Commandes
+</a>
+
+  </div>  <!-- RÉSUMÉ -->  <div class="summary"><div class="summary-card">
+
+  <div class="summary-icon">
+    👥
+  </div>
+
+  <div class="summary-title">
+    Clients
+  </div>
+
+  <div
+    class="summary-number"
+    id="nombreClients"
+  >
+    0
+  </div>
+
+</div>
+
+
+<div class="summary-card">
+
+  <div class="summary-icon">
+    📦
+  </div>
+
+  <div class="summary-title">
+    Commandes
+  </div>
+
+  <div
+    class="summary-number"
+    id="nombreCommandes"
+  >
+    0
+  </div>
+
+</div>
+
+
+<div class="summary-card">
+
+  <div class="summary-icon">
+    💰
+  </div>
+
+  <div class="summary-title">
+    Total des ventes
+  </div>
+
+  <div
+    class="summary-number"
+    id="totalVentes"
+  >
+    0 HTG
+  </div>
+
+</div>
+
+  </div>  <!-- CLIENTS -->  <div class="section"><h2>👥 Liste des clients</h2>
+
+<input
+  type="text"
+  id="recherche"
+  class="search-box"
+  placeholder="🔎 Rechercher par nom, email ou téléphone..."
+>
+
+<div id="listeClients"></div>
+
+  </div></div><script>
+
+  // ==========================================
+  // PROTECTION VENDEUR
+  // ==========================================
+
+  const vendeurConnecte =
+    localStorage.getItem(
+      "vendozaVendeurConnecte"
+    );
+
+  if (vendeurConnecte !== "true") {
+
+    window.location.href =
+      "connexion-vendeur.html";
+
+  }
+
+
+  // ==========================================
+  // NOM VENDEUR
+  // ==========================================
+
+  const vendeurNom =
+    localStorage.getItem(
+      "vendozaVendeurNom"
+    ) || "Vendeur";
+
+  document.getElementById(
+    "vendeurNom"
+  ).textContent = vendeurNom;
+
+
+  // ==========================================
+  // DÉCONNEXION
+  // ==========================================
+
+  function seDeconnecterVendeur() {
+
+    const confirmer =
+      confirm(
+        "Voulez-vous vraiment vous déconnecter ?"
+      );
+
+    if (!confirmer) {
+      return;
+    }
+
+    localStorage.removeItem(
+      "vendozaVendeurConnecte"
+    );
+
+    localStorage.removeItem(
+      "vendozaVendeurNom"
+    );
+
+    window.location.href =
+      "connexion-vendeur.html";
+  }
+
+
+  // ==========================================
+  // DONNÉES
+  // ==========================================
+
+  const utilisateurs =
+    JSON.parse(
+      localStorage.getItem(
+        "vendozaUtilisateurs"
+      )
+    ) || [];
+
+
+  const commandes =
+    JSON.parse(
+      localStorage.getItem(
+        "vendozaCommandes"
+      )
+    ) || [];
+
+
+  // ==========================================
+  // CRÉER LA LISTE DES CLIENTS
+  // ==========================================
+
+  const clients = [];
+
+
+  // Ajouter les utilisateurs enregistrés
+
+  utilisateurs.forEach(function(utilisateur) {
+
+    clients.push({
+      nom: utilisateur.nom || "Client",
+      email: utilisateur.email || "",
+      telephone: utilisateur.telephone || "",
+      commandes: [],
+      total: 0
+    });
+
+  });
+
+
+  // Ajouter les clients trouvés dans les commandes
+  // même s'ils n'existent pas encore dans utilisateurs
+
+  commandes.forEach(function(commande) {
+
+    const clientCommande =
+      commande.client || {};
+
+    const email =
+      clientCommande.email || "";
+
+    const telephone =
+      clientCommande.telephone || "";
+
+    let clientExistant =
+      clients.find(function(client) {
+
+        return (
+          (email && client.email === email) ||
+          (telephone && client.telephone === telephone)
+        );
+
+      });
+
+
+    if (!clientExistant) {
+
+      clientExistant = {
+
+        nom:
+          clientCommande.nom ||
+          "Client",
+
+        email:
+          email,
+
+        telephone:
+          telephone,
+
+        commandes: [],
+
+        total: 0
+
+      };
+
+      clients.push(clientExistant);
+
+    }
+
+
+    clientExistant.commandes.push(
+      commande
+    );
+
+
+    clientExistant.total +=
+      Number(commande.total) || 0;
+
+  });
+
+
+  // ==========================================
+  // STATISTIQUES
+  // ==========================================
+
+  document.getElementById(
+    "nombreClients"
+  ).textContent =
+    clients.length;
+
+
+  document.getElementById(
+    "nombreCommandes"
+  ).textContent =
+    commandes.length;
+
+
+  let totalVentes = 0;
+
+  commandes.forEach(function(commande) {
+
+    if (
+      commande.statut === "Confirmée" ||
+      commande.statut === "En livraison" ||
+      commande.statut === "Livrée"
+    ) {
+
+      totalVentes +=
+        Number(commande.total) || 0;
+
+    }
+
+  });
+
+
+  document.getElementById(
+    "totalVentes"
+  ).textContent =
+    totalVentes.toLocaleString() +
+    " HTG";
+
+
+  // ==========================================
+  // AFFICHER CLIENTS
+  // ==========================================
+
+  const listeClients =
+    document.getElementById(
+      "listeClients"
+    );
+
+
+  function afficherClients(liste) {
+
+    listeClients.innerHTML = "";
+
+
+    if (liste.length === 0) {
+
+      listeClients.innerHTML = `
+
+        <div class="empty">
+          📭 Aucun client trouvé.
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    liste.forEach(function(client) {
+
+      const derniereCommande =
+        client.commandes.length > 0
+          ? client.commandes[
+              client.commandes.length - 1
+            ]
+          : null;
+
+
+      const derniereDate =
+        derniereCommande?.date ||
+        "Aucune commande";
+
+
+      listeClients.innerHTML += `
+
+        <div class="client">
+
+          <div class="client-top">
+
+            <div class="client-name">
+              👤 ${client.nom}
+            </div>
+
+            <div class="client-badge">
+              ${client.commandes.length}
+              commande(s)
+            </div>
+
+          </div>
+
+
+          <div class="client-info">
+
+            📧 Email :
+            ${client.email || "Non renseigné"}
+
+            <br>
+
+            📞 Téléphone :
+            ${client.telephone || "Non renseigné"}
+
+            <br>
+
+            📅 Dernière commande :
+            ${derniereDate}
+
+          </div>
+
+
+          <div class="client-total">
+
+            💰 Total des achats :
+            ${client.total.toLocaleString()}
+            HTG
+
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+  }
+
+
+  afficherClients(clients);
+
+
+  // ==========================================
+  // RECHERCHE
+  // ==========================================
+
+  document
+    .getElementById("recherche")
+    .addEventListener(
+      "input",
+      function() {
+
+        const recherche =
+          this.value
+            .toLowerCase()
+            .trim();
+
+
+        const resultat =
+          clients.filter(function(client) {
+
+            return (
+
+              client.nom
+                .toLowerCase()
+                .includes(recherche)
+
+              ||
+
+              client.email
+                .toLowerCase()
+                .includes(recherche)
+
+              ||
+
+              client.telephone
+                .toLowerCase()
+                .includes(recherche)
+
+            );
+
+          });
+
+
+        afficherClients(resultat);
+
+      }
+    );
+
+
+  // ==========================================
+  // ACTUALISATION
+  // ==========================================
+
+  window.addEventListener(
+    "storage",
+    function(event) {
+
+      if (
+        event.key === "vendozaUtilisateurs" ||
+        event.key === "vendozaCommandes"
+      ) {
+
+        location.reload();
+
+      }
+
+    }
+  );
+
+</script></body>
+</html>
