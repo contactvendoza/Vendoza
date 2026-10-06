@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Supabase - Vendoza</title>
+</head>
+
+<body>
+  <h1>Vendoza</h1>
+  <p id="message">Connexion à Supabase...</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    async function testerSupabase() {
+      const message = document.getElementById("message");
+
+      try {
+        const { data, error } = await supabaseClient
+          .from("products")
+          .select("id, name")
+          .limit(1);
+
+        if (error) {
+          message.textContent = "Supabase connecté, mais erreur base de données : " + error.message;
+          console.error(error);
+          return;
+        }
+
+        message.textContent = "✅ Supabase fonctionne ! Connexion réussie.";
+        console.log("Produits :", data);
+
+      } catch (erreur) {
+        message.textContent = "❌ Erreur de connexion : " + erreur.message;
+        console.error(erreur);
+      }
+    }
+
+    testerSupabase();
+  </script>
+</body>
+  </html>
