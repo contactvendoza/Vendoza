@@ -6,7 +6,8 @@
 
   <title>Vendoza - Connexion</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- SUPABASE JS V2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
 
   <style>
     * {
@@ -54,6 +55,7 @@
       background: #111;
       color: white;
       font-size: 16px;
+      cursor: pointer;
     }
 
     button:disabled {
@@ -100,12 +102,14 @@
     type="email"
     id="email"
     placeholder="Votre adresse Gmail"
+    autocomplete="email"
   >
 
   <input
     type="password"
     id="password"
     placeholder="Votre mot de passe"
+    autocomplete="current-password"
   >
 
   <button id="loginBtn" onclick="connexion()">
@@ -118,20 +122,63 @@
 
 <script>
 
-const SUPABASE_URL = "https://kzrphvyhkbuhaczmnjgk.supabase.co";
+const SUPABASE_URL =
+  "https://kzrphvyhkbuhaczmnjgk.supabase.co";
 
 const SUPABASE_ANON_KEY =
-"sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
+  "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
 
-const client = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+
+// ========================================
+// VÉRIFICATION DE LA BIBLIOTHÈQUE
+// ========================================
+
+if (
+  typeof window.supabase === "undefined" ||
+  typeof window.supabase.createClient !== "function"
+) {
+
+  document.getElementById("message").textContent =
+    "ERREUR : La bibliothèque Supabase V2 ne s'est pas chargée.";
+
+  document.getElementById("message").className = "error";
+
+}
+
+
+// ========================================
+// CRÉATION DU CLIENT SUPABASE
+// ========================================
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+
+// ========================================
+// VÉRIFICATION AUTH
+// ========================================
+
+if (
+  !supabaseClient.auth ||
+  typeof supabaseClient.auth.signInWithPassword !== "function"
+) {
+
+  document.getElementById("message").textContent =
+    "ERREUR : Supabase Auth V2 n'est pas disponible.\n\n" +
+    "La bibliothèque Supabase chargée n'est pas correcte.";
+
+  document.getElementById("message").className = "error";
+
+}
 
 
 function afficher(message, type) {
 
-  const box = document.getElementById("message");
+  const box =
+    document.getElementById("message");
 
   box.textContent = message;
   box.className = type;
@@ -166,20 +213,20 @@ async function connexion() {
   bouton.textContent = "Connexion...";
 
 
-  afficher(
-    "Connexion à Supabase...",
-    "info"
-  );
-
-
   try {
 
-    // ================================
-    // 1. CONNEXION AUTH
-    // ================================
+    afficher(
+      "Connexion à Supabase...",
+      "info"
+    );
 
-    const { data, error } =
-      await client.auth.signInWithPassword({
+
+    // ====================================
+    // CONNEXION AUTH
+    // ====================================
+
+    const resultat =
+      await supabaseClient.auth.signInWithPassword({
 
         email: email,
 
@@ -188,17 +235,17 @@ async function connexion() {
       });
 
 
-    if (error) {
+    if (resultat.error) {
 
       afficher(
 
-        "ERREUR AUTH SUPABASE\n\n" +
+        "ERREUR AUTH\n\n" +
 
-        "Message : " +
-        error.message +
+        resultat.error.message +
 
         "\n\nCode : " +
-        (error.code || "non disponible"),
+
+        (resultat.error.code || "non disponible"),
 
         "error"
 
@@ -211,10 +258,10 @@ async function connexion() {
     }
 
 
-    if (!data || !data.user) {
+    if (!resultat.data || !resultat.data.user) {
 
       afficher(
-        "Connexion impossible : utilisateur non trouvé.",
+        "Erreur : utilisateur non retourné par Supabase.",
         "error"
       );
 
@@ -225,7 +272,8 @@ async function connexion() {
     }
 
 
-    const userId = data.user.id;
+    const userId =
+      resultat.data.user.id;
 
 
     afficher(
@@ -242,13 +290,12 @@ async function connexion() {
     );
 
 
-    // ================================
-    // 2. CHERCHER LE PROFIL
-    // ================================
+    // ====================================
+    // RECHERCHE DU PROFIL
+    // ====================================
 
-    const { data: profile, error: profileError } =
-
-      await client
+    const profilResultat =
+      await supabaseClient
 
         .from("profiles")
 
@@ -259,23 +306,25 @@ async function connexion() {
         .maybeSingle();
 
 
-    if (profileError) {
+    if (profilResultat.error) {
 
       afficher(
 
-        "ERREUR TABLE PROFILES\n\n" +
+        "ERREUR PROFILES\n\n" +
 
-        "Message : " +
-        profileError.message +
+        profilResultat.error.message +
 
         "\n\nCode : " +
-        (profileError.code || "non disponible") +
+
+        (profilResultat.error.code || "non disponible") +
 
         "\n\nDetails : " +
-        (profileError.details || "non disponible") +
+
+        (profilResultat.error.details || "non disponible") +
 
         "\n\nHint : " +
-        (profileError.hint || "non disponible"),
+
+        (profilResultat.error.hint || "non disponible"),
 
         "error"
 
@@ -288,13 +337,13 @@ async function connexion() {
     }
 
 
-    if (!profile) {
+    if (!profilResultat.data) {
 
       afficher(
 
-        "AUTH RÉUSSI ✅\n\n" +
+        "Connexion Auth réussie ✅\n\n" +
 
-        "Mais aucun profil n'a été trouvé.\n\n" +
+        "Mais aucun profil n'a été trouvé dans profiles.\n\n" +
 
         "User ID : " +
         userId,
@@ -310,9 +359,9 @@ async function connexion() {
     }
 
 
-    // ================================
-    // 3. ROLE
-    // ================================
+    const profile =
+      profilResultat.data;
+
 
     const role =
       String(profile.role || "")
@@ -322,7 +371,7 @@ async function connexion() {
 
     afficher(
 
-      "Tout fonctionne ✅\n\n" +
+      "TOUT FONCTIONNE ✅\n\n" +
 
       "Nom : " +
       (profile.name || "non défini") +
@@ -337,9 +386,9 @@ async function connexion() {
     );
 
 
-    // ================================
-    // 4. REDIRECTION
-    // ================================
+    // ====================================
+    // REDIRECTION
+    // ====================================
 
     setTimeout(function() {
 
@@ -368,8 +417,7 @@ async function connexion() {
 
         afficher(
 
-          "Connexion réussie mais rôle inconnu.\n\n" +
-
+          "Rôle inconnu.\n\n" +
           "Rôle trouvé : " +
           profile.role,
 
@@ -382,18 +430,15 @@ async function connexion() {
 
       }
 
-    }, 1200);
+    }, 1000);
 
 
-  }
-
-  catch (e) {
+  } catch (erreur) {
 
     afficher(
 
       "ERREUR JAVASCRIPT\n\n" +
-
-      e.message,
+      erreur.message,
 
       "error"
 
@@ -409,4 +454,4 @@ async function connexion() {
 </script>
 
 </body>
-</html>
+  </html>
