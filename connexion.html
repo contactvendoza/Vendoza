@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Vendoza - Connexion</title>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
@@ -20,93 +18,36 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f5f5f5;
-      color: #222;
-      min-height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 20px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 430px;
-    }
-
-    .logo {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .logo h1 {
-      margin: 0;
-      font-size: 34px;
-    }
-
-    .logo p {
-      margin-top: 8px;
-      color: #777;
+      align-items: center;
+      min-height: 100vh;
     }
 
     .box {
+      width: 92%;
+      max-width: 420px;
       background: white;
-      border-radius: 15px;
       padding: 25px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.10);
+      border-radius: 15px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.12);
     }
 
-    .tabs {
-      display: flex;
+    h1 {
+      text-align: center;
       margin-bottom: 25px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .tab {
-      width: 50%;
-      padding: 13px;
-      border: none;
-      background: transparent;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: bold;
-      color: #777;
-    }
-
-    .tab.active {
-      color: #111;
-      border-bottom: 3px solid #111;
-    }
-
-    .formulaire {
-      display: none;
-    }
-
-    .formulaire.active {
-      display: block;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 7px;
-      font-weight: bold;
-      font-size: 14px;
     }
 
     input {
       width: 100%;
-      padding: 13px;
-      margin-bottom: 16px;
+      padding: 14px;
+      margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      font-size: 15px;
-      outline: none;
+      font-size: 16px;
     }
 
-    input:focus {
-      border-color: #111;
-    }
-
-    .btn {
+    button {
       width: 100%;
       padding: 14px;
       border: none;
@@ -114,639 +55,304 @@
       background: #111;
       color: white;
       font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
     }
 
-    .btn:hover {
-      opacity: 0.9;
+    button:disabled {
+      opacity: 0.6;
     }
 
-    .message {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 7px;
-      text-align: center;
+    #message {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 8px;
       display: none;
+      white-space: pre-wrap;
+      word-break: break-word;
       font-size: 14px;
     }
 
     .success {
-      background: #e8f5e9;
-      color: #2e7d32;
+      display: block !important;
+      background: #e8f7e8;
+      color: #176b17;
     }
 
     .error {
-      background: #ffebee;
-      color: #c62828;
+      display: block !important;
+      background: #ffe8e8;
+      color: #a00000;
     }
 
-    .retour {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .retour a {
-      color: #111;
-      text-decoration: none;
-      font-weight: bold;
+    .info {
+      display: block !important;
+      background: #e8f1ff;
+      color: #174a8b;
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="box">
 
-  <div class="logo">
-    <h1>🛍️ Vendoza</h1>
-    <p>Bienvenue dans votre boutique en ligne</p>
-  </div>
+  <h1>Connexion Vendoza</h1>
 
-  <div class="box">
+  <input
+    type="email"
+    id="email"
+    placeholder="Votre adresse Gmail"
+    autocomplete="email"
+  >
 
-    <div class="tabs">
+  <input
+    type="password"
+    id="password"
+    placeholder="Votre mot de passe"
+    autocomplete="current-password"
+  >
 
-      <button
-        class="tab active"
-        onclick="afficherFormulaire('connexion', this)"
-      >
-        Se connecter
-      </button>
+  <button id="loginBtn" onclick="connexion()">
+    Se connecter
+  </button>
 
-      <button
-        class="tab"
-        onclick="afficherFormulaire('inscription', this)"
-      >
-        Créer un compte
-      </button>
-
-    </div>
-
-
-    <!-- ========================= -->
-    <!-- CONNEXION -->
-    <!-- ========================= -->
-
-    <form id="connexion" class="formulaire active">
-
-      <label>Email</label>
-
-      <input
-        type="email"
-        id="emailConnexion"
-        placeholder="Votre adresse email"
-        required
-      >
-
-      <label>Mot de passe</label>
-
-      <input
-        type="password"
-        id="passwordConnexion"
-        placeholder="Votre mot de passe"
-        required
-      >
-
-      <button type="submit" class="btn">
-        🔐 Se connecter
-      </button>
-
-    </form>
-
-
-    <!-- ========================= -->
-    <!-- INSCRIPTION CLIENT -->
-    <!-- ========================= -->
-
-    <form id="inscription" class="formulaire">
-
-      <label>Nom complet</label>
-
-      <input
-        type="text"
-        id="nomInscription"
-        placeholder="Votre nom complet"
-        required
-      >
-
-      <label>Téléphone</label>
-
-      <input
-        type="tel"
-        id="telephoneInscription"
-        placeholder="Votre numéro de téléphone"
-        required
-      >
-
-      <label>Email</label>
-
-      <input
-        type="email"
-        id="emailInscription"
-        placeholder="Votre adresse email"
-        required
-      >
-
-      <label>Mot de passe</label>
-
-      <input
-        type="password"
-        id="passwordInscription"
-        placeholder="Créer un mot de passe"
-        minlength="6"
-        required
-      >
-
-      <label>Confirmer le mot de passe</label>
-
-      <input
-        type="password"
-        id="confirmationPassword"
-        placeholder="Confirmer votre mot de passe"
-        minlength="6"
-        required
-      >
-
-      <button type="submit" class="btn">
-        👤 Créer mon compte
-      </button>
-
-    </form>
-
-
-    <div id="message" class="message"></div>
-
-  </div>
-
-  <div class="retour">
-    <a href="produits.html">
-      ← Retour aux produits
-    </a>
-  </div>
+  <div id="message"></div>
 
 </div>
 
-
 <script>
 
-  /* =========================
-     CHANGER DE FORMULAIRE
-  ========================= */
+function afficher(message, type) {
+  const box = document.getElementById("message");
 
-  function afficherFormulaire(nom, bouton) {
+  box.textContent = message;
+  box.className = type;
+}
 
-    document.querySelectorAll(".formulaire").forEach(form => {
-      form.classList.remove("active");
-    });
 
-    document.querySelectorAll(".tab").forEach(tab => {
-      tab.classList.remove("active");
-    });
+// Vérification du chargement de Supabase
+window.addEventListener("load", function() {
 
-    document.getElementById(nom).classList.add("active");
-
-    bouton.classList.add("active");
-
-    cacherMessage();
+  if (typeof supabase === "undefined") {
+    afficher(
+      "ERREUR : Supabase n'est pas chargé.\n\nVérifie que supabase-config.js existe bien et que son nom est exactement le même.",
+      "error"
+    );
+    return;
   }
 
+  afficher(
+    "Supabase est correctement chargé. Tu peux essayer de te connecter.",
+    "info"
+  );
 
-  /* =========================
-     MESSAGE
-  ========================= */
+});
 
-  function afficherMessage(texte, type) {
 
-    const message = document.getElementById("message");
+async function connexion() {
 
-    message.textContent = texte;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const bouton = document.getElementById("loginBtn");
 
-    message.className = "message " + type;
+  if (!email || !password) {
 
-    message.style.display = "block";
+    afficher(
+      "Entre ton adresse email et ton mot de passe.",
+      "error"
+    );
+
+    return;
   }
 
+  bouton.disabled = true;
+  bouton.textContent = "Connexion...";
 
-  function cacherMessage() {
+  afficher(
+    "Étape 1 : connexion à Supabase Auth...",
+    "info"
+  );
 
-    const message = document.getElementById("message");
 
-    message.style.display = "none";
+  try {
+
+    // ==========================================
+    // ÉTAPE 1 : CONNEXION SUPABASE AUTH
+    // ==========================================
+
+    const resultatAuth = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    const data = resultatAuth.data;
+    const error = resultatAuth.error;
+
+
+    if (error) {
+
+      afficher(
+        "ERREUR SUPABASE AUTH\n\n" +
+        "Message : " + error.message + "\n" +
+        "Code : " + (error.code || "non disponible") + "\n" +
+        "Status : " + (error.status || "non disponible"),
+        "error"
+      );
+
+      bouton.disabled = false;
+      bouton.textContent = "Se connecter";
+
+      return;
+    }
+
+
+    if (!data || !data.user) {
+
+      afficher(
+        "ERREUR : Supabase n'a pas retourné l'utilisateur.",
+        "error"
+      );
+
+      bouton.disabled = false;
+      bouton.textContent = "Se connecter";
+
+      return;
+    }
+
+
+    const userId = data.user.id;
+
+
+    afficher(
+      "Étape 1 réussie ✅\n\n" +
+      "Utilisateur connecté.\n\n" +
+      "User ID : " + userId +
+      "\n\nÉtape 2 : recherche du profil...",
+      "info"
+    );
+
+
+    // ==========================================
+    // ÉTAPE 2 : RECHERCHE DU PROFIL
+    // ==========================================
+
+    const resultatProfile = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
+
+
+    const profile = resultatProfile.data;
+    const profileError = resultatProfile.error;
+
+
+    if (profileError) {
+
+      afficher(
+        "ERREUR PROFILES\n\n" +
+        "Message : " + profileError.message + "\n\n" +
+        "Code : " + (profileError.code || "non disponible") + "\n\n" +
+        "Details : " + (profileError.details || "non disponible") + "\n\n" +
+        "Hint : " + (profileError.hint || "non disponible"),
+        "error"
+      );
+
+      bouton.disabled = false;
+      bouton.textContent = "Se connecter";
+
+      return;
+    }
+
+
+    if (!profile) {
+
+      afficher(
+        "AUTH RÉUSSI ✅\n\n" +
+        "Mais aucun profil n'a été trouvé dans la table profiles.\n\n" +
+        "User ID recherché : " + userId,
+        "error"
+      );
+
+      bouton.disabled = false;
+      bouton.textContent = "Se connecter";
+
+      return;
+    }
+
+
+    // ==========================================
+    // ÉTAPE 3 : AFFICHER LE PROFIL
+    // ==========================================
+
+    afficher(
+      "Tout fonctionne jusqu'ici ✅\n\n" +
+      "User ID : " + userId +
+      "\n\n" +
+      "Profil trouvé : OUI\n\n" +
+      "Nom : " + (profile.name || "non défini") +
+      "\n\n" +
+      "Role : " + (profile.role || "non défini") +
+      "\n\n" +
+      "Redirection en cours...",
+      "success"
+    );
+
+
+    // ==========================================
+    // ÉTAPE 4 : REDIRECTION SELON LE ROLE
+    // ==========================================
+
+    const role = String(profile.role || "").toLowerCase().trim();
+
+
+    setTimeout(function() {
+
+      if (role === "admin") {
+
+        window.location.href = "dashboard.html";
+
+      } else if (role === "client") {
+
+        window.location.href = "produits.html";
+
+      } else if (role === "vendeur") {
+
+        window.location.href = "dashboard.html";
+
+      } else {
+
+        afficher(
+          "Connexion réussie, mais le rôle est inconnu.\n\n" +
+          "Rôle trouvé : " + profile.role,
+          "error"
+        );
+
+        bouton.disabled = false;
+        bouton.textContent = "Se connecter";
+      }
+
+    }, 1200);
+
+
+  } catch (e) {
+
+    afficher(
+      "ERREUR JAVASCRIPT\n\n" +
+      "Message : " + (e.message || e) +
+      "\n\n" +
+      "Vérifie le message ci-dessus.",
+      "error"
+    );
+
+    bouton.disabled = false;
+    bouton.textContent = "Se connecter";
+
   }
 
-
-  /* =========================
-     INSCRIPTION CLIENT
-  ========================= */
-
-  document
-    .getElementById("inscription")
-    .addEventListener("submit", async function(e) {
-
-      e.preventDefault();
-
-      const nom =
-        document.getElementById("nomInscription").value.trim();
-
-      const telephone =
-        document.getElementById("telephoneInscription").value.trim();
-
-      const email =
-        document.getElementById("emailInscription")
-          .value.trim()
-          .toLowerCase();
-
-      const password =
-        document.getElementById("passwordInscription").value;
-
-      const confirmation =
-        document.getElementById("confirmationPassword").value;
-
-
-      if (password !== confirmation) {
-
-        afficherMessage(
-          "❌ Les mots de passe ne correspondent pas.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      try {
-
-        afficherMessage(
-          "⏳ Création de votre compte...",
-          "success"
-        );
-
-
-        /* CRÉATION DU COMPTE AUTH */
-
-        const { data, error } =
-          await supabase.auth.signUp({
-
-            email: email,
-
-            password: password,
-
-            options: {
-              data: {
-                name: nom,
-                telephone: telephone
-              }
-            }
-
-          });
-
-
-        if (error) {
-
-          console.error("Erreur inscription :", error);
-
-          afficherMessage(
-            "❌ " + error.message,
-            "error"
-          );
-
-          return;
-        }
-
-
-        if (!data.user) {
-
-          afficherMessage(
-            "❌ Impossible de créer le compte.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        /* CRÉATION DU PROFIL CLIENT */
-
-        const { error: profileError } =
-          await supabase
-            .from("profiles")
-            .insert({
-
-              id: data.user.id,
-
-              name: nom,
-
-              role: "client"
-
-            });
-
-
-        if (profileError) {
-
-          console.error(
-            "Erreur profil :",
-            profileError
-          );
-
-          afficherMessage(
-            "❌ Le compte a été créé, mais le profil n'a pas pu être créé : " +
-            profileError.message,
-            "error"
-          );
-
-          return;
-        }
-
-
-        const utilisateur = {
-
-          id: data.user.id,
-
-          nom: nom,
-
-          telephone: telephone,
-
-          email: email,
-
-          role: "client"
-
-        };
-
-
-        localStorage.setItem(
-          "vendozaUtilisateurConnecte",
-          JSON.stringify(utilisateur)
-        );
-
-
-        if (data.session) {
-
-          afficherMessage(
-            "✅ Compte créé avec succès !",
-            "success"
-          );
-
-          setTimeout(function() {
-
-            window.location.href = "produits.html";
-
-          }, 1200);
-
-        } else {
-
-          afficherMessage(
-            "✅ Compte créé ! Vérifiez votre email pour confirmer votre compte.",
-            "success"
-          );
-
-        }
-
-      } catch (e) {
-
-        console.error(
-          "Erreur inscription complète :",
-          e
-        );
-
-        afficherMessage(
-          "❌ " + (e.message || "Une erreur est survenue."),
-          "error"
-        );
-
-      }
-
-    });
-
-
-  /* =========================
-     CONNEXION
-  ========================= */
-
-  document
-    .getElementById("connexion")
-    .addEventListener("submit", async function(e) {
-
-      e.preventDefault();
-
-
-      const email =
-        document
-          .getElementById("emailConnexion")
-          .value
-          .trim()
-          .toLowerCase();
-
-
-      const password =
-        document.getElementById("passwordConnexion").value;
-
-
-      try {
-
-        afficherMessage(
-          "⏳ Connexion...",
-          "success"
-        );
-
-
-        /* =========================
-           AUTH SUPABASE
-        ========================= */
-
-        const { data, error } =
-          await supabase.auth.signInWithPassword({
-
-            email: email,
-
-            password: password
-
-          });
-
-
-        if (error) {
-
-          console.error(
-            "Erreur connexion Auth :",
-            error
-          );
-
-          afficherMessage(
-            "❌ " + error.message,
-            "error"
-          );
-
-          return;
-        }
-
-
-        if (!data.user) {
-
-          afficherMessage(
-            "❌ Impossible de récupérer votre compte.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        /* =========================
-           RÉCUPÉRER LE PROFIL
-        ========================= */
-
-        const { data: profile, error: profileError } =
-          await supabase
-            .from("profiles")
-            .select("id, name, role")
-            .eq("id", data.user.id)
-            .single();
-
-
-        if (profileError) {
-
-          console.error(
-            "Erreur récupération profil :",
-            profileError
-          );
-
-          await supabase.auth.signOut();
-
-          afficherMessage(
-            "❌ Erreur profil : " +
-            profileError.message,
-            "error"
-          );
-
-          return;
-        }
-
-
-        if (!profile) {
-
-          await supabase.auth.signOut();
-
-          afficherMessage(
-            "❌ Aucun profil trouvé pour ce compte.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        /* =========================
-           CRÉER SESSION LOCALE
-        ========================= */
-
-        const utilisateur = {
-
-          id: data.user.id,
-
-          nom: profile.name || data.user.email,
-
-          telephone:
-            data.user.user_metadata?.telephone || "",
-
-          email: data.user.email,
-
-          role: profile.role
-
-        };
-
-
-        localStorage.setItem(
-          "vendozaUtilisateurConnecte",
-          JSON.stringify(utilisateur)
-        );
-
-
-        /* =========================
-           REDIRECTION SELON ROLE
-        ========================= */
-
-        if (profile.role === "admin") {
-
-          afficherMessage(
-            "👑 Connexion Admin réussie !",
-            "success"
-          );
-
-          setTimeout(function() {
-
-            window.location.href = "dashboard.html";
-
-          }, 800);
-
-          return;
-        }
-
-
-        if (profile.role === "client") {
-
-          afficherMessage(
-            "✅ Connexion réussie !",
-            "success"
-          );
-
-          setTimeout(function() {
-
-            window.location.href = "produits.html";
-
-          }, 800);
-
-          return;
-        }
-
-
-        if (profile.role === "vendeur") {
-
-          afficherMessage(
-            "🛍️ Connexion vendeur réussie !",
-            "success"
-          );
-
-          setTimeout(function() {
-
-            window.location.href = "dashboard.html";
-
-          }, 800);
-
-          return;
-        }
-
-
-        /* ROLE INCONNU */
-
-        await supabase.auth.signOut();
-
-        localStorage.removeItem(
-          "vendozaUtilisateurConnecte"
-        );
-
-        afficherMessage(
-          "❌ Rôle utilisateur inconnu : " +
-          profile.role,
-          "error"
-        );
-
-      } catch (e) {
-
-        console.error(
-          "Erreur complète connexion :",
-          e
-        );
-
-        afficherMessage(
-          "❌ " + (e.message || "Une erreur est survenue."),
-          "error"
-        );
-
-      }
-
-    });
+}
 
 </script>
 
 </body>
-        </html>
+</html>
