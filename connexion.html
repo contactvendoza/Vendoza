@@ -4,454 +4,95 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Vendoza - Connexion</title>
+  <title>Test Supabase</title>
 
-  <!-- SUPABASE JS V2 -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .box {
-      width: 92%;
-      max-width: 420px;
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.12);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      background: #111;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-    }
-
-    #message {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 8px;
-      white-space: pre-wrap;
-      word-break: break-word;
-      display: none;
-      font-size: 14px;
-    }
-
-    .info {
-      display: block !important;
-      background: #e8f1ff;
-      color: #174a8b;
-    }
-
-    .success {
-      display: block !important;
-      background: #e8f7e8;
-      color: #176b17;
-    }
-
-    .error {
-      display: block !important;
-      background: #ffe8e8;
-      color: #a00000;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-<div class="box">
+<h2>Test Vendoza</h2>
 
-  <h1>Connexion Vendoza</h1>
+<button onclick="tester()">
+  TEST SUPABASE
+</button>
 
-  <input
-    type="email"
-    id="email"
-    placeholder="Votre adresse Gmail"
-    autocomplete="email"
-  >
-
-  <input
-    type="password"
-    id="password"
-    placeholder="Votre mot de passe"
-    autocomplete="current-password"
-  >
-
-  <button id="loginBtn" onclick="connexion()">
-    Se connecter
-  </button>
-
-  <div id="message"></div>
-
-</div>
+<p id="resultat"></p>
 
 <script>
 
-const SUPABASE_URL =
-  "https://kzrphvyhkbuhaczmnjgk.supabase.co";
+function tester() {
 
-const SUPABASE_ANON_KEY =
-  "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
+  const resultat =
+    document.getElementById("resultat");
 
+  resultat.innerText = "Tès ap fèt...";
 
-// ========================================
-// VÉRIFICATION DE LA BIBLIOTHÈQUE
-// ========================================
+  if (typeof window.supabase === "undefined") {
 
-if (
-  typeof window.supabase === "undefined" ||
-  typeof window.supabase.createClient !== "function"
-) {
+    resultat.innerText =
+      "❌ window.supabase pa egziste.";
 
-  document.getElementById("message").textContent =
-    "ERREUR : La bibliothèque Supabase V2 ne s'est pas chargée.";
+    return;
+  }
 
-  document.getElementById("message").className = "error";
+  if (
+    typeof window.supabase.createClient !== "function"
+  ) {
 
-}
+    resultat.innerText =
+      "❌ createClient pa egziste.";
 
+    return;
+  }
 
-// ========================================
-// CRÉATION DU CLIENT SUPABASE
-// ========================================
+  const client =
+    window.supabase.createClient(
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
+      "https://kzrphvyhkbuhaczmnjgk.supabase.co",
 
+      "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO"
 
-// ========================================
-// VÉRIFICATION AUTH
-// ========================================
-
-if (
-  !supabaseClient.auth ||
-  typeof supabaseClient.auth.signInWithPassword !== "function"
-) {
-
-  document.getElementById("message").textContent =
-    "ERREUR : Supabase Auth V2 n'est pas disponible.\n\n" +
-    "La bibliothèque Supabase chargée n'est pas correcte.";
-
-  document.getElementById("message").className = "error";
-
-}
-
-
-function afficher(message, type) {
-
-  const box =
-    document.getElementById("message");
-
-  box.textContent = message;
-  box.className = type;
-
-}
-
-
-async function connexion() {
-
-  const email =
-    document.getElementById("email").value.trim();
-
-  const password =
-    document.getElementById("password").value;
-
-  const bouton =
-    document.getElementById("loginBtn");
-
-
-  if (!email || !password) {
-
-    afficher(
-      "Entre ton adresse email et ton mot de passe.",
-      "error"
     );
+
+
+  if (!client) {
+
+    resultat.innerText =
+      "❌ Client Supabase pa kreye.";
 
     return;
   }
 
 
-  bouton.disabled = true;
-  bouton.textContent = "Connexion...";
+  if (!client.auth) {
 
+    resultat.innerText =
+      "❌ Auth pa disponib.";
 
-  try {
-
-    afficher(
-      "Connexion à Supabase...",
-      "info"
-    );
-
-
-    // ====================================
-    // CONNEXION AUTH
-    // ====================================
-
-    const resultat =
-      await supabaseClient.auth.signInWithPassword({
-
-        email: email,
-
-        password: password
-
-      });
-
-
-    if (resultat.error) {
-
-      afficher(
-
-        "ERREUR AUTH\n\n" +
-
-        resultat.error.message +
-
-        "\n\nCode : " +
-
-        (resultat.error.code || "non disponible"),
-
-        "error"
-
-      );
-
-      bouton.disabled = false;
-      bouton.textContent = "Se connecter";
-
-      return;
-    }
-
-
-    if (!resultat.data || !resultat.data.user) {
-
-      afficher(
-        "Erreur : utilisateur non retourné par Supabase.",
-        "error"
-      );
-
-      bouton.disabled = false;
-      bouton.textContent = "Se connecter";
-
-      return;
-    }
-
-
-    const userId =
-      resultat.data.user.id;
-
-
-    afficher(
-
-      "Connexion réussie ✅\n\n" +
-
-      "User ID : " +
-      userId +
-
-      "\n\nRecherche du profil...",
-
-      "info"
-
-    );
-
-
-    // ====================================
-    // RECHERCHE DU PROFIL
-    // ====================================
-
-    const profilResultat =
-      await supabaseClient
-
-        .from("profiles")
-
-        .select("*")
-
-        .eq("id", userId)
-
-        .maybeSingle();
-
-
-    if (profilResultat.error) {
-
-      afficher(
-
-        "ERREUR PROFILES\n\n" +
-
-        profilResultat.error.message +
-
-        "\n\nCode : " +
-
-        (profilResultat.error.code || "non disponible") +
-
-        "\n\nDetails : " +
-
-        (profilResultat.error.details || "non disponible") +
-
-        "\n\nHint : " +
-
-        (profilResultat.error.hint || "non disponible"),
-
-        "error"
-
-      );
-
-      bouton.disabled = false;
-      bouton.textContent = "Se connecter";
-
-      return;
-    }
-
-
-    if (!profilResultat.data) {
-
-      afficher(
-
-        "Connexion Auth réussie ✅\n\n" +
-
-        "Mais aucun profil n'a été trouvé dans profiles.\n\n" +
-
-        "User ID : " +
-        userId,
-
-        "error"
-
-      );
-
-      bouton.disabled = false;
-      bouton.textContent = "Se connecter";
-
-      return;
-    }
-
-
-    const profile =
-      profilResultat.data;
-
-
-    const role =
-      String(profile.role || "")
-      .toLowerCase()
-      .trim();
-
-
-    afficher(
-
-      "TOUT FONCTIONNE ✅\n\n" +
-
-      "Nom : " +
-      (profile.name || "non défini") +
-
-      "\n\nRole : " +
-      (profile.role || "non défini") +
-
-      "\n\nRedirection...",
-
-      "success"
-
-    );
-
-
-    // ====================================
-    // REDIRECTION
-    // ====================================
-
-    setTimeout(function() {
-
-      if (role === "admin") {
-
-        window.location.href =
-          "dashboard.html";
-
-      }
-
-      else if (role === "client") {
-
-        window.location.href =
-          "produits.html";
-
-      }
-
-      else if (role === "vendeur") {
-
-        window.location.href =
-          "dashboard.html";
-
-      }
-
-      else {
-
-        afficher(
-
-          "Rôle inconnu.\n\n" +
-          "Rôle trouvé : " +
-          profile.role,
-
-          "error"
-
-        );
-
-        bouton.disabled = false;
-        bouton.textContent = "Se connecter";
-
-      }
-
-    }, 1000);
-
-
-  } catch (erreur) {
-
-    afficher(
-
-      "ERREUR JAVASCRIPT\n\n" +
-      erreur.message,
-
-      "error"
-
-    );
-
-    bouton.disabled = false;
-    bouton.textContent = "Se connecter";
-
+    return;
   }
+
+
+  if (
+    typeof client.auth.signInWithPassword !==
+    "function"
+  ) {
+
+    resultat.innerText =
+      "❌ signInWithPassword pa disponib.";
+
+    return;
+  }
+
+
+  resultat.innerText =
+    "✅ SUPABASE AUTH AP CHARGE KÒRÈKTEMENT !";
+
 
 }
 
 </script>
 
 </body>
-  </html>
+</html>
