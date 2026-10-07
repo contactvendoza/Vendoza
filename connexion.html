@@ -216,7 +216,7 @@
 
 
     <!-- ========================= -->
-    <!-- INSCRIPTION -->
+    <!-- INSCRIPTION CLIENT -->
     <!-- ========================= -->
 
     <form id="inscription" class="formulaire">
@@ -347,22 +347,14 @@
       e.preventDefault();
 
       const nom =
-        document
-          .getElementById("nomInscription")
-          .value
-          .trim();
+        document.getElementById("nomInscription").value.trim();
 
       const telephone =
-        document
-          .getElementById("telephoneInscription")
-          .value
-          .trim();
+        document.getElementById("telephoneInscription").value.trim();
 
       const email =
-        document
-          .getElementById("emailInscription")
-          .value
-          .trim()
+        document.getElementById("emailInscription")
+          .value.trim()
           .toLowerCase();
 
       const password =
@@ -371,8 +363,6 @@
       const confirmation =
         document.getElementById("confirmationPassword").value;
 
-
-      /* Vérification mot de passe */
 
       if (password !== confirmation) {
 
@@ -393,9 +383,7 @@
         );
 
 
-        /* =========================
-           SUPABASE AUTH
-        ========================= */
+        /* CRÉATION DU COMPTE AUTH */
 
         const { data, error } =
           await supabase.auth.signUp({
@@ -405,12 +393,10 @@
             password: password,
 
             options: {
-
               data: {
                 name: nom,
                 telephone: telephone
               }
-
             }
 
           });
@@ -418,7 +404,7 @@
 
         if (error) {
 
-          console.error(error);
+          console.error("Erreur inscription :", error);
 
           afficherMessage(
             "❌ " + error.message,
@@ -440,9 +426,7 @@
         }
 
 
-        /* =========================
-           CRÉER LE PROFIL
-        ========================= */
+        /* CRÉATION DU PROFIL CLIENT */
 
         const { error: profileError } =
           await supabase
@@ -460,10 +444,13 @@
 
         if (profileError) {
 
-          console.error(profileError);
+          console.error(
+            "Erreur profil :",
+            profileError
+          );
 
           afficherMessage(
-            "❌ Compte créé mais erreur avec le profil : " +
+            "❌ Le compte a été créé, mais le profil n'a pas pu être créé : " +
             profileError.message,
             "error"
           );
@@ -471,11 +458,6 @@
           return;
         }
 
-
-        /* =========================
-           SAUVEGARDE LOCALE
-           POUR LES ANCIENNES PAGES
-        ========================= */
 
         const utilisateur = {
 
@@ -498,14 +480,10 @@
         );
 
 
-        /* =========================
-           REDIRECTION
-        ========================= */
-
         if (data.session) {
 
           afficherMessage(
-            "✅ Compte créé avec succès ! Redirection...",
+            "✅ Compte créé avec succès !",
             "success"
           );
 
@@ -526,10 +504,13 @@
 
       } catch (e) {
 
-        console.error(e);
+        console.error(
+          "Erreur inscription complète :",
+          e
+        );
 
         afficherMessage(
-          "❌ Une erreur est survenue. Réessayez.",
+          "❌ " + (e.message || "Une erreur est survenue."),
           "error"
         );
 
@@ -539,7 +520,7 @@
 
 
   /* =========================
-     CONNEXION CLIENT
+     CONNEXION
   ========================= */
 
   document
@@ -558,9 +539,7 @@
 
 
       const password =
-        document
-          .getElementById("passwordConnexion")
-          .value;
+        document.getElementById("passwordConnexion").value;
 
 
       try {
@@ -572,7 +551,7 @@
 
 
         /* =========================
-           SUPABASE AUTH LOGIN
+           AUTH SUPABASE
         ========================= */
 
         const { data, error } =
@@ -587,10 +566,13 @@
 
         if (error) {
 
-          console.error(error);
+          console.error(
+            "Erreur connexion Auth :",
+            error
+          );
 
           afficherMessage(
-            "❌ Email ou mot de passe incorrect.",
+            "❌ " + error.message,
             "error"
           );
 
@@ -623,36 +605,38 @@
 
         if (profileError) {
 
-          console.error(profileError);
-
-          afficherMessage(
-            "❌ Profil utilisateur introuvable.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        /* =========================
-           VÉRIFICATION DU RÔLE
-        ========================= */
-
-        if (profile.role !== "client") {
-
-          afficherMessage(
-            "❌ Ce compte n'est pas un compte client.",
-            "error"
+          console.error(
+            "Erreur récupération profil :",
+            profileError
           );
 
           await supabase.auth.signOut();
 
+          afficherMessage(
+            "❌ Erreur profil : " +
+            profileError.message,
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (!profile) {
+
+          await supabase.auth.signOut();
+
+          afficherMessage(
+            "❌ Aucun profil trouvé pour ce compte.",
+            "error"
+          );
+
           return;
         }
 
 
         /* =========================
-           SAUVEGARDE POUR VENDOZA
+           CRÉER SESSION LOCALE
         ========================= */
 
         const utilisateur = {
@@ -678,28 +662,83 @@
 
 
         /* =========================
-           SUCCÈS
+           REDIRECTION SELON ROLE
         ========================= */
 
-        afficherMessage(
-          "✅ Connexion réussie ! Redirection...",
-          "success"
+        if (profile.role === "admin") {
+
+          afficherMessage(
+            "👑 Connexion Admin réussie !",
+            "success"
+          );
+
+          setTimeout(function() {
+
+            window.location.href = "dashboard.html";
+
+          }, 800);
+
+          return;
+        }
+
+
+        if (profile.role === "client") {
+
+          afficherMessage(
+            "✅ Connexion réussie !",
+            "success"
+          );
+
+          setTimeout(function() {
+
+            window.location.href = "produits.html";
+
+          }, 800);
+
+          return;
+        }
+
+
+        if (profile.role === "vendeur") {
+
+          afficherMessage(
+            "🛍️ Connexion vendeur réussie !",
+            "success"
+          );
+
+          setTimeout(function() {
+
+            window.location.href = "dashboard.html";
+
+          }, 800);
+
+          return;
+        }
+
+
+        /* ROLE INCONNU */
+
+        await supabase.auth.signOut();
+
+        localStorage.removeItem(
+          "vendozaUtilisateurConnecte"
         );
 
-
-        setTimeout(function() {
-
-          window.location.href = "produits.html";
-
-        }, 1000);
-
+        afficherMessage(
+          "❌ Rôle utilisateur inconnu : " +
+          profile.role,
+          "error"
+        );
 
       } catch (e) {
 
-        console.error(e);
+        console.error(
+          "Erreur complète connexion :",
+          e
+        );
 
         afficherMessage(
-          "❌ Une erreur est survenue. Réessayez.",
+          "❌ " + (e.message || "Une erreur est survenue."),
           "error"
         );
 
@@ -710,4 +749,4 @@
 </script>
 
 </body>
-</html>
+        </html>
