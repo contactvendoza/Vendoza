@@ -7,7 +7,6 @@
   <title>Vendoza - Connexion</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
 
   <style>
     * {
@@ -18,10 +17,10 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f5f5f5;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
     }
 
     .box {
@@ -55,7 +54,6 @@
       background: #111;
       color: white;
       font-size: 16px;
-      cursor: pointer;
     }
 
     button:disabled {
@@ -66,10 +64,16 @@
       margin-top: 18px;
       padding: 12px;
       border-radius: 8px;
-      display: none;
       white-space: pre-wrap;
       word-break: break-word;
+      display: none;
       font-size: 14px;
+    }
+
+    .info {
+      display: block !important;
+      background: #e8f1ff;
+      color: #174a8b;
     }
 
     .success {
@@ -82,12 +86,6 @@
       display: block !important;
       background: #ffe8e8;
       color: #a00000;
-    }
-
-    .info {
-      display: block !important;
-      background: #e8f1ff;
-      color: #174a8b;
     }
   </style>
 </head>
@@ -102,14 +100,12 @@
     type="email"
     id="email"
     placeholder="Votre adresse Gmail"
-    autocomplete="email"
   >
 
   <input
     type="password"
     id="password"
     placeholder="Votre mot de passe"
-    autocomplete="current-password"
   >
 
   <button id="loginBtn" onclick="connexion()">
@@ -122,38 +118,38 @@
 
 <script>
 
+const SUPABASE_URL = "https://kzrphvyhkbuhaczmnjgk.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
+
+const client = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+
 function afficher(message, type) {
+
   const box = document.getElementById("message");
 
   box.textContent = message;
   box.className = type;
+
 }
-
-
-// Vérification du chargement de Supabase
-window.addEventListener("load", function() {
-
-  if (typeof supabase === "undefined") {
-    afficher(
-      "ERREUR : Supabase n'est pas chargé.\n\nVérifie que supabase-config.js existe bien et que son nom est exactement le même.",
-      "error"
-    );
-    return;
-  }
-
-  afficher(
-    "Supabase est correctement chargé. Tu peux essayer de te connecter.",
-    "info"
-  );
-
-});
 
 
 async function connexion() {
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const bouton = document.getElementById("loginBtn");
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  const bouton =
+    document.getElementById("loginBtn");
+
 
   if (!email || !password) {
 
@@ -165,38 +161,47 @@ async function connexion() {
     return;
   }
 
+
   bouton.disabled = true;
   bouton.textContent = "Connexion...";
 
+
   afficher(
-    "Étape 1 : connexion à Supabase Auth...",
+    "Connexion à Supabase...",
     "info"
   );
 
 
   try {
 
-    // ==========================================
-    // ÉTAPE 1 : CONNEXION SUPABASE AUTH
-    // ==========================================
+    // ================================
+    // 1. CONNEXION AUTH
+    // ================================
 
-    const resultatAuth = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+    const { data, error } =
+      await client.auth.signInWithPassword({
 
-    const data = resultatAuth.data;
-    const error = resultatAuth.error;
+        email: email,
+
+        password: password
+
+      });
 
 
     if (error) {
 
       afficher(
-        "ERREUR SUPABASE AUTH\n\n" +
-        "Message : " + error.message + "\n" +
-        "Code : " + (error.code || "non disponible") + "\n" +
-        "Status : " + (error.status || "non disponible"),
+
+        "ERREUR AUTH SUPABASE\n\n" +
+
+        "Message : " +
+        error.message +
+
+        "\n\nCode : " +
+        (error.code || "non disponible"),
+
         "error"
+
       );
 
       bouton.disabled = false;
@@ -209,7 +214,7 @@ async function connexion() {
     if (!data || !data.user) {
 
       afficher(
-        "ERREUR : Supabase n'a pas retourné l'utilisateur.",
+        "Connexion impossible : utilisateur non trouvé.",
         "error"
       );
 
@@ -224,38 +229,56 @@ async function connexion() {
 
 
     afficher(
-      "Étape 1 réussie ✅\n\n" +
-      "Utilisateur connecté.\n\n" +
-      "User ID : " + userId +
-      "\n\nÉtape 2 : recherche du profil...",
+
+      "Connexion réussie ✅\n\n" +
+
+      "User ID : " +
+      userId +
+
+      "\n\nRecherche du profil...",
+
       "info"
+
     );
 
 
-    // ==========================================
-    // ÉTAPE 2 : RECHERCHE DU PROFIL
-    // ==========================================
+    // ================================
+    // 2. CHERCHER LE PROFIL
+    // ================================
 
-    const resultatProfile = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .maybeSingle();
+    const { data: profile, error: profileError } =
 
+      await client
 
-    const profile = resultatProfile.data;
-    const profileError = resultatProfile.error;
+        .from("profiles")
+
+        .select("*")
+
+        .eq("id", userId)
+
+        .maybeSingle();
 
 
     if (profileError) {
 
       afficher(
-        "ERREUR PROFILES\n\n" +
-        "Message : " + profileError.message + "\n\n" +
-        "Code : " + (profileError.code || "non disponible") + "\n\n" +
-        "Details : " + (profileError.details || "non disponible") + "\n\n" +
-        "Hint : " + (profileError.hint || "non disponible"),
+
+        "ERREUR TABLE PROFILES\n\n" +
+
+        "Message : " +
+        profileError.message +
+
+        "\n\nCode : " +
+        (profileError.code || "non disponible") +
+
+        "\n\nDetails : " +
+        (profileError.details || "non disponible") +
+
+        "\n\nHint : " +
+        (profileError.hint || "non disponible"),
+
         "error"
+
       );
 
       bouton.disabled = false;
@@ -268,10 +291,16 @@ async function connexion() {
     if (!profile) {
 
       afficher(
+
         "AUTH RÉUSSI ✅\n\n" +
-        "Mais aucun profil n'a été trouvé dans la table profiles.\n\n" +
-        "User ID recherché : " + userId,
+
+        "Mais aucun profil n'a été trouvé.\n\n" +
+
+        "User ID : " +
+        userId,
+
         "error"
+
       );
 
       bouton.disabled = false;
@@ -281,68 +310,93 @@ async function connexion() {
     }
 
 
-    // ==========================================
-    // ÉTAPE 3 : AFFICHER LE PROFIL
-    // ==========================================
+    // ================================
+    // 3. ROLE
+    // ================================
+
+    const role =
+      String(profile.role || "")
+      .toLowerCase()
+      .trim();
+
 
     afficher(
-      "Tout fonctionne jusqu'ici ✅\n\n" +
-      "User ID : " + userId +
-      "\n\n" +
-      "Profil trouvé : OUI\n\n" +
-      "Nom : " + (profile.name || "non défini") +
-      "\n\n" +
-      "Role : " + (profile.role || "non défini") +
-      "\n\n" +
-      "Redirection en cours...",
+
+      "Tout fonctionne ✅\n\n" +
+
+      "Nom : " +
+      (profile.name || "non défini") +
+
+      "\n\nRole : " +
+      (profile.role || "non défini") +
+
+      "\n\nRedirection...",
+
       "success"
+
     );
 
 
-    // ==========================================
-    // ÉTAPE 4 : REDIRECTION SELON LE ROLE
-    // ==========================================
-
-    const role = String(profile.role || "").toLowerCase().trim();
-
+    // ================================
+    // 4. REDIRECTION
+    // ================================
 
     setTimeout(function() {
 
       if (role === "admin") {
 
-        window.location.href = "dashboard.html";
+        window.location.href =
+          "dashboard.html";
 
-      } else if (role === "client") {
+      }
 
-        window.location.href = "produits.html";
+      else if (role === "client") {
 
-      } else if (role === "vendeur") {
+        window.location.href =
+          "produits.html";
 
-        window.location.href = "dashboard.html";
+      }
 
-      } else {
+      else if (role === "vendeur") {
+
+        window.location.href =
+          "dashboard.html";
+
+      }
+
+      else {
 
         afficher(
-          "Connexion réussie, mais le rôle est inconnu.\n\n" +
-          "Rôle trouvé : " + profile.role,
+
+          "Connexion réussie mais rôle inconnu.\n\n" +
+
+          "Rôle trouvé : " +
+          profile.role,
+
           "error"
+
         );
 
         bouton.disabled = false;
         bouton.textContent = "Se connecter";
+
       }
 
     }, 1200);
 
 
-  } catch (e) {
+  }
+
+  catch (e) {
 
     afficher(
+
       "ERREUR JAVASCRIPT\n\n" +
-      "Message : " + (e.message || e) +
-      "\n\n" +
-      "Vérifie le message ci-dessus.",
+
+      e.message,
+
       "error"
+
     );
 
     bouton.disabled = false;
