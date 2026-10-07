@@ -374,13 +374,32 @@ function normaliserId(id) {
   return String(id);
 }
 
-function getProduits() {
+async function getProduits() {
   try {
-    const data = localStorage.getItem("produitsVendoza");
-    const produits = data ? JSON.parse(data) : [];
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-    return Array.isArray(produits) ? produits : [];
+    if (error) {
+      console.error("Erreur Supabase :", error);
+      return [];
+    }
+
+    return (data || []).map(function(produit) {
+      return {
+        id: produit.id,
+        nom: produit.name || "",
+        prix: Number(produit.price) || 0,
+        stock: Number(produit.Stock) || 0,
+        image: produit.image || "",
+        categorie: produit.Category || "Autres",
+        description: produit.description || ""
+      };
+    });
+
   } catch (e) {
+    console.error("Erreur :", e);
     return [];
   }
 }
