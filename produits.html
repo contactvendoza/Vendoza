@@ -784,12 +784,12 @@ function acheterMaintenant(id) {
    AFFICHER PRODUITS
 ================================ */
 
-function afficherProduits() {
+async function afficherProduits() {
 
   const container =
     document.getElementById("products");
 
-  let produits = getProduits();
+  let produits = await getProduits();
 
   const recherche =
     String(
