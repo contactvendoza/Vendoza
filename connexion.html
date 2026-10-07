@@ -1,8 +1,17 @@
-<!DOCTYPE html><html lang="fr">
+<!DOCTYPE html>
+<html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vendoza - Connexion</title>  <style>
+
+  <title>Vendoza - Connexion</title>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <style>
     * {
       box-sizing: border-box;
     }
@@ -142,100 +151,148 @@
       text-decoration: none;
       font-weight: bold;
     }
-  </style></head><body><div class="container">  <div class="logo">
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">
     <h1>🛍️ Vendoza</h1>
     <p>Bienvenue dans votre boutique en ligne</p>
-  </div>  <div class="box"><div class="tabs">
-  <button class="tab active" onclick="afficherFormulaire('connexion', this)">
-    Se connecter
-  </button>
+  </div>
 
-  <button class="tab" onclick="afficherFormulaire('inscription', this)">
-    Créer un compte
-  </button>
+  <div class="box">
+
+    <div class="tabs">
+
+      <button
+        class="tab active"
+        onclick="afficherFormulaire('connexion', this)"
+      >
+        Se connecter
+      </button>
+
+      <button
+        class="tab"
+        onclick="afficherFormulaire('inscription', this)"
+      >
+        Créer un compte
+      </button>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- CONNEXION -->
+    <!-- ========================= -->
+
+    <form id="connexion" class="formulaire active">
+
+      <label>Email</label>
+
+      <input
+        type="email"
+        id="emailConnexion"
+        placeholder="Votre adresse email"
+        required
+      >
+
+      <label>Mot de passe</label>
+
+      <input
+        type="password"
+        id="passwordConnexion"
+        placeholder="Votre mot de passe"
+        required
+      >
+
+      <button type="submit" class="btn">
+        🔐 Se connecter
+      </button>
+
+    </form>
+
+
+    <!-- ========================= -->
+    <!-- INSCRIPTION -->
+    <!-- ========================= -->
+
+    <form id="inscription" class="formulaire">
+
+      <label>Nom complet</label>
+
+      <input
+        type="text"
+        id="nomInscription"
+        placeholder="Votre nom complet"
+        required
+      >
+
+      <label>Téléphone</label>
+
+      <input
+        type="tel"
+        id="telephoneInscription"
+        placeholder="Votre numéro de téléphone"
+        required
+      >
+
+      <label>Email</label>
+
+      <input
+        type="email"
+        id="emailInscription"
+        placeholder="Votre adresse email"
+        required
+      >
+
+      <label>Mot de passe</label>
+
+      <input
+        type="password"
+        id="passwordInscription"
+        placeholder="Créer un mot de passe"
+        minlength="6"
+        required
+      >
+
+      <label>Confirmer le mot de passe</label>
+
+      <input
+        type="password"
+        id="confirmationPassword"
+        placeholder="Confirmer votre mot de passe"
+        minlength="6"
+        required
+      >
+
+      <button type="submit" class="btn">
+        👤 Créer mon compte
+      </button>
+
+    </form>
+
+
+    <div id="message" class="message"></div>
+
+  </div>
+
+  <div class="retour">
+    <a href="produits.html">
+      ← Retour aux produits
+    </a>
+  </div>
+
 </div>
 
-<!-- CONNEXION -->
-<form id="connexion" class="formulaire active">
 
-  <label>Email</label>
-  <input
-    type="email"
-    id="emailConnexion"
-    placeholder="Votre adresse email"
-    required
-  >
+<script>
 
-  <label>Mot de passe</label>
-  <input
-    type="password"
-    id="passwordConnexion"
-    placeholder="Votre mot de passe"
-    required
-  >
-
-  <button type="submit" class="btn">
-    🔐 Se connecter
-  </button>
-
-</form>
-
-<!-- INSCRIPTION -->
-<form id="inscription" class="formulaire">
-
-  <label>Nom complet</label>
-  <input
-    type="text"
-    id="nomInscription"
-    placeholder="Votre nom complet"
-    required
-  >
-
-  <label>Téléphone</label>
-  <input
-    type="tel"
-    id="telephoneInscription"
-    placeholder="Votre numéro de téléphone"
-    required
-  >
-
-  <label>Email</label>
-  <input
-    type="email"
-    id="emailInscription"
-    placeholder="Votre adresse email"
-    required
-  >
-
-  <label>Mot de passe</label>
-  <input
-    type="password"
-    id="passwordInscription"
-    placeholder="Créer un mot de passe"
-    minlength="6"
-    required
-  >
-
-  <label>Confirmer le mot de passe</label>
-  <input
-    type="password"
-    id="confirmationPassword"
-    placeholder="Confirmer votre mot de passe"
-    minlength="6"
-    required
-  >
-
-  <button type="submit" class="btn">
-    👤 Créer mon compte
-  </button>
-
-</form>
-
-<div id="message" class="message"></div>
-
-  </div>  <div class="retour">
-    <a href="produits.html">← Retour aux produits</a>
-  </div></div><script>
+  /* =========================
+     CHANGER DE FORMULAIRE
+  ========================= */
 
   function afficherFormulaire(nom, bouton) {
 
@@ -248,19 +305,28 @@
     });
 
     document.getElementById(nom).classList.add("active");
+
     bouton.classList.add("active");
 
     cacherMessage();
   }
+
+
+  /* =========================
+     MESSAGE
+  ========================= */
 
   function afficherMessage(texte, type) {
 
     const message = document.getElementById("message");
 
     message.textContent = texte;
+
     message.className = "message " + type;
+
     message.style.display = "block";
   }
+
 
   function cacherMessage() {
 
@@ -270,126 +336,378 @@
   }
 
 
-  // CRÉATION DU COMPTE
-  document.getElementById("inscription").addEventListener("submit", function(e) {
+  /* =========================
+     INSCRIPTION CLIENT
+  ========================= */
 
-    e.preventDefault();
+  document
+    .getElementById("inscription")
+    .addEventListener("submit", async function(e) {
 
-    const nom = document.getElementById("nomInscription").value.trim();
-    const telephone = document.getElementById("telephoneInscription").value.trim();
-    const email = document.getElementById("emailInscription").value.trim().toLowerCase();
-    const password = document.getElementById("passwordInscription").value;
-    const confirmation = document.getElementById("confirmationPassword").value;
+      e.preventDefault();
 
-    if (password !== confirmation) {
+      const nom =
+        document
+          .getElementById("nomInscription")
+          .value
+          .trim();
 
-      afficherMessage(
-        "❌ Les mots de passe ne correspondent pas.",
-        "error"
-      );
+      const telephone =
+        document
+          .getElementById("telephoneInscription")
+          .value
+          .trim();
 
-      return;
-    }
+      const email =
+        document
+          .getElementById("emailInscription")
+          .value
+          .trim()
+          .toLowerCase();
 
-    let utilisateurs =
-      JSON.parse(localStorage.getItem("vendozaUtilisateurs")) || [];
+      const password =
+        document.getElementById("passwordInscription").value;
 
-    const existe = utilisateurs.find(
-      utilisateur => utilisateur.email === email
-    );
-
-    if (existe) {
-
-      afficherMessage(
-        "❌ Cette adresse email possède déjà un compte.",
-        "error"
-      );
-
-      return;
-    }
-
-    const utilisateur = {
-      id: "USR-" + Date.now(),
-      nom: nom,
-      telephone: telephone,
-      email: email,
-      password: password,
-      dateCreation: new Date().toLocaleString("fr-FR")
-    };
-
-    utilisateurs.push(utilisateur);
-
-    localStorage.setItem(
-      "vendozaUtilisateurs",
-      JSON.stringify(utilisateurs)
-    );
-
-    // Connexion automatique
-    localStorage.setItem(
-      "vendozaUtilisateurConnecte",
-      JSON.stringify(utilisateur)
-    );
-
-    afficherMessage(
-      "✅ Compte créé avec succès ! Redirection...",
-      "success"
-    );
-
-    setTimeout(() => {
-      window.location.href = "produits.html";
-    }, 1200);
-
-  });
+      const confirmation =
+        document.getElementById("confirmationPassword").value;
 
 
-  // CONNEXION
-  document.getElementById("connexion").addEventListener("submit", function(e) {
+      /* Vérification mot de passe */
 
-    e.preventDefault();
+      if (password !== confirmation) {
 
-    const email =
-      document.getElementById("emailConnexion")
-      .value
-      .trim()
-      .toLowerCase();
+        afficherMessage(
+          "❌ Les mots de passe ne correspondent pas.",
+          "error"
+        );
 
-    const password =
-      document.getElementById("passwordConnexion").value;
+        return;
+      }
 
-    let utilisateurs =
-      JSON.parse(localStorage.getItem("vendozaUtilisateurs")) || [];
 
-    const utilisateur = utilisateurs.find(
-      user =>
-        user.email === email &&
-        user.password === password
-    );
+      try {
 
-    if (!utilisateur) {
+        afficherMessage(
+          "⏳ Création de votre compte...",
+          "success"
+        );
 
-      afficherMessage(
-        "❌ Email ou mot de passe incorrect.",
-        "error"
-      );
 
-      return;
-    }
+        /* =========================
+           SUPABASE AUTH
+        ========================= */
 
-    localStorage.setItem(
-      "vendozaUtilisateurConnecte",
-      JSON.stringify(utilisateur)
-    );
+        const { data, error } =
+          await supabase.auth.signUp({
 
-    afficherMessage(
-      "✅ Connexion réussie ! Redirection...",
-      "success"
-    );
+            email: email,
 
-    setTimeout(() => {
-      window.location.href = "produits.html";
-    }, 1000);
+            password: password,
 
-  });
+            options: {
 
-</script></body>
+              data: {
+                name: nom,
+                telephone: telephone
+              }
+
+            }
+
+          });
+
+
+        if (error) {
+
+          console.error(error);
+
+          afficherMessage(
+            "❌ " + error.message,
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (!data.user) {
+
+          afficherMessage(
+            "❌ Impossible de créer le compte.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        /* =========================
+           CRÉER LE PROFIL
+        ========================= */
+
+        const { error: profileError } =
+          await supabase
+            .from("profiles")
+            .insert({
+
+              id: data.user.id,
+
+              name: nom,
+
+              role: "client"
+
+            });
+
+
+        if (profileError) {
+
+          console.error(profileError);
+
+          afficherMessage(
+            "❌ Compte créé mais erreur avec le profil : " +
+            profileError.message,
+            "error"
+          );
+
+          return;
+        }
+
+
+        /* =========================
+           SAUVEGARDE LOCALE
+           POUR LES ANCIENNES PAGES
+        ========================= */
+
+        const utilisateur = {
+
+          id: data.user.id,
+
+          nom: nom,
+
+          telephone: telephone,
+
+          email: email,
+
+          role: "client"
+
+        };
+
+
+        localStorage.setItem(
+          "vendozaUtilisateurConnecte",
+          JSON.stringify(utilisateur)
+        );
+
+
+        /* =========================
+           REDIRECTION
+        ========================= */
+
+        if (data.session) {
+
+          afficherMessage(
+            "✅ Compte créé avec succès ! Redirection...",
+            "success"
+          );
+
+          setTimeout(function() {
+
+            window.location.href = "produits.html";
+
+          }, 1200);
+
+        } else {
+
+          afficherMessage(
+            "✅ Compte créé ! Vérifiez votre email pour confirmer votre compte.",
+            "success"
+          );
+
+        }
+
+      } catch (e) {
+
+        console.error(e);
+
+        afficherMessage(
+          "❌ Une erreur est survenue. Réessayez.",
+          "error"
+        );
+
+      }
+
+    });
+
+
+  /* =========================
+     CONNEXION CLIENT
+  ========================= */
+
+  document
+    .getElementById("connexion")
+    .addEventListener("submit", async function(e) {
+
+      e.preventDefault();
+
+
+      const email =
+        document
+          .getElementById("emailConnexion")
+          .value
+          .trim()
+          .toLowerCase();
+
+
+      const password =
+        document
+          .getElementById("passwordConnexion")
+          .value;
+
+
+      try {
+
+        afficherMessage(
+          "⏳ Connexion...",
+          "success"
+        );
+
+
+        /* =========================
+           SUPABASE AUTH LOGIN
+        ========================= */
+
+        const { data, error } =
+          await supabase.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+
+          });
+
+
+        if (error) {
+
+          console.error(error);
+
+          afficherMessage(
+            "❌ Email ou mot de passe incorrect.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (!data.user) {
+
+          afficherMessage(
+            "❌ Impossible de récupérer votre compte.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        /* =========================
+           RÉCUPÉRER LE PROFIL
+        ========================= */
+
+        const { data: profile, error: profileError } =
+          await supabase
+            .from("profiles")
+            .select("id, name, role")
+            .eq("id", data.user.id)
+            .single();
+
+
+        if (profileError) {
+
+          console.error(profileError);
+
+          afficherMessage(
+            "❌ Profil utilisateur introuvable.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        /* =========================
+           VÉRIFICATION DU RÔLE
+        ========================= */
+
+        if (profile.role !== "client") {
+
+          afficherMessage(
+            "❌ Ce compte n'est pas un compte client.",
+            "error"
+          );
+
+          await supabase.auth.signOut();
+
+          return;
+        }
+
+
+        /* =========================
+           SAUVEGARDE POUR VENDOZA
+        ========================= */
+
+        const utilisateur = {
+
+          id: data.user.id,
+
+          nom: profile.name || data.user.email,
+
+          telephone:
+            data.user.user_metadata?.telephone || "",
+
+          email: data.user.email,
+
+          role: profile.role
+
+        };
+
+
+        localStorage.setItem(
+          "vendozaUtilisateurConnecte",
+          JSON.stringify(utilisateur)
+        );
+
+
+        /* =========================
+           SUCCÈS
+        ========================= */
+
+        afficherMessage(
+          "✅ Connexion réussie ! Redirection...",
+          "success"
+        );
+
+
+        setTimeout(function() {
+
+          window.location.href = "produits.html";
+
+        }, 1000);
+
+
+      } catch (e) {
+
+        console.error(e);
+
+        afficherMessage(
+          "❌ Une erreur est survenue. Réessayez.",
+          "error"
+        );
+
+      }
+
+    });
+
+</script>
+
+</body>
 </html>
