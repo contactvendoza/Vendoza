@@ -6,9 +6,7 @@
   <title>Vendoza - Connexion</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -30,15 +28,8 @@
       box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     }
 
-    h1 {
-      text-align: center;
-      color: #111;
-    }
-
-    p {
-      text-align: center;
-      color: #666;
-    }
+    h1 { text-align: center; color: #111; }
+    p { text-align: center; color: #666; }
 
     input {
       width: 100%;
@@ -61,51 +52,31 @@
       cursor: pointer;
     }
 
-    button:disabled {
-      opacity: 0.6;
-    }
+    button:disabled { opacity: 0.6; }
 
     #message {
       margin-top: 15px;
       padding: 12px;
       border-radius: 8px;
-      white-space: pre-wrap;
       overflow-wrap: anywhere;
       font-size: 14px;
     }
 
-    .error {
-      color: #a00000;
-      background: #ffe5e5;
-    }
-
-    .success {
-      color: #176b17;
-      background: #e5ffe5;
-    }
-
-    .info {
-      color: #174a8b;
-      background: #e5efff;
-    }
+    .error { color: #a00000; background: #ffe5e5; }
+    .success { color: #176b17; background: #e5ffe5; }
+    .info { color: #174a8b; background: #e5efff; }
   </style>
 
-  <!-- Charger Supabase une seule fois -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Configuration Vendoza -->
-  <script src="supabase-config.js"></script>
 </head>
 
 <body>
 
 <div class="container">
-
   <h1>Connexion Vendoza</h1>
   <p>Connectez-vous à votre compte</p>
 
   <form id="loginForm">
-
     <input
       type="email"
       id="email"
@@ -122,14 +93,10 @@
       required
     >
 
-    <button type="submit" id="loginButton">
-      Se connecter
-    </button>
-
+    <button type="submit" id="loginButton">Se connecter</button>
   </form>
 
   <div id="message" style="display:none"></div>
-
 </div>
 
 <script>
@@ -151,30 +118,24 @@ formulaire.addEventListener("submit", async function(event) {
   afficher("Vérification de la connexion...", "info");
 
   try {
-    // Vérifier que la bibliothèque Supabase est chargée.
     if (!window.supabase || !window.supabase.createClient) {
       throw new Error(
-        "La bibliothèque Supabase ne se charge pas. Vérifie ta connexion Internet."
+        "La bibliothèque Supabase ne se charge pas. Vérifie Internet."
       );
     }
 
-    // Vérifier que le fichier de configuration est chargé.
-    if (
-      typeof SUPABASE_URL === "undefined" ||
-      typeof SUPABASE_ANON_KEY === "undefined"
-    ) {
-      throw new Error(
-        "Le fichier supabase-config.js ne se charge pas. Vérifie son nom et son emplacement."
-      );
-    }
+    // Configuration directe, comme dans le test qui fonctionne.
+    const SUPABASE_URL =
+      "https://kzrphvyhkbuhaczmnjgk.supabase.co";
 
-    // Créer le client Supabase.
+    const SUPABASE_ANON_KEY =
+      "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
+
     const client = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
 
-    // Connecter l'utilisateur.
     const { data, error } = await client.auth.signInWithPassword({
       email: document.getElementById("email").value.trim(),
       password: document.getElementById("password").value
@@ -188,7 +149,6 @@ formulaire.addEventListener("submit", async function(event) {
       throw new Error("Aucun utilisateur retourné par Supabase.");
     }
 
-    // Récupérer le profil.
     const { data: profil, error: erreurProfil } = await client
       .from("profiles")
       .select("id, name, role")
@@ -197,7 +157,7 @@ formulaire.addEventListener("submit", async function(event) {
 
     if (erreurProfil) {
       throw new Error(
-        "Connexion réussie, mais erreur de lecture du profil : " +
+        "Connexion réussie, mais erreur du profil : " +
         erreurProfil.message
       );
     }
@@ -220,7 +180,7 @@ formulaire.addEventListener("submit", async function(event) {
       window.location.href = "dashboard-vendeur.html";
     } else {
       throw new Error(
-        "Rôle non reconnu dans profiles : " + (profil.role || "vide")
+        "Rôle non reconnu : " + (profil.role || "vide")
       );
     }
 
