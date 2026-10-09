@@ -3,23 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Vendoza - Connexion</title>
 
-  <script>
-    window.location.href = "connexion.html";
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: #f4f5f7;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 25px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #111;
+    }
+
+    p {
+      text-align: center;
+      color: #666;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #111;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    #message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+
+    .error {
+      color: #a00000;
+      background: #ffe5e5;
+    }
+
+    .success {
+      color: #176b17;
+      background: #e5ffe5;
+    }
+
+    .info {
+      color: #174a8b;
+      background: #e5efff;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
 
-  <p>
-    Redirection vers la page de connexion...
-  </p>
+<div class="container">
 
-  <a href="connexion.html">
-    🔐 Ouvrir la page de connexion
-  </a>
+  <h1>Connexion Vendoza</h1>
+  <p>Connectez-vous à votre compte</p>
+
+  <form id="loginForm">
+
+    <input
+      type="email"
+      id="email"
+      placeholder="Adresse e-mail"
+      autocomplete="email"
+      required
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Mot de passe"
+      autocomplete="current-password"
+      required
+    >
+
+    <button type="submit" id="loginButton">
+      Se connecter
+    </button>
+
+  </form>
+
+  <div id="message" class="hidden"></div>
+
+</div>
+
+<script>
+const formulaire = document.getElementById("loginForm");
+const bouton = document.getElementById("loginButton");
+const message = document.getElementById("message");
+
+function afficher(texte, type) {
+  message.textContent = texte;
+  message.className = type;
+}
+
+formulaire.addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  bouton.disabled = true;
+  bouton.textContent = "Connexion...";
+  afficher("Vérification de la connexion...", "info");
+
+  try {
+    // Vérifier que la configuration Supabase est chargée.
+    if (typeof supabase === "undefined" || !supabase.auth) {
+      throw new Error(
+        "Le client Supabase n'est pas disponible. Vérifie supabase-config.js et l'ordre des scripts."
+      );
+    }
+
+    // Connexion avec Supabase Auth.
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: document.getElementById("email").value.trim(),
+      password: document.getElementById("password").value
+    });
+
+    if (error) {
+      throw new Error("Connexion : " + error.message);
+    }
+
+    if (!data.user) {
+      throw new Error("Aucun utilisateur n'a été retourné.");
+    }
+
+    // Récupérer le rôle de l'utilisateur.
+    const { data: profil, error: erreurProfil } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    if (erreurProfil) {
+      throw new Error(
+        "Connexion réussie, mais lecture du profil impossible : " +
+        erreurProfil.message
+      );
+    }
+
+    if (!profil) {
+      throw new Error(
+        "Compte connecté, mais aucun profil correspondant trouvé dans la table profiles."
+      );
+    }
+
+    const role = String(profil.role || "").toLowerCase().trim();
+
+    afficher("Connexion réussie ! Redirection...", "success");
+
+    if (role === "admin") {
+      window.location.href = "dashboard.html";
+    } else if (role === "client") {
+      window.location.href = "produits.html";
+    } else if (role === "vendeur") {
+      window.location.href = "dashboard-vendeur.html";
+    } else {
+      throw new Error(
+        "Le rôle du compte est inconnu : " + (profil.role || "vide")
+      );
+    }
+
+  } catch (erreur) {
+    afficher(erreur.message || String(erreur), "error");
+    bouton.disabled = false;
+    bouton.textContent = "Se connecter";
+  }
+});
+</script>
 
 </body>
-</html>
+  </html>
