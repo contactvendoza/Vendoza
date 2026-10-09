@@ -3,57 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Test Supabase - Vendoza</title>
 </head>
 
-<body>
+<body style="font-family: Arial; padding: 20px;">
 
   <h1>Vendoza</h1>
+  <h2>Test de connexion Supabase</h2>
 
-  <p id="message">Connexion à Supabase...</p>
+  <p id="message">Vérification en cours...</p>
 
-  <!-- Supabase -->
+  <!-- Charger la bibliothèque Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Configuration Vendoza -->
-  <script src="supabase-config.js"></script>
-
   <script>
+    const SUPABASE_URL =
+      "https://kzrphvyhkbuhaczmnjgk.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
+
+    const message = document.getElementById("message");
+
     async function testerSupabase() {
-
-      const message = document.getElementById("message");
-
       try {
+        if (!window.supabase) {
+          throw new Error(
+            "La bibliothèque Supabase ne s'est pas chargée. Vérifie ta connexion Internet."
+          );
+        }
 
-        const { data, error } = await supabase
-  .from("products")
-  .select("id")
-  .limit(1);
+        const client = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_ANON_KEY
+        );
+
+        message.textContent =
+          "Bibliothèque chargée. Test de la base de données...";
+
+        const { data, error } = await client
+          .from("products")
+          .select("id")
+          .limit(1);
 
         if (error) {
-
           message.textContent =
-            "Supabase connecté, mais erreur base de données : "
-            + error.message;
-
-          console.error(error);
-
+            "Erreur de base de données : " + error.message;
           return;
         }
 
         message.textContent =
-          "✅ Supabase fonctionne ! Connexion réussie.";
+          "✅ Supabase fonctionne ! La connexion est réussie.";
 
-        console.log("Produits :", data);
+        console.log("Résultat :", data);
 
       } catch (erreur) {
-
         message.textContent =
-          "❌ Erreur de connexion : "
-          + erreur.message;
+          "❌ Erreur : " + erreur.message;
 
-        console.error(erreur);
+        console.error("Erreur Supabase :", erreur);
       }
     }
 
