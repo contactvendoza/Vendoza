@@ -26,10 +26,10 @@
 
       try {
 
-        const { data, error } = await supabaseClient
-          .from("products")
-          .select("id")
-          .limit(1);
+        const { data, error } = await supabase
+  .from("products")
+  .select("id")
+  .limit(1);
 
         if (error) {
 
