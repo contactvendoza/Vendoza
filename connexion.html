@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vendoza - Connexion</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-
   <style>
     * {
       box-sizing: border-box;
@@ -91,13 +88,13 @@
       color: #174a8b;
       background: #e5efff;
     }
-
-    .hidden {
-      display: none;
-    }
   </style>
+
+  <!-- Charger Supabase une seule fois -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
+
+  <!-- Configuration Vendoza -->
+  <script src="supabase-config.js"></script>
 </head>
 
 <body>
@@ -131,7 +128,7 @@
 
   </form>
 
-  <div id="message" class="hidden"></div>
+  <div id="message" style="display:none"></div>
 
 </div>
 
@@ -143,6 +140,7 @@ const message = document.getElementById("message");
 function afficher(texte, type) {
   message.textContent = texte;
   message.className = type;
+  message.style.display = "block";
 }
 
 formulaire.addEventListener("submit", async function(event) {
@@ -153,44 +151,60 @@ formulaire.addEventListener("submit", async function(event) {
   afficher("Vérification de la connexion...", "info");
 
   try {
-    // Vérifier que la configuration Supabase est chargée.
-    if (typeof supabase === "undefined" || !supabase.auth) {
+    // Vérifier que la bibliothèque Supabase est chargée.
+    if (!window.supabase || !window.supabase.createClient) {
       throw new Error(
-        "Le client Supabase n'est pas disponible. Vérifie supabase-config.js et l'ordre des scripts."
+        "La bibliothèque Supabase ne se charge pas. Vérifie ta connexion Internet."
       );
     }
 
-    // Connexion avec Supabase Auth.
-    const { data, error } = await supabase.auth.signInWithPassword({
+    // Vérifier que le fichier de configuration est chargé.
+    if (
+      typeof SUPABASE_URL === "undefined" ||
+      typeof SUPABASE_ANON_KEY === "undefined"
+    ) {
+      throw new Error(
+        "Le fichier supabase-config.js ne se charge pas. Vérifie son nom et son emplacement."
+      );
+    }
+
+    // Créer le client Supabase.
+    const client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    // Connecter l'utilisateur.
+    const { data, error } = await client.auth.signInWithPassword({
       email: document.getElementById("email").value.trim(),
       password: document.getElementById("password").value
     });
 
     if (error) {
-      throw new Error("Connexion : " + error.message);
+      throw new Error("Erreur de connexion : " + error.message);
     }
 
     if (!data.user) {
-      throw new Error("Aucun utilisateur n'a été retourné.");
+      throw new Error("Aucun utilisateur retourné par Supabase.");
     }
 
-    // Récupérer le rôle de l'utilisateur.
-    const { data: profil, error: erreurProfil } = await supabase
+    // Récupérer le profil.
+    const { data: profil, error: erreurProfil } = await client
       .from("profiles")
-      .select("*")
+      .select("id, name, role")
       .eq("id", data.user.id)
       .maybeSingle();
 
     if (erreurProfil) {
       throw new Error(
-        "Connexion réussie, mais lecture du profil impossible : " +
+        "Connexion réussie, mais erreur de lecture du profil : " +
         erreurProfil.message
       );
     }
 
     if (!profil) {
       throw new Error(
-        "Compte connecté, mais aucun profil correspondant trouvé dans la table profiles."
+        "Aucun profil trouvé pour ce compte dans la table profiles."
       );
     }
 
@@ -206,7 +220,7 @@ formulaire.addEventListener("submit", async function(event) {
       window.location.href = "dashboard-vendeur.html";
     } else {
       throw new Error(
-        "Le rôle du compte est inconnu : " + (profil.role || "vide")
+        "Rôle non reconnu dans profiles : " + (profil.role || "vide")
       );
     }
 
@@ -219,4 +233,4 @@ formulaire.addEventListener("submit", async function(event) {
 </script>
 
 </body>
-  </html>
+</html>
