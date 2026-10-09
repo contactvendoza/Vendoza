@@ -4,95 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Test Supabase</title>
+  <title>Vendoza - Connexion</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.location.href = "connexion.html";
+  </script>
 </head>
 
 <body>
 
-<h2>Test Vendoza</h2>
+  <p>
+    Redirection vers la page de connexion...
+  </p>
 
-<button onclick="tester()">
-  TEST SUPABASE
-</button>
-
-<p id="resultat"></p>
-
-<script>
-
-function tester() {
-
-  const resultat =
-    document.getElementById("resultat");
-
-  resultat.innerText = "Tès ap fèt...";
-
-  if (typeof window.supabase === "undefined") {
-
-    resultat.innerText =
-      "❌ window.supabase pa egziste.";
-
-    return;
-  }
-
-  if (
-    typeof window.supabase.createClient !== "function"
-  ) {
-
-    resultat.innerText =
-      "❌ createClient pa egziste.";
-
-    return;
-  }
-
-  const client =
-    window.supabase.createClient(
-
-      "https://kzrphvyhkbuhaczmnjgk.supabase.co",
-
-      "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO"
-
-    );
-
-
-  if (!client) {
-
-    resultat.innerText =
-      "❌ Client Supabase pa kreye.";
-
-    return;
-  }
-
-
-  if (!client.auth) {
-
-    resultat.innerText =
-      "❌ Auth pa disponib.";
-
-    return;
-  }
-
-
-  if (
-    typeof client.auth.signInWithPassword !==
-    "function"
-  ) {
-
-    resultat.innerText =
-      "❌ signInWithPassword pa disponib.";
-
-    return;
-  }
-
-
-  resultat.innerText =
-    "✅ SUPABASE AUTH AP CHARGE KÒRÈKTEMENT !";
-
-
-}
-
-</script>
+  <a href="connexion.html">
+    🔐 Ouvrir la page de connexion
+  </a>
 
 </body>
 </html>
