@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Connexion - Vendoza</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -85,10 +84,10 @@
     }
 
     .message {
+      display: none;
       margin-top: 16px;
       padding: 12px;
       border-radius: 8px;
-      display: none;
       line-height: 1.5;
       overflow-wrap: anywhere;
     }
@@ -135,6 +134,7 @@
     <form id="loginForm">
 
       <label for="email">Adrès imel</label>
+
       <input
         type="email"
         id="email"
@@ -144,6 +144,7 @@
       >
 
       <label for="password">Modpas</label>
+
       <input
         type="password"
         id="password"
@@ -172,6 +173,7 @@
 
   <script>
     // KONFIGIRASYON SUPABASE
+
     const SUPABASE_URL =
       "https://kzrphvyhkbuhaczmnjgk.supabase.co";
 
@@ -195,20 +197,17 @@
     loginForm.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      const email = document
-        .getElementById("email")
-        .value.trim();
-
-      const password = document
-        .getElementById("password")
-        .value;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
       loginButton.disabled = true;
       loginButton.textContent = "Koneksyon an ap fèt...";
       message.className = "message";
 
       try {
-        // 1. KONEKTE AK SUPABASE AUTH
+
+        // 1. KONEKTE AK KONT SUPABASE LA
+
         const { data, error } = await client.auth.signInWithPassword({
           email: email,
           password: password
@@ -222,40 +221,39 @@
 
         if (!data.user) {
           throw new Error(
-            "Supabase pa retounen enfòmasyon itilizatè a."
+            "Nou pa jwenn enfòmasyon itilizatè a."
           );
         }
 
-        // 2. CHÈCHE PWOFIL ITILIZATÈ A AVÈK UUID
+        // 2. CHÈCHE PWOFIL LA AVÈK KOLÒN ID
+
         const { data: profil, error: erreurProfil } = await client
           .from("profiles")
           .select("*")
-          .eq("uuid", data.user.id)
+          .eq("id", data.user.id)
           .maybeSingle();
 
         if (erreurProfil) {
           throw new Error(
-            "Koneksyon reyisi, men gen yon erè lè n ap li pwofil la: " +
+            "Koneksyon reyisi, men gen yon erè nan pwofil la: " +
             erreurProfil.message
           );
         }
 
         if (!profil) {
           throw new Error(
-            "Kont lan konekte, men pa gen pwofil ki koresponn ak UUID sa a nan tablo profiles. Verifye UUID itilizatè a ak RLS policies yo."
+            "Kont lan konekte, men nou pa jwenn pwofil ki koresponn ak ID sa a. Verifye ID a ak RLS policies yo nan Supabase."
           );
         }
 
-        // 3. VERIFYE WÒL ITILIZATÈ A
-        // Nou itilize kolòn admin la jan li parèt nan tablo a.
+        // 3. LI WÒL ITILIZATÈ A
+
         const role = String(
           profil.admin || profil.role || ""
         ).trim().toLowerCase();
 
-        // Sove enfòmasyon debaz itilizatè a sou aparèy la.
         const utilisateur = {
           id: data.user.id,
-          uuid: data.user.id,
           email: data.user.email,
           role: role
         };
@@ -270,23 +268,33 @@
           "success"
         );
 
-        // 4. VOYE ITILIZATÈ A NAN PAJ KI KORESPONN AK WÒL LI
+        // 4. REDIREKSYON SELON WÒL LA
+
         setTimeout(function() {
 
-          if (role === "admin" || role === "administrateur") {
+          if (
+            role === "admin" ||
+            role === "administrateur"
+          ) {
             window.location.href = "dashboard.html";
 
-          } else if (role === "vendeur" || role === "seller") {
+          } else if (
+            role === "vendeur" ||
+            role === "seller"
+          ) {
             window.location.href = "dashboard-vendeur.html";
 
-          } else if (role === "client" || role === "user") {
+          } else if (
+            role === "client" ||
+            role === "user"
+          ) {
             window.location.href = "produits.html";
 
           } else {
             afficherMessage(
-              "Koneksyon reyisi, men wòl pwofil la pa rekonèt. Valè kolòn admin lan se: " +
+              "Koneksyon reyisi, men valè wòl la pa rekonèt. Valè kolòn admin lan: " +
               (role || "vid") +
-              ". Verifye wòl la nan Supabase.",
+              ".",
               "error"
             );
 
@@ -308,4 +316,4 @@
   </script>
 
 </body>
-        </html>
+  </html>
