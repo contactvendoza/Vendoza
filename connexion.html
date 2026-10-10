@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+const { data: profil, error: erreurProfil } = await client
+  .from("profiles")
+  .select("*")
+  .eq("uuid", data.user.id)
+  .maybeSingle();<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -150,10 +154,10 @@ formulaire.addEventListener("submit", async function(event) {
     }
 
     const { data: profil, error: erreurProfil } = await client
-      .from("profiles")
-      .select("id, name, role")
-      .eq("id", data.user.id)
-      .maybeSingle();
+  .from("profiles")
+  .select("*")
+  .eq("uuid", data.user.id)
+  .maybeSingle();
 
     if (erreurProfil) {
       throw new Error(
