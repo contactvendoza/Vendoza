@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vendoza - Connexion</title>
+
+  <title>Connexion - Vendoza</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -18,33 +21,47 @@
       align-items: center;
       justify-content: center;
       font-family: Arial, sans-serif;
-      background: #f4f5f7;
+      background: #f3f5f9;
     }
 
     .container {
       width: 100%;
-      max-width: 400px;
-      padding: 25px;
+      max-width: 420px;
+      padding: 30px 24px;
       background: white;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
     }
 
-    h1 {
+    .logo {
       text-align: center;
-      color: #111;
+      font-size: 32px;
+      font-weight: bold;
+      color: #172554;
+      margin-bottom: 8px;
     }
 
-    p {
+    .logo span {
+      color: #f59e0b;
+    }
+
+    h2 {
       text-align: center;
-      color: #666;
+      margin-bottom: 25px;
+      color: #172554;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      font-weight: bold;
+      color: #333;
     }
 
     input {
       width: 100%;
       padding: 13px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
+      border: 1px solid #d1d5db;
       border-radius: 8px;
       font-size: 16px;
     }
@@ -52,207 +69,243 @@
     button {
       width: 100%;
       padding: 14px;
-      margin-top: 12px;
+      margin-top: 22px;
       border: none;
       border-radius: 8px;
-      background: #111;
+      background: #172554;
       color: white;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
     }
 
     button:disabled {
       opacity: 0.6;
+      cursor: wait;
     }
 
-    #message {
-      margin-top: 15px;
+    .message {
+      margin-top: 16px;
       padding: 12px;
       border-radius: 8px;
+      display: none;
+      line-height: 1.5;
       overflow-wrap: anywhere;
-      font-size: 14px;
     }
 
     .error {
-      color: #a00000;
-      background: #ffe5e5;
+      display: block;
+      color: #991b1b;
+      background: #fee2e2;
     }
 
     .success {
-      color: #176b17;
-      background: #e5ffe5;
+      display: block;
+      color: #166534;
+      background: #dcfce7;
     }
 
-    .info {
-      color: #174a8b;
-      background: #e5efff;
+    .links {
+      margin-top: 20px;
+      text-align: center;
+      line-height: 2;
+    }
+
+    a {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+
+    .back {
+      display: block;
+      margin-top: 18px;
+      text-align: center;
     }
   </style>
-
-  <!-- Bibliothèque Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
   <div class="container">
 
-    <h1>Connexion Vendoza</h1>
+    <div class="logo">Ven<span>doza</span></div>
 
-    <p>Connectez-vous à votre compte</p>
+    <h2>Konekte sou kont ou</h2>
 
     <form id="loginForm">
 
+      <label for="email">Adrès imel</label>
       <input
         type="email"
         id="email"
-        placeholder="Adresse e-mail"
+        placeholder="Antre imel ou"
         autocomplete="email"
         required
       >
 
+      <label for="password">Modpas</label>
       <input
         type="password"
         id="password"
-        placeholder="Mot de passe"
+        placeholder="Antre modpas ou"
         autocomplete="current-password"
         required
       >
 
       <button type="submit" id="loginButton">
-        Se connecter
+        Konekte
       </button>
 
     </form>
 
-    <div id="message" style="display:none"></div>
+    <div id="message" class="message" role="status"></div>
+
+    <div class="links">
+      <a href="inscription.html">Kreye yon kont</a>
+    </div>
+
+    <a class="back" href="produits.html">
+      ← Retounen nan pwodwi yo
+    </a>
 
   </div>
 
   <script>
-    const formulaire = document.getElementById("loginForm");
-    const bouton = document.getElementById("loginButton");
+    // KONFIGIRASYON SUPABASE
+    const SUPABASE_URL =
+      "https://kzrphvyhkbuhaczmnjgk.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
+
+    const client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    const loginForm = document.getElementById("loginForm");
+    const loginButton = document.getElementById("loginButton");
     const message = document.getElementById("message");
 
-    function afficher(texte, type) {
+    function afficherMessage(texte, type) {
       message.textContent = texte;
-      message.className = type;
-      message.style.display = "block";
+      message.className = "message " + type;
     }
 
-    formulaire.addEventListener("submit", async function(event) {
+    loginForm.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      bouton.disabled = true;
-      bouton.textContent = "Connexion...";
+      const email = document
+        .getElementById("email")
+        .value.trim();
 
-      afficher("Vérification de la connexion...", "info");
+      const password = document
+        .getElementById("password")
+        .value;
+
+      loginButton.disabled = true;
+      loginButton.textContent = "Koneksyon an ap fèt...";
+      message.className = "message";
 
       try {
-
-        // 1. Vérifier la bibliothèque Supabase.
-        if (!window.supabase || !window.supabase.createClient) {
-          throw new Error(
-            "La bibliothèque Supabase ne se charge pas. Vérifiez votre connexion Internet."
-          );
-        }
-
-        // 2. Configuration Supabase.
-        const SUPABASE_URL =
-          "https://kzrphvyhkbuhaczmnjgk.supabase.co";
-
-        const SUPABASE_ANON_KEY =
-          "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
-
-        const client = window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_ANON_KEY
-        );
-
-        // 3. Connecter l'utilisateur.
-        const { data, error } =
-          await client.auth.signInWithPassword({
-            email: document.getElementById("email").value.trim(),
-            password: document.getElementById("password").value
-          });
+        // 1. KONEKTE AK SUPABASE AUTH
+        const { data, error } = await client.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
 
         if (error) {
           throw new Error(
-            "Erreur de connexion : " + error.message
+            "Koneksyon an echwe: " + error.message
           );
         }
 
         if (!data.user) {
           throw new Error(
-            "Aucun utilisateur retourné par Supabase."
+            "Supabase pa retounen enfòmasyon itilizatè a."
           );
         }
 
-        // 4. Rechercher le profil avec la colonne uuid.
-        const { data: profil, error: erreurProfil } =
-          await client
-            .from("profiles")
-            .select("*")
-            .eq("uuid", data.user.id)
-            .maybeSingle();
+        // 2. CHÈCHE PWOFIL ITILIZATÈ A AVÈK UUID
+        const { data: profil, error: erreurProfil } = await client
+          .from("profiles")
+          .select("*")
+          .eq("uuid", data.user.id)
+          .maybeSingle();
 
         if (erreurProfil) {
           throw new Error(
-            "Erreur lors de la lecture du profil : " +
+            "Koneksyon reyisi, men gen yon erè lè n ap li pwofil la: " +
             erreurProfil.message
           );
         }
 
         if (!profil) {
           throw new Error(
-            "Aucun profil correspondant à ce compte n'a été trouvé. Vérifiez que la valeur de uuid correspond à l'ID de l'utilisateur dans Supabase Authentication."
+            "Kont lan konekte, men pa gen pwofil ki koresponn ak UUID sa a nan tablo profiles. Verifye UUID itilizatè a ak RLS policies yo."
           );
         }
 
-        // 5. Vérifier le rôle.
-        const role = String(profil.role || "")
-          .toLowerCase()
-          .trim();
+        // 3. VERIFYE WÒL ITILIZATÈ A
+        // Nou itilize kolòn admin la jan li parèt nan tablo a.
+        const role = String(
+          profil.admin || profil.role || ""
+        ).trim().toLowerCase();
 
-        afficher(
-          "Connexion réussie ! Redirection...",
+        // Sove enfòmasyon debaz itilizatè a sou aparèy la.
+        const utilisateur = {
+          id: data.user.id,
+          uuid: data.user.id,
+          email: data.user.email,
+          role: role
+        };
+
+        localStorage.setItem(
+          "v endozaUtilisateurConnecte".replace(" ", ""),
+          JSON.stringify(utilisateur)
+        );
+
+        afficherMessage(
+          "Koneksyon reyisi! N ap ouvri paj ou a...",
           "success"
         );
 
-        // 6. Rediriger selon le rôle.
-        if (role === "admin") {
+        // 4. VOYE ITILIZATÈ A NAN PAJ KI KORESPONN AK WÒL LI
+        setTimeout(function() {
 
-          window.location.href = "dashboard.html";
+          if (role === "admin" || role === "administrateur") {
+            window.location.href = "dashboard.html";
 
-        } else if (role === "client") {
+          } else if (role === "vendeur" || role === "seller") {
+            window.location.href = "dashboard-vendeur.html";
 
-          window.location.href = "produits.html";
+          } else if (role === "client" || role === "user") {
+            window.location.href = "produits.html";
 
-        } else if (role === "vendeur") {
+          } else {
+            afficherMessage(
+              "Koneksyon reyisi, men wòl pwofil la pa rekonèt. Valè kolòn admin lan se: " +
+              (role || "vid") +
+              ". Verifye wòl la nan Supabase.",
+              "error"
+            );
 
-          window.location.href = "dashboard-vendeur.html";
+            loginButton.disabled = false;
+            loginButton.textContent = "Konekte";
+          }
 
-        } else {
+        }, 1200);
 
-          throw new Error(
-            "Rôle non reconnu : " + (profil.role || "vide")
-          );
+      } catch (error) {
 
-        }
+        afficherMessage(error.message, "error");
 
-      } catch (erreur) {
-
-        afficher(
-          erreur.message || String(erreur),
-          "error"
-        );
-
-        bouton.disabled = false;
-        bouton.textContent = "Se connecter";
+        loginButton.disabled = false;
+        loginButton.textContent = "Konekte";
 
       }
     });
   </script>
 
 </body>
-    </html>
+        </html>
