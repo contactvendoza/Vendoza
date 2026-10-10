@@ -1,8 +1,4 @@
-const { data: profil, error: erreurProfil } = await client
-  .from("profiles")
-  .select("*")
-  .eq("uuid", data.user.id)
-  .maybeSingle();<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -10,7 +6,9 @@ const { data: profil, error: erreurProfil } = await client
   <title>Vendoza - Connexion</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -29,11 +27,18 @@ const { data: profil, error: erreurProfil } = await client
       padding: 25px;
       background: white;
       border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
     }
 
-    h1 { text-align: center; color: #111; }
-    p { text-align: center; color: #666; }
+    h1 {
+      text-align: center;
+      color: #111;
+    }
+
+    p {
+      text-align: center;
+      color: #666;
+    }
 
     input {
       width: 100%;
@@ -56,7 +61,9 @@ const { data: profil, error: erreurProfil } = await client
       cursor: pointer;
     }
 
-    button:disabled { opacity: 0.6; }
+    button:disabled {
+      opacity: 0.6;
+    }
 
     #message {
       margin-top: 15px;
@@ -66,135 +73,186 @@ const { data: profil, error: erreurProfil } = await client
       font-size: 14px;
     }
 
-    .error { color: #a00000; background: #ffe5e5; }
-    .success { color: #176b17; background: #e5ffe5; }
-    .info { color: #174a8b; background: #e5efff; }
+    .error {
+      color: #a00000;
+      background: #ffe5e5;
+    }
+
+    .success {
+      color: #176b17;
+      background: #e5ffe5;
+    }
+
+    .info {
+      color: #174a8b;
+      background: #e5efff;
+    }
   </style>
 
+  <!-- Bibliothèque Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>Connexion Vendoza</h1>
-  <p>Connectez-vous à votre compte</p>
+  <div class="container">
 
-  <form id="loginForm">
-    <input
-      type="email"
-      id="email"
-      placeholder="Adresse e-mail"
-      autocomplete="email"
-      required
-    >
+    <h1>Connexion Vendoza</h1>
 
-    <input
-      type="password"
-      id="password"
-      placeholder="Mot de passe"
-      autocomplete="current-password"
-      required
-    >
+    <p>Connectez-vous à votre compte</p>
 
-    <button type="submit" id="loginButton">Se connecter</button>
-  </form>
+    <form id="loginForm">
 
-  <div id="message" style="display:none"></div>
-</div>
+      <input
+        type="email"
+        id="email"
+        placeholder="Adresse e-mail"
+        autocomplete="email"
+        required
+      >
 
-<script>
-const formulaire = document.getElementById("loginForm");
-const bouton = document.getElementById("loginButton");
-const message = document.getElementById("message");
+      <input
+        type="password"
+        id="password"
+        placeholder="Mot de passe"
+        autocomplete="current-password"
+        required
+      >
 
-function afficher(texte, type) {
-  message.textContent = texte;
-  message.className = type;
-  message.style.display = "block";
-}
+      <button type="submit" id="loginButton">
+        Se connecter
+      </button>
 
-formulaire.addEventListener("submit", async function(event) {
-  event.preventDefault();
+    </form>
 
-  bouton.disabled = true;
-  bouton.textContent = "Connexion...";
-  afficher("Vérification de la connexion...", "info");
+    <div id="message" style="display:none"></div>
 
-  try {
-    if (!window.supabase || !window.supabase.createClient) {
-      throw new Error(
-        "La bibliothèque Supabase ne se charge pas. Vérifie Internet."
-      );
+  </div>
+
+  <script>
+    const formulaire = document.getElementById("loginForm");
+    const bouton = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+
+    function afficher(texte, type) {
+      message.textContent = texte;
+      message.className = type;
+      message.style.display = "block";
     }
 
-    // Configuration directe, comme dans le test qui fonctionne.
-    const SUPABASE_URL =
-      "https://kzrphvyhkbuhaczmnjgk.supabase.co";
+    formulaire.addEventListener("submit", async function(event) {
+      event.preventDefault();
 
-    const SUPABASE_ANON_KEY =
-      "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
+      bouton.disabled = true;
+      bouton.textContent = "Connexion...";
 
-    const client = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
+      afficher("Vérification de la connexion...", "info");
 
-    const { data, error } = await client.auth.signInWithPassword({
-      email: document.getElementById("email").value.trim(),
-      password: document.getElementById("password").value
+      try {
+
+        // 1. Vérifier la bibliothèque Supabase.
+        if (!window.supabase || !window.supabase.createClient) {
+          throw new Error(
+            "La bibliothèque Supabase ne se charge pas. Vérifiez votre connexion Internet."
+          );
+        }
+
+        // 2. Configuration Supabase.
+        const SUPABASE_URL =
+          "https://kzrphvyhkbuhaczmnjgk.supabase.co";
+
+        const SUPABASE_ANON_KEY =
+          "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
+
+        const client = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_ANON_KEY
+        );
+
+        // 3. Connecter l'utilisateur.
+        const { data, error } =
+          await client.auth.signInWithPassword({
+            email: document.getElementById("email").value.trim(),
+            password: document.getElementById("password").value
+          });
+
+        if (error) {
+          throw new Error(
+            "Erreur de connexion : " + error.message
+          );
+        }
+
+        if (!data.user) {
+          throw new Error(
+            "Aucun utilisateur retourné par Supabase."
+          );
+        }
+
+        // 4. Rechercher le profil avec la colonne uuid.
+        const { data: profil, error: erreurProfil } =
+          await client
+            .from("profiles")
+            .select("*")
+            .eq("uuid", data.user.id)
+            .maybeSingle();
+
+        if (erreurProfil) {
+          throw new Error(
+            "Erreur lors de la lecture du profil : " +
+            erreurProfil.message
+          );
+        }
+
+        if (!profil) {
+          throw new Error(
+            "Aucun profil correspondant à ce compte n'a été trouvé. Vérifiez que la valeur de uuid correspond à l'ID de l'utilisateur dans Supabase Authentication."
+          );
+        }
+
+        // 5. Vérifier le rôle.
+        const role = String(profil.role || "")
+          .toLowerCase()
+          .trim();
+
+        afficher(
+          "Connexion réussie ! Redirection...",
+          "success"
+        );
+
+        // 6. Rediriger selon le rôle.
+        if (role === "admin") {
+
+          window.location.href = "dashboard.html";
+
+        } else if (role === "client") {
+
+          window.location.href = "produits.html";
+
+        } else if (role === "vendeur") {
+
+          window.location.href = "dashboard-vendeur.html";
+
+        } else {
+
+          throw new Error(
+            "Rôle non reconnu : " + (profil.role || "vide")
+          );
+
+        }
+
+      } catch (erreur) {
+
+        afficher(
+          erreur.message || String(erreur),
+          "error"
+        );
+
+        bouton.disabled = false;
+        bouton.textContent = "Se connecter";
+
+      }
     });
-
-    if (error) {
-      throw new Error("Erreur de connexion : " + error.message);
-    }
-
-    if (!data.user) {
-      throw new Error("Aucun utilisateur retourné par Supabase.");
-    }
-
-    const { data: profil, error: erreurProfil } = await client
-  .from("profiles")
-  .select("*")
-  .eq("uuid", data.user.id)
-  .maybeSingle();
-
-    if (erreurProfil) {
-      throw new Error(
-        "Connexion réussie, mais erreur du profil : " +
-        erreurProfil.message
-      );
-    }
-
-    if (!profil) {
-      throw new Error(
-        "Aucun profil trouvé pour ce compte dans la table profiles."
-      );
-    }
-
-    const role = String(profil.role || "").toLowerCase().trim();
-
-    afficher("Connexion réussie ! Redirection...", "success");
-
-    if (role === "admin") {
-      window.location.href = "dashboard.html";
-    } else if (role === "client") {
-      window.location.href = "produits.html";
-    } else if (role === "vendeur") {
-      window.location.href = "dashboard-vendeur.html";
-    } else {
-      throw new Error(
-        "Rôle non reconnu : " + (profil.role || "vide")
-      );
-    }
-
-  } catch (erreur) {
-    afficher(erreur.message || String(erreur), "error");
-    bouton.disabled = false;
-    bouton.textContent = "Se connecter";
-  }
-});
-</script>
+  </script>
 
 </body>
-  </html>
+    </html>
