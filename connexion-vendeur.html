@@ -129,7 +129,6 @@
     <form id="loginForm">
 
       <label for="email">Adresse e-mail</label>
-
       <input
         type="email"
         id="email"
@@ -139,7 +138,6 @@
       >
 
       <label for="password">Mot de passe</label>
-
       <input
         type="password"
         id="password"
@@ -166,25 +164,23 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    // Configuration directe du projet Supabase
     const SUPABASE_URL =
       "https://kzrphvyhkbuhaczmnjgk.supabase.co";
 
     const SUPABASE_ANON_KEY =
       "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
 
-    // Création du client Supabase
+    // Initialisation du client Supabase
     let clientVendoza = null;
 
-if (window.supabase && window.supabase.createClient) {
-  clientVendoza = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-} else {
-  console.error(
-    "Supabase n'est pas chargé. Vérifiez la connexion Internet ou le CDN."
-  );
+    if (
+      window.supabase &&
+      typeof window.supabase.createClient === "function"
+    ) {
+      clientVendoza = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
     }
 
     const formulaire = document.getElementById("loginForm");
@@ -207,6 +203,12 @@ if (window.supabase && window.supabase.createClient) {
       let connexionReussie = false;
 
       try {
+        if (!clientVendoza) {
+          throw new Error(
+            "Supabase ne s'est pas chargé. Vérifiez votre connexion Internet et rechargez la page."
+          );
+        }
+
         const email =
           document.getElementById("email").value.trim();
 
@@ -214,11 +216,8 @@ if (window.supabase && window.supabase.createClient) {
           document.getElementById("password").value;
 
         // 1. Connexion à Supabase Auth
-        if (!clientVendoza) {
-  throw new Error(
-    "La bibliothèque Supabase ne se charge pas. Vérifiez votre connexion Internet."
-  );
-    }
+        const { data, error } =
+          await clientVendoza.auth.signInWithPassword({
             email: email,
             password: password
           });
@@ -235,13 +234,15 @@ if (window.supabase && window.supabase.createClient) {
           );
         }
 
-        // 2. Vérification du profil
-        const { data: profil, error: erreurProfil } =
-          await clientVendoza
-            .from("profiles")
-            .select("user_id, role")
-            .eq("user_id", data.user.id)
-            .maybeSingle();
+        // 2. Vérification du profil administrateur
+        const {
+          data: profil,
+          error: erreurProfil
+        } = await clientVendoza
+          .from("profiles")
+          .select("user_id, role")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
 
         if (erreurProfil) {
           throw new Error(
@@ -258,7 +259,6 @@ if (window.supabase && window.supabase.createClient) {
           );
         }
 
-        // 3. Vérification du rôle
         if (
           String(profil.role || "").trim().toLowerCase() !== "admin"
         ) {
@@ -269,7 +269,7 @@ if (window.supabase && window.supabase.createClient) {
           );
         }
 
-        // 4. Nettoyage des anciennes données locales
+        // 3. Nettoyage des anciennes données locales
         localStorage.removeItem("vendozaVendeurConnecte");
         localStorage.removeItem("vendozaVendeurNom");
 
@@ -282,7 +282,7 @@ if (window.supabase && window.supabase.createClient) {
 
         bouton.textContent = "Connexion réussie...";
 
-        // 5. Redirection
+        // 4. Redirection vers le tableau de bord
         setTimeout(function() {
           window.location.href = "./tableau%20de%20bord.html";
         }, 800);
