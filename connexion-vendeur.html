@@ -26,7 +26,7 @@
       width: 100%;
       max-width: 420px;
       padding: 35px 25px;
-      background: #ffffff;
+      background: white;
       border-radius: 16px;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
     }
@@ -40,47 +40,36 @@
       margin: 0;
       color: #1769ff;
       font-size: 34px;
-      font-weight: bold;
     }
 
     .logo p {
-      margin-top: 8px;
       color: #667085;
       font-size: 14px;
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 25px;
       color: #101828;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin: 18px 0 8px;
       color: #344054;
       font-weight: bold;
-      font-size: 14px;
     }
 
     input {
-      display: block;
       width: 100%;
       padding: 13px;
-      margin-bottom: 18px;
       border: 1px solid #d0d5dd;
       border-radius: 8px;
       font-size: 16px;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #1769ff;
-      box-shadow: 0 0 0 3px rgba(23, 105, 255, 0.12);
     }
 
     button {
       width: 100%;
+      margin-top: 22px;
       padding: 14px;
       border: none;
       border-radius: 8px;
@@ -91,37 +80,30 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background: #0f50cc;
-    }
-
     button:disabled {
       opacity: 0.6;
-      cursor: not-allowed;
     }
 
     #message {
       display: none;
-      padding: 12px;
       margin-top: 18px;
+      padding: 12px;
       border-radius: 8px;
+      overflow-wrap: anywhere;
       font-size: 14px;
       line-height: 1.5;
-      overflow-wrap: anywhere;
     }
 
     #message.error {
       display: block;
       color: #b42318;
       background: #fef3f2;
-      border: 1px solid #fecdca;
     }
 
     #message.success {
       display: block;
       color: #027a48;
       background: #ecfdf3;
-      border: 1px solid #abefc6;
     }
 
     .footer {
@@ -151,7 +133,6 @@
       <input
         type="email"
         id="email"
-        name="email"
         placeholder="Votre adresse e-mail"
         autocomplete="username"
         required
@@ -162,7 +143,6 @@
       <input
         type="password"
         id="password"
-        name="password"
         placeholder="Votre mot de passe"
         autocomplete="current-password"
         required
@@ -182,14 +162,23 @@
 
   </main>
 
-  <!-- 1. Charger la bibliothèque Supabase -->
+  <!-- Bibliothèque Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- 2. Charger la configuration du projet -->
-  <script src="./supabase-config.js"></script>
-
-  <!-- 3. Gérer la connexion -->
   <script>
+    // Configuration directe du projet Supabase
+    const SUPABASE_URL =
+      "https://kzrphvyhkbuhaczmnjgk.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
+
+    // Création du client Supabase
+    const clientVendoza = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
     const formulaire = document.getElementById("loginForm");
     const bouton = document.getElementById("loginButton");
     const message = document.getElementById("message");
@@ -202,57 +191,42 @@
     formulaire.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      message.textContent = "";
-      message.className = "";
-
       bouton.disabled = true;
       bouton.textContent = "Connexion en cours...";
+      message.textContent = "";
+      message.className = "";
 
       let connexionReussie = false;
 
       try {
-        // Vérifier le chargement de la bibliothèque.
-        if (!window.supabase) {
-          throw new Error(
-            "La bibliothèque Supabase ne s'est pas chargée. Vérifiez votre connexion Internet."
-          );
-        }
+        const email =
+          document.getElementById("email").value.trim();
 
-        // Vérifier l'initialisation du client.
-        if (
-          typeof supabase === "undefined" ||
-          !supabase.auth
-        ) {
-          throw new Error(
-            "Le client Supabase n'est pas initialisé. Vérifiez supabase-config.js et son emplacement."
-          );
-        }
+        const password =
+          document.getElementById("password").value;
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-
-        // ÉTAPE 1 : Authentification.
+        // 1. Connexion à Supabase Auth
         const { data, error } =
-          await supabase.auth.signInWithPassword({
+          await clientVendoza.auth.signInWithPassword({
             email: email,
             password: password
           });
 
         if (error) {
           throw new Error(
-            "Connexion refusée : " + error.message
+            "Échec de connexion : " + error.message
           );
         }
 
         if (!data.user) {
           throw new Error(
-            "Aucun utilisateur n'a été retourné par Supabase."
+            "Aucun utilisateur n'a été retourné."
           );
         }
 
-        // ÉTAPE 2 : Récupérer le profil.
+        // 2. Vérification du profil
         const { data: profil, error: erreurProfil } =
-          await supabase
+          await clientVendoza
             .from("profiles")
             .select("user_id, role")
             .eq("user_id", data.user.id)
@@ -260,32 +234,31 @@
 
         if (erreurProfil) {
           throw new Error(
-            "Erreur lors de la vérification du profil : " +
+            "Erreur de lecture du profil : " +
             erreurProfil.message
           );
         }
 
-        // ÉTAPE 3 : Vérifier l'existence du profil.
         if (!profil) {
-          await supabase.auth.signOut();
+          await clientVendoza.auth.signOut();
 
           throw new Error(
-            "Profil introuvable. Vérifiez la table profiles dans Supabase."
+            "Profil introuvable dans la table profiles."
           );
         }
 
-        // ÉTAPE 4 : Vérifier le rôle administrateur.
+        // 3. Vérification du rôle
         if (
           String(profil.role || "").trim().toLowerCase() !== "admin"
         ) {
-          await supabase.auth.signOut();
+          await clientVendoza.auth.signOut();
 
           throw new Error(
-            "Accès refusé : ce compte ne possède pas le rôle admin."
+            "Accès refusé : votre compte n'est pas administrateur."
           );
         }
 
-        // ÉTAPE 5 : Nettoyer les anciennes connexions locales.
+        // 4. Nettoyage des anciennes données locales
         localStorage.removeItem("vendozaVendeurConnecte");
         localStorage.removeItem("vendozaVendeurNom");
 
@@ -298,20 +271,16 @@
 
         bouton.textContent = "Connexion réussie...";
 
-        // ÉTAPE 6 : Rediriger vers le tableau de bord.
+        // 5. Redirection
         setTimeout(function() {
           window.location.href = "./dashboard.html";
         }, 800);
 
       } catch (error) {
-        console.error(
-          "ERREUR CONNEXION VENDOZA :",
-          error
-        );
+        console.error("Erreur Vendoza :", error);
 
         afficherMessage(
-          error.message ||
-          "Une erreur inattendue est survenue.",
+          error.message || "Une erreur inattendue est survenue.",
           "error"
         );
 
@@ -325,4 +294,4 @@
   </script>
 
 </body>
-    </html>
+</html>
