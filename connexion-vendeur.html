@@ -174,10 +174,18 @@
       "sb_publishable_ZvVK-d8qoaqi4__K0cqoyg_IsCaAqPO";
 
     // Création du client Supabase
-    const clientVendoza = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
+    let clientVendoza = null;
+
+if (window.supabase && window.supabase.createClient) {
+  clientVendoza = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+} else {
+  console.error(
+    "Supabase n'est pas chargé. Vérifiez la connexion Internet ou le CDN."
+  );
+    }
 
     const formulaire = document.getElementById("loginForm");
     const bouton = document.getElementById("loginButton");
@@ -206,8 +214,11 @@
           document.getElementById("password").value;
 
         // 1. Connexion à Supabase Auth
-        const { data, error } =
-          await clientVendoza.auth.signInWithPassword({
+        if (!clientVendoza) {
+  throw new Error(
+    "La bibliothèque Supabase ne se charge pas. Vérifiez votre connexion Internet."
+  );
+    }
             email: email,
             password: password
           });
