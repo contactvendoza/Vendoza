@@ -3,268 +3,310 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vendoza - Connexion administrateur</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
+  <title>Connexion Administrateur | Vendoza</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       min-height: 100vh;
-      padding: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 20px;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #111827, #2563eb);
+      background: linear-gradient(135deg, #101828, #263c63);
     }
 
-    .container { width: 100%; max-width: 430px; }
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 35px 25px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    }
 
     .logo {
       text-align: center;
-      color: white;
-      font-size: 32px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 18px;
-      padding: 28px;
-      box-shadow: 0 15px 40px rgba(0,0,0,.25);
-    }
-
-    h1 {
-      text-align: center;
-      color: #111827;
-      font-size: 25px;
-    }
-
-    .description {
-      text-align: center;
-      color: #6b7280;
       margin-bottom: 25px;
+    }
+
+    .logo h1 {
+      margin: 0;
+      color: #1769ff;
+      font-size: 34px;
+      font-weight: bold;
+    }
+
+    .logo p {
+      margin-top: 8px;
+      color: #667085;
+      font-size: 14px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #101828;
     }
 
     label {
       display: block;
-      margin: 16px 0 7px;
+      margin-bottom: 8px;
+      color: #344054;
       font-weight: bold;
-      color: #374151;
+      font-size: 14px;
     }
 
     input {
       width: 100%;
       padding: 13px;
-      border: 1px solid #d1d5db;
-      border-radius: 9px;
+      margin-bottom: 18px;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
       font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #1769ff;
+      box-shadow: 0 0 0 3px rgba(23, 105, 255, 0.12);
     }
 
     button {
       width: 100%;
-      margin-top: 22px;
       padding: 14px;
       border: none;
-      border-radius: 9px;
-      background: #2563eb;
+      border-radius: 8px;
+      background: #1769ff;
       color: white;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
     }
 
+    button:hover {
+      background: #0f50cc;
+    }
+
     button:disabled {
-      opacity: .6;
-      cursor: wait;
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
-    .message {
+    #message {
       display: none;
-      margin-top: 15px;
       padding: 12px;
+      margin-top: 18px;
       border-radius: 8px;
-      overflow-wrap: anywhere;
       font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
     }
 
-    .error {
+    #message.error {
       display: block;
-      background: #fee2e2;
-      color: #991b1b;
+      color: #b42318;
+      background: #fef3f2;
+      border: 1px solid #fecdca;
     }
 
-    .success {
+    #message.success {
       display: block;
-      background: #dcfce7;
-      color: #166534;
+      color: #027a48;
+      background: #ecfdf3;
+      border: 1px solid #abefc6;
     }
 
-    .back {
-      display: block;
+    .footer {
+      margin-top: 22px;
       text-align: center;
-      margin-top: 20px;
-      color: #2563eb;
-      text-decoration: none;
-    }
-
-    .info {
-      margin-top: 20px;
-      padding: 12px;
-      background: #f3f4f6;
-      border-radius: 8px;
-      text-align: center;
-      color: #6b7280;
+      color: #667085;
       font-size: 12px;
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="logo">🛍️ Vendoza</div>
 
-    <div class="card">
-      <h1>🔐 Connexion administrateur</h1>
+  <main class="login-container">
 
-      <p class="description">
-        Connectez-vous avec votre adresse e-mail.
-      </p>
-
-      <form id="loginForm">
-        <label for="email">Adresse e-mail</label>
-        <input
-          type="email"
-          id="email"
-          autocomplete="username"
-          placeholder="Votre adresse e-mail"
-          required
-        >
-
-        <label for="password">Mot de passe</label>
-        <input
-          type="password"
-          id="password"
-          autocomplete="current-password"
-          placeholder="Votre mot de passe"
-          required
-        >
-
-        <button type="submit" id="loginButton">
-          Se connecter
-        </button>
-
-        <div id="message" class="message" role="status"></div>
-      </form>
-
-      <a href="accueil.html" class="back">
-        ← Retour à la boutique
-      </a>
-
-      <div class="info">
-        Accès réservé aux administrateurs autorisés de Vendoza.
-      </div>
+    <div class="logo">
+      <h1>Vendoza</h1>
+      <p>Espace sécurisé de gestion</p>
     </div>
-  </div>
+
+    <h2>Connexion administrateur</h2>
+
+    <form id="loginForm">
+
+      <label for="email">Adresse e-mail</label>
+
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Votre adresse e-mail"
+        autocomplete="username"
+        required
+      >
+
+      <label for="password">Mot de passe</label>
+
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Votre mot de passe"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit" id="loginButton">
+        Se connecter
+      </button>
+
+      <div id="message" role="alert"></div>
+
+    </form>
+
+    <div class="footer">
+      Vendoza &copy; 2026 — Accès réservé aux administrateurs
+    </div>
+
+  </main>
+
+  <!-- Bibliothèque officielle Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Configuration de votre projet -->
+  <script src="supabase-config.js"></script>
 
   <script>
-    const form = document.getElementById("loginForm");
+    const formulaire = document.getElementById("loginForm");
+    const bouton = document.getElementById("loginButton");
     const message = document.getElementById("message");
-    const button = document.getElementById("loginButton");
 
     function afficherMessage(texte, type) {
       message.textContent = texte;
-      message.className = "message " + type;
+      message.className = type;
     }
 
-    form.addEventListener("submit", async function(event) {
+    formulaire.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      button.disabled = true;
-      afficherMessage("Connexion en cours...", "success");
+      message.textContent = "";
+      message.className = "";
+      bouton.disabled = true;
+      bouton.textContent = "Connexion en cours...";
 
       try {
+        // Vérifier que Supabase est bien configuré.
+        if (!window.supabase) {
+          throw new Error(
+            "La bibliothèque Supabase ne s'est pas chargée. Vérifiez votre connexion Internet."
+          );
+        }
+
+        if (
+          typeof supabase === "undefined" ||
+          !supabase.auth
+        ) {
+          throw new Error(
+            "Le fichier supabase-config.js est absent ou mal configuré."
+          );
+        }
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        // 1. Connecter l'utilisateur avec Supabase Auth.
         const { data, error } = await supabase.auth.signInWithPassword({
           email: email,
           password: password
         });
 
         if (error) {
-          afficherMessage(
-            "Connexion refusée. Vérifiez votre e-mail et votre mot de passe.",
-            "error"
+          throw new Error(
+            "Connexion refusée : " + error.message
           );
-          return;
         }
 
-        const utilisateur = data.user;
-
-        if (!utilisateur) {
-          afficherMessage("Utilisateur introuvable.", "error");
-          return;
+        if (!data.user) {
+          throw new Error(
+            "Supabase n'a retourné aucun utilisateur."
+          );
         }
 
+        // 2. Récupérer le rôle de l'utilisateur.
         const { data: profil, error: erreurProfil } = await supabase
           .from("profiles")
           .select("user_id, role")
-          .eq("user_id", utilisateur.id)
+          .eq("user_id", data.user.id)
           .maybeSingle();
 
         if (erreurProfil) {
-          await supabase.auth.signOut();
-
-          afficherMessage(
-            "Erreur lors de la vérification du profil : " +
-            erreurProfil.message,
-            "error"
+          throw new Error(
+            "Impossible de vérifier votre profil : " +
+            erreurProfil.message
           );
-          return;
         }
 
+        // 3. Vérifier que le profil existe.
         if (!profil) {
           await supabase.auth.signOut();
 
-          afficherMessage(
-            "Votre connexion fonctionne, mais votre profil est introuvable. Vérifiez la table profiles et ses règles RLS.",
-            "error"
+          throw new Error(
+            "Aucun profil n'a été trouvé pour ce compte. Vérifiez la table profiles dans Supabase."
           );
-          return;
         }
 
-        if (profil.role !== "admin") {
+        // 4. Vérifier les droits administrateur.
+        if (
+          String(profil.role || "").trim().toLowerCase() !== "admin"
+        ) {
           await supabase.auth.signOut();
 
-          afficherMessage(
-            "Accès refusé : votre compte n'a pas le rôle administrateur.",
-            "error"
+          throw new Error(
+            "Accès refusé : votre compte n'a pas le rôle admin."
           );
-          return;
         }
 
+        // 5. Nettoyer les anciennes données de connexion locale.
         localStorage.removeItem("vendozaVendeurConnecte");
         localStorage.removeItem("vendozaVendeurNom");
 
-        afficherMessage("Connexion réussie ! Ouverture du tableau de bord...", "success");
+        afficherMessage(
+          "Connexion réussie ! Ouverture du tableau de bord...",
+          "success"
+        );
 
-        window.location.replace("dashboard.html");
+        bouton.textContent = "Connexion réussie...";
+
+        // 6. Ouvrir le tableau de bord.
+        setTimeout(function() {
+          window.location.href = "dashboard.html";
+        }, 800);
 
       } catch (error) {
+        console.error("ERREUR CONNEXION VENDOZA :", error);
+
         afficherMessage(
-          "Une erreur inattendue est survenue. Vérifiez votre connexion Internet et la configuration Supabase.",
+          error.message || "Une erreur inattendue est survenue.",
           "error"
         );
+
       } finally {
-        button.disabled = false;
+        bouton.disabled = false;
+        bouton.textContent = "Se connecter";
       }
     });
   </script>
+
 </body>
 </html>
