@@ -372,10 +372,26 @@ if (
 }
 
 // Le fichier supabase-config.js doit définir la variable supabase.
-if (
-  typeof supabase === "undefined" ||
-  !supabase.auth
-) {
+const supabase = window.supabaseClient;
+
+if (!supabase || !supabase.auth) {
+    document.body.innerHTML = `
+        <div style="
+            text-align: center;
+            padding: 50px 20px;
+            font-family: Arial, sans-serif;
+        ">
+            <h2>Erreur de configuration</h2>
+            <p>Le client Supabase n'est pas initialisé.</p>
+            <p>Vérifiez le fichier supabase-config.js.</p>
+            <a href="./connexion-vendeur.html">
+                Retour à la connexion
+            </a>
+        </div>
+    `;
+
+    throw new Error("Le client Supabase n'est pas initialisé.");
+}
   document.body.innerHTML = `
     <div style="padding:25px;font-family:Arial,sans-serif">
       <h2>Erreur de configuration</h2>
