@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Vendoza - Dashboard Administrateur</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script src="supabase-config.js"></script>
+  <script src="./supabase-config.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -38,25 +34,10 @@
       gap: 15px;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-
-    header p {
-      margin: 6px 0 0;
-      opacity: 0.8;
-    }
-
-    .vendeur-info {
-      text-align: right;
-    }
-
-    .vendeur-nom {
-      font-weight: bold;
-      margin-bottom: 8px;
-      overflow-wrap: anywhere;
-    }
+    header h1 { margin: 0; font-size: 28px; }
+    header p { margin: 6px 0 0; opacity: .8; }
+    .vendeur-info { text-align: right; }
+    .vendeur-nom { font-weight: bold; margin-bottom: 8px; overflow-wrap: anywhere; }
 
     .logout {
       border: none;
@@ -68,9 +49,7 @@
       font-weight: bold;
     }
 
-    .logout:hover {
-      background: #b91c1c;
-    }
+    .logout:disabled { opacity: .6; cursor: wait; }
 
     .container {
       width: 95%;
@@ -94,9 +73,7 @@
       position: relative;
     }
 
-    .top-actions a:hover {
-      background: #2563eb;
-    }
+    .top-actions a:hover { background: #2563eb; }
 
     .notification-badge {
       display: none;
@@ -118,46 +95,24 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 15px;
       margin-bottom: 25px;
     }
 
-    .card {
+    .card, .section {
       background: white;
       padding: 20px;
       border-radius: 14px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
-    }
-
-    .card .icon {
-      font-size: 30px;
-    }
-
-    .card h3 {
-      margin: 10px 0 5px;
-      font-size: 16px;
-      color: #666;
-    }
-
-    .card .number {
-      font-size: 28px;
-      font-weight: bold;
-      color: #111827;
+      box-shadow: 0 3px 12px rgba(0,0,0,.07);
       overflow-wrap: anywhere;
     }
 
-    .section {
-      background: white;
-      padding: 20px;
-      border-radius: 14px;
-      margin-bottom: 25px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
-    }
-
-    .section h2 {
-      margin-top: 0;
-    }
+    .card .icon { font-size: 30px; }
+    .card h3 { margin: 10px 0 5px; font-size: 16px; color: #666; }
+    .card .number { font-size: 28px; font-weight: bold; color: #111827; }
+    .section { margin-bottom: 25px; }
+    .section h2 { margin-top: 0; }
 
     .warning {
       background: #fff7ed;
@@ -167,9 +122,7 @@
       margin-bottom: 10px;
     }
 
-    .warning strong {
-      color: #c2410c;
-    }
+    .warning strong { color: #c2410c; }
 
     .order {
       border: 1px solid #eee;
@@ -179,11 +132,7 @@
       overflow-wrap: anywhere;
     }
 
-    .empty {
-      text-align: center;
-      color: #777;
-      padding: 15px;
-    }
+    .empty { text-align: center; color: #777; padding: 15px; }
 
     .status {
       display: inline-block;
@@ -194,10 +143,7 @@
       font-weight: bold;
     }
 
-    .products-list {
-      margin-top: 6px;
-      padding-left: 18px;
-    }
+    .products-list { margin-top: 6px; padding-left: 18px; }
 
     .loading {
       text-align: center;
@@ -216,42 +162,22 @@
     }
 
     @media (max-width: 800px) {
-      .stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .header-content {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .vendeur-info {
-        text-align: left;
-      }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .header-content { flex-direction: column; align-items: flex-start; }
+      .vendeur-info { text-align: left; }
     }
 
     @media (max-width: 500px) {
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      header h1 {
-        font-size: 24px;
-      }
-
-      .top-actions a {
-        width: 100%;
-        text-align: center;
-      }
+      .stats { grid-template-columns: 1fr; }
+      header h1 { font-size: 24px; }
+      .top-actions a { width: 100%; text-align: center; }
     }
   </style>
 </head>
 
 <body>
-
 <header>
   <div class="header-content">
-
     <div>
       <h1>🛍️ Vendoza Dashboard</h1>
       <p>Gestion de votre boutique en ligne</p>
@@ -261,40 +187,28 @@
       <div class="vendeur-nom">
         👤 <span id="vendeurNom">Vérification...</span>
       </div>
-
       <button class="logout" id="boutonDeconnexion">
         🚪 Déconnexion
       </button>
     </div>
-
   </div>
 </header>
 
 <div class="container">
-
   <div class="top-actions">
-
     <a href="produit.html">🛍️ Produits</a>
-
     <a href="commandes.html">📦 Commandes</a>
-
     <a href="clients.html">👥 Clients</a>
-
     <a href="rapports.html">📈 Rapports</a>
-
     <a href="Paiements.html">💳 Paiements</a>
-
     <a href="paramètres.html">⚙️ Paramètres</a>
-
     <a href="notifications-vendeur.html">
       🔔 Notifications
       <span id="notificationBadge" class="notification-badge">0</span>
     </a>
-
   </div>
 
   <div class="stats">
-
     <div class="card">
       <div class="icon">📦</div>
       <h3>Produits</h3>
@@ -318,12 +232,10 @@
       <h3>Chiffre d'affaires</h3>
       <div class="number" id="chiffreAffaires">0 HTG</div>
     </div>
-
   </div>
 
   <div class="section">
     <h2>📊 Stock</h2>
-
     <p>
       <strong>Nombre total d'articles en stock :</strong>
       <span id="stockTotal">0</span>
@@ -332,7 +244,6 @@
 
   <div class="section">
     <h2>⚠️ Produits presque finis</h2>
-
     <div id="stockFaible">
       <div class="loading">Chargement...</div>
     </div>
@@ -340,90 +251,78 @@
 
   <div class="section">
     <h2>🕒 Commandes récentes</h2>
-
     <div id="commandesRecentes">
       <div class="loading">Chargement...</div>
     </div>
   </div>
-
 </div>
 
 <script>
 "use strict";
 
-// ==========================================
-// 1. VÉRIFIER SUPABASE
-// ==========================================
+// =====================================
+// 1. INITIALISATION SUPABASE
+// =====================================
 
-if (
-  !window.supabase ||
-  typeof window.supabase.createClient !== "function"
-) {
-  document.body.innerHTML = `
-    <div style="padding:25px;font-family:Arial,sans-serif">
-      <h2>Erreur de chargement</h2>
-      <p>La bibliothèque Supabase n'a pas pu être chargée.</p>
-      <p>Vérifiez votre connexion Internet puis réessayez.</p>
-      <a href="connexion-vendeur.html">Retour à la connexion</a>
-    </div>
-  `;
-
-  throw new Error("Bibliothèque Supabase indisponible.");
-}
-
-// Le fichier supabase-config.js doit définir la variable supabase.
 const supabase = window.supabaseClient;
 
 if (!supabase || !supabase.auth) {
-    document.body.innerHTML = `
-        <div style="
-            text-align: center;
-            padding: 50px 20px;
-            font-family: Arial, sans-serif;
-        ">
-            <h2>Erreur de configuration</h2>
-            <p>Le client Supabase n'est pas initialisé.</p>
-            <p>Vérifiez le fichier supabase-config.js.</p>
-            <a href="./connexion-vendeur.html">
-                Retour à la connexion
-            </a>
-        </div>
-    `;
-
-    throw new Error("Le client Supabase n'est pas initialisé.");
-}
   document.body.innerHTML = `
     <div style="padding:25px;font-family:Arial,sans-serif">
       <h2>Erreur de configuration</h2>
       <p>Le client Supabase n'est pas initialisé.</p>
       <p>Vérifiez le fichier supabase-config.js.</p>
-      <a href="connexion-vendeur.html">Retour à la connexion</a>
+      <a href="./connexion-vendeur.html">Retour à la connexion</a>
     </div>
   `;
-
   throw new Error("Client Supabase non initialisé.");
 }
 
-// ==========================================
-// 2. PROTECTION ADMINISTRATEUR
-// ==========================================
+// =====================================
+// 2. OUTILS
+// =====================================
+
+function echapperHTML(valeur) {
+  return String(valeur ?? "").replace(/[&<>"']/g, function(c) {
+    const map = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    };
+    return map[c];
+  });
+}
+
+function afficherErreur(elementId, message) {
+  const element = document.getElementById(elementId);
+  element.innerHTML = "";
+
+  const boite = document.createElement("div");
+  boite.className = "error";
+  boite.textContent = message;
+
+  element.appendChild(boite);
+}
+
+// =====================================
+// 3. VÉRIFICATION ADMINISTRATEUR
+// =====================================
 
 let utilisateurVendoza = null;
 
 async function verifierAdministrateur() {
-
   const { data, error } = await supabase.auth.getSession();
 
   if (error) {
-    throw new Error(
-      "Impossible de vérifier la session : " + error.message
-    );
+    throw new Error("Erreur de session : " + error.message);
   }
 
   const utilisateur = data.session?.user;
 
   if (!utilisateur) {
-    window.location.replace("connexion-vendeur.html");
+    window.location.replace("./connexion-vendeur.html");
     return false;
   }
 
@@ -434,17 +333,12 @@ async function verifierAdministrateur() {
     .maybeSingle();
 
   if (erreurProfil) {
-    throw new Error(
-      "Impossible de vérifier le profil : " + erreurProfil.message
-    );
+    throw new Error("Erreur du profil : " + erreurProfil.message);
   }
 
-  if (
-    !profil ||
-    String(profil.role || "").trim().toLowerCase() !== "admin"
-  ) {
+  if (!profil || String(profil.role || "").trim().toLowerCase() !== "admin") {
     await supabase.auth.signOut();
-    window.location.replace("connexion-vendeur.html");
+    window.location.replace("./connexion-vendeur.html");
     return false;
   }
 
@@ -456,19 +350,13 @@ async function verifierAdministrateur() {
   return true;
 }
 
-// ==========================================
-// 3. DÉCONNEXION
-// ==========================================
+// =====================================
+// 4. DÉCONNEXION
+// =====================================
 
-document
-  .getElementById("boutonDeconnexion")
+document.getElementById("boutonDeconnexion")
   .addEventListener("click", async function() {
-
-    const confirmer = confirm(
-      "Voulez-vous vraiment vous déconnecter ?"
-    );
-
-    if (!confirmer) return;
+    if (!confirm("Voulez-vous vraiment vous déconnecter ?")) return;
 
     this.disabled = true;
 
@@ -483,393 +371,245 @@ document
     localStorage.removeItem("vendozaVendeurConnecte");
     localStorage.removeItem("vendozaVendeurNom");
 
-    window.location.replace("connexion-vendeur.html");
+    window.location.replace("./connexion-vendeur.html");
   });
 
-// ==========================================
-// 4. NOTIFICATIONS
-// ==========================================
+// =====================================
+// 5. NOTIFICATIONS
+// =====================================
 
 function chargerBadgeNotifications() {
-
   let commandes = [];
+  let lues = [];
 
   try {
-    commandes = JSON.parse(
-      localStorage.getItem("vendozaCommandes") || "[]"
-    );
-
-    if (!Array.isArray(commandes)) {
-      commandes = [];
-    }
-  } catch (error) {
+    commandes = JSON.parse(localStorage.getItem("vendozaCommandes") || "[]");
+    if (!Array.isArray(commandes)) commandes = [];
+  } catch {
     commandes = [];
   }
 
-  let notificationsLues = [];
-
   try {
-    notificationsLues = JSON.parse(
-      localStorage.getItem(
-        "vendozaNotificationsVendeurLues"
-      ) || "[]"
+    lues = JSON.parse(
+      localStorage.getItem("vendozaNotificationsVendeurLues") || "[]"
     );
-
-    if (!Array.isArray(notificationsLues)) {
-      notificationsLues = [];
-    }
-  } catch (error) {
-    notificationsLues = [];
+    if (!Array.isArray(lues)) lues = [];
+  } catch {
+    lues = [];
   }
 
   let nonLues = 0;
 
   commandes.forEach(function(commande) {
-
-    const notificationId =
-      String(commande.id || "") + "-" +
+    const id = String(commande.id || "") + "-" +
       String(commande.statut || "");
 
-    if (!notificationsLues.includes(notificationId)) {
-      nonLues++;
-    }
+    if (!lues.includes(id)) nonLues++;
   });
 
   const badge = document.getElementById("notificationBadge");
 
-  if (nonLues > 0) {
-    badge.textContent = nonLues > 99 ? "99+" : String(nonLues);
-    badge.style.display = "block";
-  } else {
-    badge.style.display = "none";
-  }
+  badge.textContent = nonLues > 99 ? "99+" : String(nonLues);
+  badge.style.display = nonLues > 0 ? "block" : "none";
 }
 
-// ==========================================
-// 5. CHARGER LES PRODUITS
-// ==========================================
+// =====================================
+// 6. PRODUITS ET STATISTIQUES
+// =====================================
 
-async function chargerProduitsSupabase() {
+async function chargerDashboard() {
+  const stockFaible = document.getElementById("stockFaible");
+  const commandesRecentes = document.getElementById("commandesRecentes");
 
-  const conteneur = document.getElementById("stockFaible");
+  stockFaible.innerHTML = '<div class="loading">Chargement...</div>';
+  commandesRecentes.innerHTML = '<div class="loading">Chargement...</div>';
+
+  let produits = [];
 
   try {
-
     const { data, error } = await supabase
       .from("products")
       .select("*");
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
-    return data || [];
+    produits = data || [];
 
-  } catch (error) {
+    document.getElementById("nombreProduits").textContent = produits.length;
 
-    console.error("Erreur chargement produits :", error);
+    const stockTotal = produits.reduce(function(total, produit) {
+      return total + (Number(produit.Stock ?? produit.stock ?? 0) || 0);
+    }, 0);
 
-    conteneur.innerHTML = `
-      <div class="error">
-        Impossible de charger les produits : ${
-          echapperHTML(error.message || "Erreur inconnue")
-        }
-      </div>
-    `;
+    document.getElementById("stockTotal").textContent = stockTotal;
 
-    return null;
-  }
-}
-
-// ==========================================
-// 6. AFFICHER LE STOCK ET LES STATISTIQUES
-// ==========================================
-
-async function chargerDashboard() {
-
-  const produits = await chargerProduitsSupabase();
-
-  if (produits === null) {
-    document.getElementById("nombreProduits").textContent = "—";
-    document.getElementById("stockTotal").textContent = "—";
-    return;
-  }
-
-  document.getElementById("nombreProduits").textContent =
-    produits.length;
-
-  let stockTotal = 0;
-
-  produits.forEach(function(produit) {
-
-    stockTotal += Number(
-      produit.Stock ?? produit.stock ?? 0
-    ) || 0;
-  });
-
-  document.getElementById("stockTotal").textContent =
-    stockTotal;
-
-  const stockFaible = document.getElementById("stockFaible");
-
-  const produitsFaibles = produits.filter(function(produit) {
-
-    const stock = Number(
-      produit.Stock ?? produit.stock ?? 0
-    ) || 0;
-
-    return stock <= 5;
-  });
-
-  if (produitsFaibles.length === 0) {
-
-    stockFaible.innerHTML = `
-      <div class="empty">
-        ✅ Aucun produit n'est presque épuisé.
-      </div>
-    `;
-
-  } else {
+    const faibles = produits.filter(function(produit) {
+      return (Number(produit.Stock ?? produit.stock ?? 0) || 0) <= 5;
+    });
 
     stockFaible.innerHTML = "";
 
-    produitsFaibles.forEach(function(produit) {
+    if (faibles.length === 0) {
+      stockFaible.innerHTML =
+        '<div class="empty">✅ Aucun produit presque épuisé.</div>';
+    } else {
+      faibles.forEach(function(produit) {
+        const element = document.createElement("div");
+        element.className = "warning";
 
-      const stock = Number(
-        produit.Stock ?? produit.stock ?? 0
-      ) || 0;
+        const nom = document.createElement("strong");
+        nom.textContent = produit.name || produit.nom || "Produit sans nom";
 
-      const nom = echapperHTML(
-        produit.name || produit.nom || "Produit sans nom"
-      );
+        const ligne = document.createElement("div");
+        ligne.textContent =
+          "Stock restant : " +
+          (Number(produit.Stock ?? produit.stock ?? 0) || 0);
 
-      const element = document.createElement("div");
-
-      element.className = "warning";
-
-      element.innerHTML = `
-        <strong>${nom}</strong>
-        <br>
-        Stock restant : <strong>${stock}</strong>
-      `;
-
-      stockFaible.appendChild(element);
-    });
+        element.append(nom, document.createElement("br"), ligne);
+        stockFaible.appendChild(element);
+      });
+    }
+  } catch (error) {
+    console.error("Erreur produits :", error);
+    document.getElementById("nombreProduits").textContent = "—";
+    document.getElementById("stockTotal").textContent = "—";
+    afficherErreur(
+      "stockFaible",
+      "Impossible de charger les produits : " +
+      (error.message || "Erreur inconnue")
+    );
   }
 
-  // ========================================
-  // COMMANDES LOCALES
-  // ========================================
-
+  // Les commandes sont actuellement lues depuis le stockage local du navigateur.
   let commandes = [];
 
   try {
-    commandes = JSON.parse(
-      localStorage.getItem("vendozaCommandes") || "[]"
-    );
-
-    if (!Array.isArray(commandes)) {
-      commandes = [];
-    }
-  } catch (error) {
+    commandes = JSON.parse(localStorage.getItem("vendozaCommandes") || "[]");
+    if (!Array.isArray(commandes)) commandes = [];
+  } catch {
     commandes = [];
   }
 
-  document.getElementById("nombreCommandes").textContent =
-    commandes.length;
+  document.getElementById("nombreCommandes").textContent = commandes.length;
+
+  const statutsConfirmes = [
+    "confirmée", "confirmee", "en livraison", "livrée", "livree"
+  ];
 
   const confirmees = commandes.filter(function(commande) {
-
-    const statut = String(commande.statut || "").toLowerCase();
-
-    return [
-      "confirmée",
-      "confirmee",
-      "en livraison",
-      "livrée",
-      "livree"
-    ].includes(statut);
+    return statutsConfirmes.includes(
+      String(commande.statut || "").toLowerCase()
+    );
   });
 
   document.getElementById("commandesConfirmees").textContent =
     confirmees.length;
 
-  let chiffreAffaires = 0;
-
-  confirmees.forEach(function(commande) {
-    chiffreAffaires += Number(commande.total) || 0;
-  });
+  const chiffreAffaires = confirmees.reduce(function(total, commande) {
+    return total + (Number(commande.total) || 0);
+  }, 0);
 
   document.getElementById("chiffreAffaires").textContent =
     chiffreAffaires.toLocaleString("fr-FR") + " HTG";
 
-  // ========================================
-  // COMMANDES RÉCENTES
-  // ========================================
-
-  const conteneurCommandes =
-    document.getElementById("commandesRecentes");
+  commandesRecentes.innerHTML = "";
 
   const recentes = commandes.slice().reverse().slice(0, 5);
 
   if (recentes.length === 0) {
-
-    conteneurCommandes.innerHTML = `
-      <div class="empty">
-        📭 Aucune commande pour le moment.
-      </div>
-    `;
-
+    commandesRecentes.innerHTML =
+      '<div class="empty">📭 Aucune commande pour le moment.</div>';
     return;
   }
 
-  conteneurCommandes.innerHTML = "";
-
   recentes.forEach(function(commande) {
-
     const bloc = document.createElement("div");
     bloc.className = "order";
 
     const titre = document.createElement("strong");
-
     titre.textContent = commande.id || "Commande";
-
     bloc.appendChild(titre);
 
     const client = document.createElement("p");
-
-    client.textContent =
-      "Client : " +
-      (commande.client?.nom || "N/A");
-
+    client.textContent = "Client : " + (commande.client?.nom || "N/A");
     bloc.appendChild(client);
 
     const telephone = document.createElement("p");
-
     telephone.textContent =
-      "Téléphone : " +
-      (commande.client?.telephone || "N/A");
-
+      "Téléphone : " + (commande.client?.telephone || "N/A");
     bloc.appendChild(telephone);
 
     const titreProduits = document.createElement("p");
-
     titreProduits.textContent = "Produits :";
-
     bloc.appendChild(titreProduits);
 
     const liste = document.createElement("ul");
     liste.className = "products-list";
 
-    if (
-      Array.isArray(commande.produits) &&
-      commande.produits.length > 0
-    ) {
-
+    if (Array.isArray(commande.produits) && commande.produits.length > 0) {
       commande.produits.forEach(function(article) {
-
         const ligne = document.createElement("li");
-
         ligne.textContent =
-          (article.name || "Produit") +
-          " × " +
+          (article.name || "Produit") + " × " +
           (Number(article.quantity) || 0);
-
         liste.appendChild(ligne);
       });
-
     } else {
-
       const ligne = document.createElement("li");
-
-      ligne.textContent =
-        commande.produit?.name || "N/A";
-
+      ligne.textContent = commande.produit?.name || "N/A";
       liste.appendChild(ligne);
     }
 
     bloc.appendChild(liste);
 
     const total = document.createElement("p");
-
     total.textContent =
       "Total : " +
       (Number(commande.total) || 0).toLocaleString("fr-FR") +
       " HTG";
-
     bloc.appendChild(total);
 
     const statut = document.createElement("span");
-
     statut.className = "status";
-
-    statut.textContent =
-      commande.statut || "En attente";
-
+    statut.textContent = commande.statut || "En attente";
     bloc.appendChild(statut);
 
-    conteneurCommandes.appendChild(bloc);
+    commandesRecentes.appendChild(bloc);
   });
 }
 
-// ==========================================
-// 7. SÉCURITÉ HTML
-// ==========================================
+// =====================================
+// 7. DÉMARRAGE
+// =====================================
 
-function echapperHTML(valeur) {
-
-  return String(valeur ?? "").replace(
-    /[&<>"']/g,
-    function(caractere) {
-
-      const remplacement = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      };
-
-      return remplacement[caractere];
-    }
-  );
-}
-
-// ==========================================
-// 8. DÉMARRER LE DASHBOARD
-// ==========================================
+let chargementEnCours = false;
 
 async function demarrerDashboard() {
+  if (chargementEnCours) return;
+  chargementEnCours = true;
 
   try {
-
     const autorise = await verifierAdministrateur();
 
-    if (!autorise) {
-      return;
-    }
+    if (!autorise) return;
 
     await chargerDashboard();
-
     chargerBadgeNotifications();
 
     setInterval(async function() {
-
-      await chargerDashboard();
-
-      chargerBadgeNotifications();
-
-    }, 10000);
+      try {
+        await chargerDashboard();
+        chargerBadgeNotifications();
+      } catch (error) {
+        console.error("Erreur actualisation :", error);
+      }
+    }, 30000);
 
     window.addEventListener("storage", function() {
-
       chargerBadgeNotifications();
-
       chargerDashboard();
     });
-
   } catch (error) {
-
     console.error("Erreur Dashboard :", error);
 
     document.body.innerHTML = `
@@ -883,16 +623,15 @@ async function demarrerDashboard() {
       ">
         <h2>Erreur lors du chargement du Dashboard</h2>
         <p>${echapperHTML(error.message || "Erreur inconnue")}</p>
-        <a href="connexion-vendeur.html">
-          Retour à la connexion
-        </a>
+        <a href="./connexion-vendeur.html">Retour à la connexion</a>
       </div>
     `;
+  } finally {
+    chargementEnCours = false;
   }
 }
 
 demarrerDashboard();
 </script>
-
 </body>
-  </html>
+                                            </html>
