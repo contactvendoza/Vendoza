@@ -313,6 +313,95 @@ function afficherErreur(elementId, message) {
 let utilisateurVendoza = null;
 
 async function verifierAdministrateur() {
+  const nom = document.getElementById("vendeurNom");
+
+  nom.textContent = "Vérification de la session...";
+
+  try {
+    // Verifye si kliyan Supabase la disponib
+    if (!window.supabaseClient) {
+      throw new Error("Le client Supabase n'est pas initialisé.");
+    }
+
+    // Eseye li sesyon an
+    const resultat = await Promise.race([
+      window.supabaseClient.auth.getSession(),
+      new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Délai dépassé pendant la vérification de session. Rechargez la page.")),
+          10000
+        )
+      )
+    ]);
+
+    const { data, error } = resultat;
+
+    if (error) {
+      throw new Error("Erreur de session : " + error.message);
+    }
+
+    const utilisateur = data.session?.user;
+
+    if (!utilisateur) {
+      window.location.replace("./connexion-vendeur.html");
+      return false;
+    }
+
+    nom.textContent = "Vérification du profil...";
+
+    const resultatProfil = await Promise.race([
+      window.supabaseClient
+        .from("profiles")
+        .select("user_id, role")
+        .eq("user_id", utilisateur.id)
+        .maybeSingle(),
+      new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Délai dépassé pendant la vérification du profil.")),
+          10000
+        )
+      )
+    ]);
+
+    const { data: profil, error: erreurProfil } = resultatProfil;
+
+    if (erreurProfil) {
+      throw new Error("Erreur du profil : " + erreurProfil.message);
+    }
+
+    if (
+      !profil ||
+      String(profil.role || "").trim().toLowerCase() !== "admin"
+    ) {
+      await window.supabaseClient.auth.signOut();
+      window.location.replace("./connexion-vendeur.html");
+      return false;
+    }
+
+    utilisateurVendoza = utilisateur;
+
+    nom.textContent = utilisateur.email || "Administrateur";
+
+    return true;
+
+  } catch (erreur) {
+    console.error("Erreur de vérification :", erreur);
+
+    nom.textContent = "Erreur de vérification";
+
+    afficherErreur(
+      "stockFaible",
+      erreur.message || "Une erreur inconnue est survenue."
+    );
+
+    afficherErreur(
+      "commandesRecentes",
+      "Impossible de vérifier votre session. Consultez le message d'erreur ci-dessus."
+    );
+
+    throw erreur;
+  }
+  }
   const { data, error } = await supabase.auth.getSession();
 
   if (error) {
