@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vendoza | Tableau de bord</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./supabase-config.js"></script>
-
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -33,13 +30,14 @@
 
     button {
       border: none;
-      padding: 11px 16px;
+      padding: 12px 16px;
       border-radius: 7px;
       cursor: pointer;
       font-size: 14px;
       font-weight: bold;
     }
 
+    button:disabled { opacity: .6; cursor: wait; }
     .btn-logout { background: #e63946; color: white; }
 
     main {
@@ -62,7 +60,7 @@
       background: white;
       padding: 22px;
       border-radius: 12px;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, .06);
     }
 
     .card h3 {
@@ -92,7 +90,6 @@
     .success { color: #0f5132; background: #d1e7dd; }
     .muted { color: #667085; }
     .loading { color: #667085; padding: 10px 0; }
-
     .table-wrapper { width: 100%; overflow-x: auto; }
 
     table {
@@ -141,13 +138,15 @@
       <h1>Vendoza</h1>
       <p>Tableau de bord administrateur</p>
     </div>
-    <button class="btn-logout" id="btnDeconnexion">Déconnexion</button>
+    <button class="btn-logout" id="btnDeconnexion">
+      Déconnexion
+    </button>
   </header>
 
   <main>
     <div class="welcome">
       <h2>Bienvenue sur votre tableau de bord</h2>
-      <p>Administrateur : <strong id="vendeurNom">Initialisation...</strong></p>
+      <p>Administrateur : <strong id="vendeurNom">Démarrage...</strong></p>
       <div id="messageGlobal" class="message" hidden></div>
     </div>
 
@@ -156,153 +155,175 @@
         <h3>Total des produits</h3>
         <div class="stat-number" id="totalProduits">—</div>
       </div>
+
       <div class="card">
         <h3>Produits en stock faible</h3>
         <div class="stat-number" id="nombreStockFaible">—</div>
       </div>
+
       <div class="card">
         <h3>Commandes enregistrées</h3>
         <div class="stat-number" id="totalCommandes">—</div>
       </div>
+
       <div class="card">
         <h3>Dernière mise à jour</h3>
-        <div class="stat-number" id="derniereMiseAJour" style="font-size:18px">—</div>
+        <div class="stat-number" id="derniereMiseAJour"
+             style="font-size:18px">—</div>
       </div>
     </section>
 
     <section class="section">
       <h2>Produits en stock faible</h2>
-      <div id="stockFaible"><p class="loading">En attente de vérification...</p></div>
+      <div id="stockFaible">
+        <p class="loading">Démarrage du tableau de bord...</p>
+      </div>
     </section>
 
     <section class="section">
       <h2>Commandes récentes</h2>
-      <div id="commandesRecentes"><p class="loading">En attente de vérification...</p></div>
+      <div id="commandesRecentes">
+        <p class="loading">Vérification des commandes...</p>
+      </div>
     </section>
 
     <section class="section">
       <h2>État de la connexion</h2>
-      <p id="etatConnexion" class="muted">Initialisation...</p>
+      <p id="etatConnexion" class="muted">
+        Chargement du JavaScript...
+      </p>
     </section>
   </main>
 
   <footer>© <span id="annee"></span> Vendoza. Tous droits réservés.</footer>
 
+  <!-- Chaje bibliyotèk yo anvan kòd dashboard la -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-config.js"></script>
+
   <script>
     "use strict";
 
-    const supabase = window.supabaseClient;
-    let utilisateurVendoza = null;
+    const $ = id => document.getElementById(id);
+    let client = null;
+    let utilisateurConnecte = null;
     let actualisationEnCours = false;
-    let actualisationAutomatiqueDemarree = false;
 
-    document.getElementById("annee").textContent = new Date().getFullYear();
+    $("annee").textContent = new Date().getFullYear();
 
-    function afficherErreur(elementId, message) {
-      const element = document.getElementById(elementId);
-      if (!element) return;
+    // Fonksyon sa a montre mesaj dirèkteman sou paj la.
+    function mesajGlobal(texte, type = "error") {
+      const zone = $("messageGlobal");
+      zone.hidden = false;
+      zone.className = "message " + type;
+      zone.textContent = texte;
+    }
 
-      element.replaceChildren();
+    function erreurZone(id, texte) {
+      const zone = $(id);
+      zone.replaceChildren();
+
       const p = document.createElement("p");
       p.className = "message error";
-      p.textContent = message;
-      element.appendChild(p);
+      p.textContent = texte;
+      zone.appendChild(p);
     }
 
-    function afficherMessageGlobal(message, type = "error") {
-      const element = document.getElementById("messageGlobal");
-      element.hidden = false;
-      element.className = "message " + type;
-      element.textContent = message;
-    }
-
-    function avecDelai(promise, message, millisecondes = 12000) {
+    function delaiMax(promise, texte, ms = 15000) {
       let minuterie;
 
       const delai = new Promise((_, reject) => {
-        minuterie = setTimeout(() => reject(new Error(message)), millisecondes);
+        minuterie = setTimeout(
+          () => reject(new Error(texte)),
+          ms
+        );
       });
 
-      return Promise.race([promise, delai]).finally(() => clearTimeout(minuterie));
+      return Promise.race([promise, delai])
+        .finally(() => clearTimeout(minuterie));
     }
 
-    function verifierConfiguration() {
-      if (!window.supabase) {
-        throw new Error("La bibliothèque Supabase ne s'est pas chargée. Vérifiez Internet.");
-      }
+    async function verifierAdmin() {
+      $("vendeurNom").textContent = "Vérification de la session...";
+      $("etatConnexion").textContent = "Connexion à Supabase...";
 
-      if (!supabase || !supabase.auth) {
-        throw new Error("Le client Supabase est absent. Vérifiez supabase-config.js.");
-      }
-    }
-
-    async function verifierAdministrateur() {
-      const nom = document.getElementById("vendeurNom");
-      const etat = document.getElementById("etatConnexion");
-
-      nom.textContent = "Vérification de la session...";
-      etat.textContent = "Connexion à Supabase...";
-
-      const { data, error } = await avecDelai(
-        supabase.auth.getSession(),
-        "Supabase ne répond pas pendant la vérification de session."
+      const resultat = await delaiMax(
+        client.auth.getSession(),
+        "Délai dépassé lors de la vérification de session."
       );
 
-      if (error) throw new Error("Erreur de session : " + error.message);
+      if (resultat.error) {
+        throw new Error("Erreur de session : " + resultat.error.message);
+      }
 
-      const utilisateur = data.session?.user;
+      const utilisateur = resultat.data?.session?.user;
 
       if (!utilisateur) {
+        $("etatConnexion").textContent =
+          "Aucune session active. Retour à la connexion...";
         window.location.replace("./connexion-vendeur.html");
         return false;
       }
 
-      nom.textContent = "Vérification du profil...";
-      etat.textContent = "Lecture du profil administrateur...";
+      $("vendeurNom").textContent = "Vérification du profil...";
+      $("etatConnexion").textContent =
+        "Vérification du rôle administrateur...";
 
-      const resultatProfil = await avecDelai(
-        supabase
+      const profilResultat = await delaiMax(
+        client
           .from("profiles")
           .select("user_id, role")
           .eq("user_id", utilisateur.id)
           .maybeSingle(),
-        "Supabase ne répond pas pendant la lecture du profil."
+        "Délai dépassé lors de la lecture du profil."
       );
 
-      if (resultatProfil.error) {
-        throw new Error("Erreur du profil : " + resultatProfil.error.message);
+      if (profilResultat.error) {
+        throw new Error(
+          "Erreur de lecture du profil : " +
+          profilResultat.error.message
+        );
       }
 
-      const profil = resultatProfil.data;
+      const profil = profilResultat.data;
 
       if (!profil) {
         throw new Error(
-          "Aucun profil ne correspond à cet utilisateur dans la table profiles."
+          "Aucun profil trouvé pour cet utilisateur dans la table profiles."
         );
       }
 
-      if (String(profil.role || "").trim().toLowerCase() !== "admin") {
+      if (
+        String(profil.role || "").trim().toLowerCase() !== "admin"
+      ) {
         throw new Error(
-          "Le profil existe, mais son rôle n'est pas admin."
+          "Accès refusé : le rôle de ce compte n'est pas admin."
         );
       }
 
-      utilisateurVendoza = utilisateur;
-      nom.textContent = utilisateur.email || "Administrateur";
-      etat.textContent = "Session et profil administrateur vérifiés.";
+      utilisateurConnecte = utilisateur;
+      $("vendeurNom").textContent =
+        utilisateur.email || "Administrateur";
+      $("etatConnexion").textContent =
+        "Session et profil administrateur vérifiés.";
 
       return true;
     }
 
-    function obtenirStock(produit) {
+    function lireStock(produit) {
       const colonnes = [
-        "stock", "quantity", "quantite",
-        "stock_quantity", "quantite_stock"
+        "stock",
+        "quantity",
+        "quantite",
+        "stock_quantity",
+        "quantite_stock"
       ];
 
       for (const colonne of colonnes) {
-        if (produit[colonne] !== undefined && produit[colonne] !== null) {
+        if (produit[colonne] !== undefined &&
+            produit[colonne] !== null) {
           const valeur = Number(produit[colonne]);
+
           if (Number.isFinite(valeur)) return valeur;
         }
       }
@@ -310,143 +331,31 @@
       return null;
     }
 
-    async function chargerProduits() {
-      const zone = document.getElementById("stockFaible");
-      zone.textContent = "Chargement des produits...";
-
-      const resultat = await avecDelai(
-        supabase.from("products").select("*"),
-        "Le chargement des produits a dépassé le délai."
-      );
-
-      if (resultat.error) {
-        throw new Error("Impossible de charger les produits : " + resultat.error.message);
-      }
-
-      const produits = resultat.data || [];
-      document.getElementById("totalProduits").textContent = produits.length;
-
-      const faibles = produits.filter(p => {
-        const stock = obtenirStock(p);
-        return stock !== null && stock <= 5;
-      });
-
-      document.getElementById("nombreStockFaible").textContent = faibles.length;
-      zone.replaceChildren();
-
-      if (!produits.length) {
-        zone.textContent = "Aucun produit n'a été trouvé dans la table products.";
-        return;
-      }
-
-      if (!faibles.length) {
-        zone.textContent = "Aucun produit en stock faible.";
-        return;
-      }
-
+    function creerTableau(entetes, lignes) {
       const wrapper = document.createElement("div");
       wrapper.className = "table-wrapper";
 
       const table = document.createElement("table");
       const thead = document.createElement("thead");
-      const trh = document.createElement("tr");
+      const trEntete = document.createElement("tr");
 
-      ["Produit", "Stock restant", "État"].forEach(titre => {
+      entetes.forEach(titre => {
         const th = document.createElement("th");
         th.textContent = titre;
-        trh.appendChild(th);
+        trEntete.appendChild(th);
       });
 
-      thead.appendChild(trh);
+      thead.appendChild(trEntete);
       table.appendChild(thead);
 
       const tbody = document.createElement("tbody");
 
-      faibles.forEach(produit => {
-        const tr = document.createElement("tr");
-        const nom = produit.name || produit.nom || produit.title || produit.titre || "Produit sans nom";
-        const stock = obtenirStock(produit);
-
-        const tdNom = document.createElement("td");
-        tdNom.textContent = String(nom);
-
-        const tdStock = document.createElement("td");
-        tdStock.textContent = String(stock);
-
-        const tdEtat = document.createElement("td");
-        const badge = document.createElement("span");
-        badge.className = "badge";
-        badge.textContent = stock <= 0 ? "Rupture de stock" : "Stock faible";
-        tdEtat.appendChild(badge);
-
-        tr.append(tdNom, tdStock, tdEtat);
-        tbody.appendChild(tr);
-      });
-
-      table.appendChild(tbody);
-      wrapper.appendChild(table);
-      zone.appendChild(wrapper);
-    }
-
-    function formaterMontant(valeur) {
-      const montant = Number(valeur);
-      if (!Number.isFinite(montant)) return "—";
-      return montant.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
-    }
-
-    function chargerCommandes() {
-      const zone = document.getElementById("commandesRecentes");
-      zone.replaceChildren();
-
-      let commandes = [];
-
-      try {
-        const contenu = localStorage.getItem("vendozaCommandes");
-        const donnees = contenu ? JSON.parse(contenu) : [];
-        if (Array.isArray(donnees)) commandes = donnees;
-      } catch (erreur) {
-        throw new Error("Les données locales des commandes sont illisibles.");
-      }
-
-      document.getElementById("totalCommandes").textContent = commandes.length;
-
-      if (!commandes.length) {
-        zone.textContent = "Aucune commande enregistrée dans ce navigateur.";
-        return;
-      }
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "table-wrapper";
-
-      const table = document.createElement("table");
-      const thead = document.createElement("thead");
-      const trh = document.createElement("tr");
-
-      ["Référence", "Client", "Montant", "Statut"].forEach(titre => {
-        const th = document.createElement("th");
-        th.textContent = titre;
-        trh.appendChild(th);
-      });
-
-      thead.appendChild(trh);
-      table.appendChild(thead);
-
-      const tbody = document.createElement("tbody");
-      [...commandes].reverse().slice(0, 10).forEach((commande, index) => {
+      lignes.forEach(ligne => {
         const tr = document.createElement("tr");
 
-        const valeurs = [
-          commande.reference || commande.numero || commande.id || `Commande ${index + 1}`,
-          commande.client || commande.nomClient || commande.customer_name || commande.nom || "Client",
-          commande.total ?? commande.montant ?? commande.totalCommande ?? commande.prix ?? null,
-          commande.statut || commande.status || commande.etat || "En attente"
-        ];
-
-        valeurs.forEach((valeur, i) => {
+        ligne.forEach(valeur => {
           const td = document.createElement("td");
-          td.textContent = i === 2 && valeur !== null
-            ? formaterMontant(valeur)
-            : String(valeur ?? "—");
+          td.textContent = String(valeur ?? "—");
           tr.appendChild(td);
         });
 
@@ -455,91 +364,247 @@
 
       table.appendChild(tbody);
       wrapper.appendChild(table);
-      zone.appendChild(wrapper);
+
+      return wrapper;
     }
 
-    async function actualiserTableauDeBord() {
+    async function chargerProduits() {
+      $("stockFaible").textContent = "Chargement des produits...";
+
+      const resultat = await delaiMax(
+        client.from("products").select("*"),
+        "Le chargement des produits a dépassé le délai."
+      );
+
+      if (resultat.error) {
+        throw new Error(
+          "Impossible de lire la table products : " +
+          resultat.error.message
+        );
+      }
+
+      const produits = resultat.data || [];
+      $("totalProduits").textContent = produits.length;
+
+      const faibles = produits.filter(produit => {
+        const stock = lireStock(produit);
+        return stock !== null && stock <= 5;
+      });
+
+      $("nombreStockFaible").textContent = faibles.length;
+      $("stockFaible").replaceChildren();
+
+      if (produits.length === 0) {
+        $("stockFaible").textContent =
+          "La table products ne contient aucun produit.";
+        return;
+      }
+
+      if (faibles.length === 0) {
+        $("stockFaible").textContent =
+          "Aucun produit en stock faible, ou aucune colonne de stock reconnue.";
+        return;
+      }
+
+      const lignes = faibles.map(produit => {
+        const nom =
+          produit.name ||
+          produit.nom ||
+          produit.title ||
+          produit.titre ||
+          "Produit sans nom";
+
+        const stock = lireStock(produit);
+        const etat = stock <= 0
+          ? "Rupture de stock"
+          : "Stock faible";
+
+        return [nom, stock, etat];
+      });
+
+      $("stockFaible").appendChild(
+        creerTableau(
+          ["Produit", "Stock restant", "État"],
+          lignes
+        )
+      );
+    }
+
+    function chargerCommandesLocales() {
+      $("commandesRecentes").replaceChildren();
+
+      let commandes = [];
+
+      try {
+        const contenu = localStorage.getItem("vendozaCommandes");
+        const donnees = contenu ? JSON.parse(contenu) : [];
+        if (Array.isArray(donnees)) commandes = donnees;
+      } catch (e) {
+        throw new Error(
+          "Les commandes enregistrées dans ce navigateur sont illisibles."
+        );
+      }
+
+      $("totalCommandes").textContent = commandes.length;
+
+      if (commandes.length === 0) {
+        $("commandesRecentes").textContent =
+          "Aucune commande locale trouvée dans ce navigateur. " +
+          "Ces données ne sont pas encore lues depuis une table de commandes Supabase.";
+        return;
+      }
+
+      const lignes = [...commandes]
+        .reverse()
+        .slice(0, 10)
+        .map((commande, index) => [
+          commande.reference ||
+            commande.numero ||
+            commande.id ||
+            "Commande " + (index + 1),
+
+          commande.client ||
+            commande.nomClient ||
+            commande.customer_name ||
+            commande.nom ||
+            "Client",
+
+          commande.total ??
+            commande.montant ??
+            commande.totalCommande ??
+            commande.prix ??
+            "—",
+
+          commande.statut ||
+            commande.status ||
+            commande.etat ||
+            "En attente"
+        ]);
+
+      $("commandesRecentes").appendChild(
+        creerTableau(
+          ["Référence", "Client", "Montant", "Statut"],
+          lignes
+        )
+      );
+    }
+
+    async function actualiser() {
       if (actualisationEnCours) return;
       actualisationEnCours = true;
 
       try {
         await chargerProduits();
-      } catch (erreur) {
-        console.error(erreur);
-        afficherErreur("stockFaible", erreur.message || "Erreur de chargement des produits.");
+      } catch (e) {
+        console.error("Erreur produits :", e);
+        $("totalProduits").textContent = "—";
+        $("nombreStockFaible").textContent = "—";
+        erreurZone(
+          "stockFaible",
+          e.message || "Erreur lors du chargement des produits."
+        );
       }
 
       try {
-        chargerCommandes();
-      } catch (erreur) {
-        console.error(erreur);
-        afficherErreur("commandesRecentes", erreur.message || "Erreur de chargement des commandes.");
+        chargerCommandesLocales();
+      } catch (e) {
+        console.error("Erreur commandes :", e);
+        $("totalCommandes").textContent = "—";
+        erreurZone(
+          "commandesRecentes",
+          e.message || "Erreur lors du chargement des commandes."
+        );
       }
 
-      document.getElementById("derniereMiseAJour").textContent =
+      $("derniereMiseAJour").textContent =
         new Date().toLocaleTimeString("fr-FR");
 
       actualisationEnCours = false;
     }
 
-    document.getElementById("btnDeconnexion").addEventListener("click", async function () {
+    $("btnDeconnexion").addEventListener("click", async function() {
       const bouton = this;
       bouton.disabled = true;
       bouton.textContent = "Déconnexion...";
 
       try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
+        if (!client?.auth) {
+          throw new Error("Le client Supabase n'est pas disponible.");
+        }
+
+        const resultat = await client.auth.signOut();
+
+        if (resultat.error) throw resultat.error;
+
         window.location.replace("./connexion-vendeur.html");
-      } catch (erreur) {
-        afficherMessageGlobal("Erreur de déconnexion : " + erreur.message);
+      } catch (e) {
+        console.error("Erreur déconnexion :", e);
+        mesajGlobal("Erreur de déconnexion : " + e.message);
         bouton.disabled = false;
         bouton.textContent = "Déconnexion";
       }
     });
 
     async function demarrerDashboard() {
-      try {
-        verifierConfiguration();
+      $("etatConnexion").textContent =
+        "Le JavaScript du tableau de bord fonctionne.";
 
-        const autorise = await verifierAdministrateur();
+      try {
+        if (!window.supabase) {
+          throw new Error(
+            "La bibliothèque Supabase n'a pas été chargée. Vérifiez Internet."
+          );
+        }
+
+        if (!window.supabaseClient) {
+          throw new Error(
+            "Le client Supabase est absent. Vérifiez le fichier supabase-config.js."
+          );
+        }
+
+        client = window.supabaseClient;
+
+        if (!client.auth) {
+          throw new Error(
+            "Le client Supabase existe, mais le module Auth est absent."
+          );
+        }
+
+        const autorise = await verifierAdmin();
         if (!autorise) return;
 
-        await actualiserTableauDeBord();
+        await actualiser();
 
-        afficherMessageGlobal("Connexion réussie. Le tableau de bord est prêt.", "success");
-
-        if (!actualisationAutomatiqueDemarree) {
-          actualisationAutomatiqueDemarree = true;
-
-          setInterval(actualiserTableauDeBord, 30000);
-
-          window.addEventListener("storage", evenement => {
-            if (evenement.key === "vendozaCommandes") {
-              try {
-                chargerCommandes();
-              } catch (erreur) {
-                afficherErreur("commandesRecentes", erreur.message);
-              }
-            }
-          });
-        }
-      } catch (erreur) {
-        console.error("Erreur du tableau de bord :", erreur);
-
-        document.getElementById("vendeurNom").textContent = "Erreur de vérification";
-        document.getElementById("etatConnexion").textContent =
-          erreur.message || "Une erreur inconnue est survenue.";
-
-        afficherMessageGlobal(
-          erreur.message || "Impossible de démarrer le tableau de bord."
+        mesajGlobal(
+          "Connexion réussie. Le tableau de bord est prêt.",
+          "success"
         );
 
-        afficherErreur("stockFaible", "La vérification n'a pas abouti.");
-        afficherErreur("commandesRecentes", "Les commandes ne peuvent pas être chargées avant la vérification.");
+        $("etatConnexion").textContent =
+          "Connecté à Supabase. Profil administrateur vérifié.";
+
+        setInterval(actualiser, 30000);
+
+      } catch (e) {
+        console.error("Erreur du tableau de bord :", e);
+
+        $("vendeurNom").textContent = "Vérification échouée";
+        $("etatConnexion").textContent =
+          e.message || "Une erreur inconnue est survenue.";
+
+        mesajGlobal(
+          e.message || "Impossible de démarrer le tableau de bord."
+        );
+
+        erreurZone("stockFaible", "Erreur : " + e.message);
+        erreurZone(
+          "commandesRecentes",
+          "Les commandes n'ont pas pu être chargées."
+        );
       }
     }
 
+    // Kòmanse dashboard la sèlman apre tout eleman HTML yo egziste.
     demarrerDashboard();
   </script>
 </body>
