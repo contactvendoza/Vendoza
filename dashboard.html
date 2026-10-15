@@ -3,724 +3,847 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vendoza - Dashboard Administrateur</title>
+
+  <title>Vendoza | Tableau de bord</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase-config.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #222;
+      background: #f4f6f9;
+      color: #202938;
     }
 
     header {
-      background: #111827;
+      background: #14213d;
       color: white;
       padding: 20px;
-    }
-
-    .header-content {
-      width: 95%;
-      max-width: 1200px;
-      margin: auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       gap: 15px;
     }
 
-    header h1 { margin: 0; font-size: 28px; }
-    header p { margin: 6px 0 0; opacity: .8; }
-    .vendeur-info { text-align: right; }
-    .vendeur-nom { font-weight: bold; margin-bottom: 8px; overflow-wrap: anywhere; }
+    header h1 {
+      font-size: 25px;
+    }
 
-    .logout {
+    header p {
+      margin-top: 6px;
+      color: #dbe4f0;
+    }
+
+    button {
       border: none;
-      background: #dc2626;
-      color: white;
-      padding: 10px 14px;
+      padding: 11px 16px;
       border-radius: 7px;
       cursor: pointer;
+      font-size: 14px;
       font-weight: bold;
     }
 
-    .logout:disabled { opacity: .6; cursor: wait; }
+    .btn-logout {
+      background: #e63946;
+      color: white;
+    }
 
-    .container {
+    main {
       width: 95%;
       max-width: 1200px;
       margin: 25px auto;
     }
 
-    .top-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 25px;
+    .welcome {
+      margin-bottom: 22px;
     }
 
-    .top-actions a {
-      text-decoration: none;
-      background: #111827;
-      color: white;
-      padding: 11px 16px;
-      border-radius: 8px;
-      position: relative;
-    }
-
-    .top-actions a:hover { background: #2563eb; }
-
-    .notification-badge {
-      display: none;
-      position: absolute;
-      top: -8px;
-      right: -7px;
-      min-width: 22px;
-      height: 22px;
-      padding: 2px 6px;
-      border-radius: 50%;
-      background: #dc2626;
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
-      text-align: center;
-      line-height: 18px;
-      border: 2px solid white;
+    .welcome h2 {
+      margin-bottom: 8px;
     }
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
       margin-bottom: 25px;
     }
 
-    .card, .section {
+    .card {
       background: white;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.07);
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .card h3 {
+      font-size: 15px;
+      color: #667085;
+      margin-bottom: 13px;
+    }
+
+    .stat-number {
+      font-size: 29px;
+      font-weight: bold;
+      color: #14213d;
       overflow-wrap: anywhere;
     }
 
-    .card .icon { font-size: 30px; }
-    .card h3 { margin: 10px 0 5px; font-size: 16px; color: #666; }
-    .card .number { font-size: 28px; font-weight: bold; color: #111827; }
-    .section { margin-bottom: 25px; }
-    .section h2 { margin-top: 0; }
-
-    .warning {
-      background: #fff7ed;
-      border-left: 5px solid #f97316;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 10px;
+    .section {
+      background: white;
+      padding: 22px;
+      margin-bottom: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
     }
 
-    .warning strong { color: #c2410c; }
+    .section h2 {
+      font-size: 20px;
+      margin-bottom: 17px;
+    }
 
-    .order {
-      border: 1px solid #eee;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 10px;
+    .message {
+      padding: 12px;
+      border-radius: 7px;
+      margin-bottom: 12px;
       overflow-wrap: anywhere;
-    }
-
-    .empty { text-align: center; color: #777; padding: 15px; }
-
-    .status {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 6px;
-      background: #eef2ff;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .products-list { margin-top: 6px; padding-left: 18px; }
-
-    .loading {
-      text-align: center;
-      padding: 15px;
-      color: #2563eb;
-      font-weight: bold;
     }
 
     .error {
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      overflow-wrap: anywhere;
+      color: #842029;
+      background: #f8d7da;
     }
 
-    @media (max-width: 800px) {
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .header-content { flex-direction: column; align-items: flex-start; }
-      .vendeur-info { text-align: left; }
+    .success {
+      color: #0f5132;
+      background: #d1e7dd;
     }
 
-    @media (max-width: 500px) {
-      .stats { grid-template-columns: 1fr; }
-      header h1 { font-size: 24px; }
-      .top-actions a { width: 100%; text-align: center; }
+    .muted {
+      color: #667085;
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 500px;
+    }
+
+    th,
+    td {
+      padding: 13px;
+      border-bottom: 1px solid #eaecf0;
+      text-align: left;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475467;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      background: #fff0c2;
+      color: #795600;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .loading {
+      color: #667085;
+      padding: 10px 0;
+    }
+
+    footer {
+      text-align: center;
+      color: #667085;
+      padding: 25px 10px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        align-items: flex-start;
+      }
+
+      header h1 {
+        font-size: 22px;
+      }
+
+      main {
+        width: 92%;
+      }
+
+      .section,
+      .card {
+        padding: 16px;
+      }
     }
   </style>
 </head>
 
 <body>
-<header>
-  <div class="header-content">
+
+  <header>
     <div>
-      <h1>🛍️ Vendoza Dashboard</h1>
-      <p>Gestion de votre boutique en ligne</p>
+      <h1>Vendoza</h1>
+      <p>Tableau de bord administrateur</p>
     </div>
 
-    <div class="vendeur-info">
-      <div class="vendeur-nom">
-        👤 <span id="vendeurNom">Vérification...</span>
+    <button class="btn-logout" id="btnDeconnexion">
+      Déconnexion
+    </button>
+  </header>
+
+  <main>
+    <div class="welcome">
+      <h2>Bienvenue sur votre tableau de bord</h2>
+      <p>
+        Administrateur :
+        <strong id="vendeurNom">Vérification...</strong>
+      </p>
+    </div>
+
+    <div id="messageGlobal" hidden></div>
+
+    <section class="stats">
+      <div class="card">
+        <h3>Total des produits</h3>
+        <div class="stat-number" id="totalProduits">—</div>
       </div>
-      <button class="logout" id="boutonDeconnexion">
-        🚪 Déconnexion
-      </button>
-    </div>
-  </div>
-</header>
 
-<div class="container">
-  <div class="top-actions">
-    <a href="produit.html">🛍️ Produits</a>
-    <a href="commandes.html">📦 Commandes</a>
-    <a href="clients.html">👥 Clients</a>
-    <a href="rapports.html">📈 Rapports</a>
-    <a href="Paiements.html">💳 Paiements</a>
-    <a href="paramètres.html">⚙️ Paramètres</a>
-    <a href="notifications-vendeur.html">
-      🔔 Notifications
-      <span id="notificationBadge" class="notification-badge">0</span>
-    </a>
-  </div>
+      <div class="card">
+        <h3>Produits en stock faible</h3>
+        <div class="stat-number" id="nombreStockFaible">—</div>
+      </div>
 
-  <div class="stats">
-    <div class="card">
-      <div class="icon">📦</div>
-      <h3>Produits</h3>
-      <div class="number" id="nombreProduits">0</div>
-    </div>
+      <div class="card">
+        <h3>Commandes enregistrées</h3>
+        <div class="stat-number" id="totalCommandes">—</div>
+      </div>
 
-    <div class="card">
-      <div class="icon">🛒</div>
-      <h3>Commandes</h3>
-      <div class="number" id="nombreCommandes">0</div>
-    </div>
+      <div class="card">
+        <h3>Dernière mise à jour</h3>
+        <div class="stat-number" id="derniereMiseAJour"
+             style="font-size:18px;">—</div>
+      </div>
+    </section>
 
-    <div class="card">
-      <div class="icon">✅</div>
-      <h3>Confirmées</h3>
-      <div class="number" id="commandesConfirmees">0</div>
-    </div>
+    <section class="section">
+      <h2>Produits en stock faible</h2>
+      <div id="stockFaible">
+        <p class="loading">Chargement des produits...</p>
+      </div>
+    </section>
 
-    <div class="card">
-      <div class="icon">💰</div>
-      <h3>Chiffre d'affaires</h3>
-      <div class="number" id="chiffreAffaires">0 HTG</div>
-    </div>
-  </div>
+    <section class="section">
+      <h2>Commandes récentes</h2>
+      <div id="commandesRecentes">
+        <p class="loading">Chargement des commandes...</p>
+      </div>
+    </section>
 
-  <div class="section">
-    <h2>📊 Stock</h2>
-    <p>
-      <strong>Nombre total d'articles en stock :</strong>
-      <span id="stockTotal">0</span>
-    </p>
-  </div>
+    <section class="section">
+      <h2>État de la connexion</h2>
+      <p id="etatConnexion" class="muted">
+        Vérification de la connexion...
+      </p>
+    </section>
+  </main>
 
-  <div class="section">
-    <h2>⚠️ Produits presque finis</h2>
-    <div id="stockFaible">
-      <div class="loading">Chargement...</div>
-    </div>
-  </div>
+  <footer>
+    © <span id="annee"></span> Vendoza. Tous droits réservés.
+  </footer>
 
-  <div class="section">
-    <h2>🕒 Commandes récentes</h2>
-    <div id="commandesRecentes">
-      <div class="loading">Chargement...</div>
-    </div>
-  </div>
-</div>
+  <script>
+    "use strict";
 
-<script>
-"use strict";
+    const supabase = window.supabaseClient;
 
-// =====================================
-// 1. INITIALISATION SUPABASE
-// =====================================
+    let utilisateurVendoza = null;
+    let actualisationEnCours = false;
 
-const supabase = window.supabaseClient;
+    document.getElementById("annee").textContent =
+      new Date().getFullYear();
 
-if (!supabase || !supabase.auth) {
-  document.body.innerHTML = `
-    <div style="padding:25px;font-family:Arial,sans-serif">
-      <h2>Erreur de configuration</h2>
-      <p>Le client Supabase n'est pas initialisé.</p>
-      <p>Vérifiez le fichier supabase-config.js.</p>
-      <a href="./connexion-vendeur.html">Retour à la connexion</a>
-    </div>
-  `;
-  throw new Error("Client Supabase non initialisé.");
-}
+    function afficherErreur(elementId, message) {
+      const element = document.getElementById(elementId);
 
-// =====================================
-// 2. OUTILS
-// =====================================
+      if (!element) return;
 
-function echapperHTML(valeur) {
-  return String(valeur ?? "").replace(/[&<>"']/g, function(c) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    };
-    return map[c];
-  });
-}
+      element.replaceChildren();
 
-function afficherErreur(elementId, message) {
-  const element = document.getElementById(elementId);
-  element.innerHTML = "";
+      const paragraphe = document.createElement("p");
+      paragraphe.className = "message error";
+      paragraphe.textContent = message;
 
-  const boite = document.createElement("div");
-  boite.className = "error";
-  boite.textContent = message;
-
-  element.appendChild(boite);
-}
-
-// =====================================
-// 3. VÉRIFICATION ADMINISTRATEUR
-// =====================================
-
-let utilisateurVendoza = null;
-
-async function verifierAdministrateur() {
-  const nom = document.getElementById("vendeurNom");
-
-  nom.textContent = "Vérification de la session...";
-
-  try {
-    // Verifye si kliyan Supabase la disponib
-    if (!window.supabaseClient) {
-      throw new Error("Le client Supabase n'est pas initialisé.");
+      element.appendChild(paragraphe);
     }
 
-    // Eseye li sesyon an
-    const resultat = await Promise.race([
-      window.supabaseClient.auth.getSession(),
-      new Promise((_, reject) =>
-        setTimeout(
-          () => reject(new Error("Délai dépassé pendant la vérification de session. Rechargez la page.")),
-          10000
-        )
-      )
-    ]);
+    function afficherMessageGlobal(message, type = "error") {
+      const element = document.getElementById("messageGlobal");
 
-    const { data, error } = resultat;
-
-    if (error) {
-      throw new Error("Erreur de session : " + error.message);
+      element.hidden = false;
+      element.className = "message " + type;
+      element.textContent = message;
     }
 
-    const utilisateur = data.session?.user;
-
-    if (!utilisateur) {
-      window.location.replace("./connexion-vendeur.html");
-      return false;
+    function afficherDate() {
+      document.getElementById("derniereMiseAJour").textContent =
+        new Date().toLocaleTimeString("fr-FR");
     }
 
-    nom.textContent = "Vérification du profil...";
-
-    const resultatProfil = await Promise.race([
-      window.supabaseClient
-        .from("profiles")
-        .select("user_id, role")
-        .eq("user_id", utilisateur.id)
-        .maybeSingle(),
-      new Promise((_, reject) =>
-        setTimeout(
-          () => reject(new Error("Délai dépassé pendant la vérification du profil.")),
-          10000
-        )
-      )
-    ]);
-
-    const { data: profil, error: erreurProfil } = resultatProfil;
-
-    if (erreurProfil) {
-      throw new Error("Erreur du profil : " + erreurProfil.message);
-    }
-
-    if (
-      !profil ||
-      String(profil.role || "").trim().toLowerCase() !== "admin"
-    ) {
-      await window.supabaseClient.auth.signOut();
-      window.location.replace("./connexion-vendeur.html");
-      return false;
-    }
-
-    utilisateurVendoza = utilisateur;
-
-    nom.textContent = utilisateur.email || "Administrateur";
-
-    return true;
-
-  } catch (erreur) {
-    console.error("Erreur de vérification :", erreur);
-
-    nom.textContent = "Erreur de vérification";
-
-    afficherErreur(
-      "stockFaible",
-      erreur.message || "Une erreur inconnue est survenue."
-    );
-
-    afficherErreur(
-      "commandesRecentes",
-      "Impossible de vérifier votre session. Consultez le message d'erreur ci-dessus."
-    );
-
-    throw erreur;
-  }
-  }
-  const { data, error } = await supabase.auth.getSession();
-
-  if (error) {
-    throw new Error("Erreur de session : " + error.message);
-  }
-
-  const utilisateur = data.session?.user;
-
-  if (!utilisateur) {
-    window.location.replace("./connexion-vendeur.html");
-    return false;
-  }
-
-  const { data: profil, error: erreurProfil } = await supabase
-    .from("profiles")
-    .select("user_id, role")
-    .eq("user_id", utilisateur.id)
-    .maybeSingle();
-
-  if (erreurProfil) {
-    throw new Error("Erreur du profil : " + erreurProfil.message);
-  }
-
-  if (!profil || String(profil.role || "").trim().toLowerCase() !== "admin") {
-    await supabase.auth.signOut();
-    window.location.replace("./connexion-vendeur.html");
-    return false;
-  }
-
-  utilisateurVendoza = utilisateur;
-
-  document.getElementById("vendeurNom").textContent =
-    utilisateur.email || "Administrateur";
-
-  return true;
-}
-
-// =====================================
-// 4. DÉCONNEXION
-// =====================================
-
-document.getElementById("boutonDeconnexion")
-  .addEventListener("click", async function() {
-    if (!confirm("Voulez-vous vraiment vous déconnecter ?")) return;
-
-    this.disabled = true;
-
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      alert("Erreur de déconnexion : " + error.message);
-      this.disabled = false;
-      return;
-    }
-
-    localStorage.removeItem("vendozaVendeurConnecte");
-    localStorage.removeItem("vendozaVendeurNom");
-
-    window.location.replace("./connexion-vendeur.html");
-  });
-
-// =====================================
-// 5. NOTIFICATIONS
-// =====================================
-
-function chargerBadgeNotifications() {
-  let commandes = [];
-  let lues = [];
-
-  try {
-    commandes = JSON.parse(localStorage.getItem("vendozaCommandes") || "[]");
-    if (!Array.isArray(commandes)) commandes = [];
-  } catch {
-    commandes = [];
-  }
-
-  try {
-    lues = JSON.parse(
-      localStorage.getItem("vendozaNotificationsVendeurLues") || "[]"
-    );
-    if (!Array.isArray(lues)) lues = [];
-  } catch {
-    lues = [];
-  }
-
-  let nonLues = 0;
-
-  commandes.forEach(function(commande) {
-    const id = String(commande.id || "") + "-" +
-      String(commande.statut || "");
-
-    if (!lues.includes(id)) nonLues++;
-  });
-
-  const badge = document.getElementById("notificationBadge");
-
-  badge.textContent = nonLues > 99 ? "99+" : String(nonLues);
-  badge.style.display = nonLues > 0 ? "block" : "none";
-}
-
-// =====================================
-// 6. PRODUITS ET STATISTIQUES
-// =====================================
-
-async function chargerDashboard() {
-  const stockFaible = document.getElementById("stockFaible");
-  const commandesRecentes = document.getElementById("commandesRecentes");
-
-  stockFaible.innerHTML = '<div class="loading">Chargement...</div>';
-  commandesRecentes.innerHTML = '<div class="loading">Chargement...</div>';
-
-  let produits = [];
-
-  try {
-    const { data, error } = await supabase
-      .from("products")
-      .select("*");
-
-    if (error) throw error;
-
-    produits = data || [];
-
-    document.getElementById("nombreProduits").textContent = produits.length;
-
-    const stockTotal = produits.reduce(function(total, produit) {
-      return total + (Number(produit.Stock ?? produit.stock ?? 0) || 0);
-    }, 0);
-
-    document.getElementById("stockTotal").textContent = stockTotal;
-
-    const faibles = produits.filter(function(produit) {
-      return (Number(produit.Stock ?? produit.stock ?? 0) || 0) <= 5;
-    });
-
-    stockFaible.innerHTML = "";
-
-    if (faibles.length === 0) {
-      stockFaible.innerHTML =
-        '<div class="empty">✅ Aucun produit presque épuisé.</div>';
-    } else {
-      faibles.forEach(function(produit) {
-        const element = document.createElement("div");
-        element.className = "warning";
-
-        const nom = document.createElement("strong");
-        nom.textContent = produit.name || produit.nom || "Produit sans nom";
-
-        const ligne = document.createElement("div");
-        ligne.textContent =
-          "Stock restant : " +
-          (Number(produit.Stock ?? produit.stock ?? 0) || 0);
-
-        element.append(nom, document.createElement("br"), ligne);
-        stockFaible.appendChild(element);
-      });
-    }
-  } catch (error) {
-    console.error("Erreur produits :", error);
-    document.getElementById("nombreProduits").textContent = "—";
-    document.getElementById("stockTotal").textContent = "—";
-    afficherErreur(
-      "stockFaible",
-      "Impossible de charger les produits : " +
-      (error.message || "Erreur inconnue")
-    );
-  }
-
-  // Les commandes sont actuellement lues depuis le stockage local du navigateur.
-  let commandes = [];
-
-  try {
-    commandes = JSON.parse(localStorage.getItem("vendozaCommandes") || "[]");
-    if (!Array.isArray(commandes)) commandes = [];
-  } catch {
-    commandes = [];
-  }
-
-  document.getElementById("nombreCommandes").textContent = commandes.length;
-
-  const statutsConfirmes = [
-    "confirmée", "confirmee", "en livraison", "livrée", "livree"
-  ];
-
-  const confirmees = commandes.filter(function(commande) {
-    return statutsConfirmes.includes(
-      String(commande.statut || "").toLowerCase()
-    );
-  });
-
-  document.getElementById("commandesConfirmees").textContent =
-    confirmees.length;
-
-  const chiffreAffaires = confirmees.reduce(function(total, commande) {
-    return total + (Number(commande.total) || 0);
-  }, 0);
-
-  document.getElementById("chiffreAffaires").textContent =
-    chiffreAffaires.toLocaleString("fr-FR") + " HTG";
-
-  commandesRecentes.innerHTML = "";
-
-  const recentes = commandes.slice().reverse().slice(0, 5);
-
-  if (recentes.length === 0) {
-    commandesRecentes.innerHTML =
-      '<div class="empty">📭 Aucune commande pour le moment.</div>';
-    return;
-  }
-
-  recentes.forEach(function(commande) {
-    const bloc = document.createElement("div");
-    bloc.className = "order";
-
-    const titre = document.createElement("strong");
-    titre.textContent = commande.id || "Commande";
-    bloc.appendChild(titre);
-
-    const client = document.createElement("p");
-    client.textContent = "Client : " + (commande.client?.nom || "N/A");
-    bloc.appendChild(client);
-
-    const telephone = document.createElement("p");
-    telephone.textContent =
-      "Téléphone : " + (commande.client?.telephone || "N/A");
-    bloc.appendChild(telephone);
-
-    const titreProduits = document.createElement("p");
-    titreProduits.textContent = "Produits :";
-    bloc.appendChild(titreProduits);
-
-    const liste = document.createElement("ul");
-    liste.className = "products-list";
-
-    if (Array.isArray(commande.produits) && commande.produits.length > 0) {
-      commande.produits.forEach(function(article) {
-        const ligne = document.createElement("li");
-        ligne.textContent =
-          (article.name || "Produit") + " × " +
-          (Number(article.quantity) || 0);
-        liste.appendChild(ligne);
-      });
-    } else {
-      const ligne = document.createElement("li");
-      ligne.textContent = commande.produit?.name || "N/A";
-      liste.appendChild(ligne);
-    }
-
-    bloc.appendChild(liste);
-
-    const total = document.createElement("p");
-    total.textContent =
-      "Total : " +
-      (Number(commande.total) || 0).toLocaleString("fr-FR") +
-      " HTG";
-    bloc.appendChild(total);
-
-    const statut = document.createElement("span");
-    statut.className = "status";
-    statut.textContent = commande.statut || "En attente";
-    bloc.appendChild(statut);
-
-    commandesRecentes.appendChild(bloc);
-  });
-}
-
-// =====================================
-// 7. DÉMARRAGE
-// =====================================
-
-let chargementEnCours = false;
-
-async function demarrerDashboard() {
-  if (chargementEnCours) return;
-  chargementEnCours = true;
-
-  try {
-    const autorise = await verifierAdministrateur();
-
-    if (!autorise) return;
-
-    await chargerDashboard();
-    chargerBadgeNotifications();
-
-    setInterval(async function() {
-      try {
-        await chargerDashboard();
-        chargerBadgeNotifications();
-      } catch (error) {
-        console.error("Erreur actualisation :", error);
+    function formaterMontant(valeur) {
+      const montant = Number(valeur);
+
+      if (!Number.isFinite(montant)) {
+        return "—";
       }
-    }, 30000);
 
-    window.addEventListener("storage", function() {
-      chargerBadgeNotifications();
-      chargerDashboard();
-    });
-  } catch (error) {
-    console.error("Erreur Dashboard :", error);
+      return montant.toLocaleString("fr-FR", {
+        maximumFractionDigits: 2
+      });
+    }
 
-    document.body.innerHTML = `
-      <div style="
-        max-width:600px;
-        margin:40px auto;
-        padding:25px;
-        font-family:Arial,sans-serif;
-        background:#fff;
-        border-radius:12px;
-      ">
-        <h2>Erreur lors du chargement du Dashboard</h2>
-        <p>${echapperHTML(error.message || "Erreur inconnue")}</p>
-        <a href="./connexion-vendeur.html">Retour à la connexion</a>
-      </div>
-    `;
-  } finally {
-    chargementEnCours = false;
-  }
-}
+    /*
+     * 1. Vérifier que la bibliothèque et la configuration
+     * Supabase sont bien chargées.
+     */
+    function verifierConfiguration() {
+      if (!window.supabase) {
+        throw new Error(
+          "La bibliothèque Supabase ne s'est pas chargée. Vérifiez votre connexion Internet."
+        );
+      }
 
-demarrerDashboard();
-</script>
+      if (!supabase || typeof supabase.auth?.getSession !== "function") {
+        throw new Error(
+          "La configuration Supabase n'est pas chargée. Vérifiez le fichier supabase-config.js."
+        );
+      }
+    }
+
+    /*
+     * 2. Vérifier la session et le rôle de l'administrateur.
+     */
+    async function verifierAdministrateur() {
+      const nom = document.getElementById("vendeurNom");
+
+      try {
+        nom.textContent = "Vérification de la session...";
+
+        const resultatSession = await Promise.race([
+          supabase.auth.getSession(),
+
+          new Promise((_, reject) => {
+            setTimeout(() => {
+              reject(
+                new Error(
+                  "Le délai de vérification de session a été dépassé. Rechargez la page."
+                )
+              );
+            }, 15000);
+          })
+        ]);
+
+        const { data, error } = resultatSession;
+
+        if (error) {
+          throw new Error(
+            "Erreur de session : " + error.message
+          );
+        }
+
+        const utilisateur = data.session?.user;
+
+        if (!utilisateur) {
+          window.location.replace("./connexion-vendeur.html");
+          return false;
+        }
+
+        nom.textContent = "Vérification du profil...";
+
+        const resultatProfil = await Promise.race([
+          supabase
+            .from("profiles")
+            .select("user_id, role")
+            .eq("user_id", utilisateur.id)
+            .maybeSingle(),
+
+          new Promise((_, reject) => {
+            setTimeout(() => {
+              reject(
+                new Error(
+                  "Le délai de vérification du profil a été dépassé."
+                )
+              );
+            }, 15000);
+          })
+        ]);
+
+        const {
+          data: profil,
+          error: erreurProfil
+        } = resultatProfil;
+
+        if (erreurProfil) {
+          throw new Error(
+            "Erreur du profil : " + erreurProfil.message
+          );
+        }
+
+        if (
+          !profil ||
+          String(profil.role || "").trim().toLowerCase() !== "admin"
+        ) {
+          await supabase.auth.signOut();
+
+          window.location.replace("./connexion-vendeur.html");
+          return false;
+        }
+
+        utilisateurVendoza = utilisateur;
+
+        nom.textContent = utilisateur.email || "Administrateur";
+
+        document.getElementById("etatConnexion").textContent =
+          "Connexion Supabase active. Profil administrateur vérifié.";
+
+        return true;
+
+      } catch (erreur) {
+        console.error(
+          "Erreur pendant la vérification de l'administrateur :",
+          erreur
+        );
+
+        nom.textContent = "Erreur de vérification";
+
+        afficherErreur(
+          "stockFaible",
+          erreur.message || "Une erreur inconnue est survenue."
+        );
+
+        afficherErreur(
+          "commandesRecentes",
+          "Impossible de charger les données tant que la vérification n'est pas terminée."
+        );
+
+        document.getElementById("etatConnexion").textContent =
+          "La vérification a échoué.";
+
+        throw erreur;
+      }
+    }
+
+    /*
+     * 3. Charger les produits depuis Supabase.
+     */
+    async function chargerProduits() {
+      const zoneStock = document.getElementById("stockFaible");
+
+      zoneStock.replaceChildren();
+
+      const chargement = document.createElement("p");
+      chargement.className = "loading";
+      chargement.textContent = "Chargement des produits...";
+      zoneStock.appendChild(chargement);
+
+      const { data: produits, error } = await supabase
+        .from("products")
+        .select("*");
+
+      if (error) {
+        throw new Error(
+          "Impossible de charger les produits : " + error.message
+        );
+      }
+
+      const listeProduits = produits || [];
+
+      document.getElementById("totalProduits").textContent =
+        listeProduits.length;
+
+      /*
+       * Reconnaître plusieurs noms possibles pour la colonne
+       * de quantité en stock.
+       */
+      function obtenirStock(produit) {
+        const colonnesPossibles = [
+          "stock",
+          "quantity",
+          "quantite",
+          "stock_quantity",
+          "quantite_stock"
+        ];
+
+        for (const colonne of colonnesPossibles) {
+          if (
+            produit[colonne] !== undefined &&
+            produit[colonne] !== null
+          ) {
+            const nombre = Number(produit[colonne]);
+
+            if (Number.isFinite(nombre)) {
+              return nombre;
+            }
+          }
+        }
+
+        return null;
+      }
+
+      const produitsFaibles = listeProduits.filter(produit => {
+        const stock = obtenirStock(produit);
+        return stock !== null && stock <= 5;
+      });
+
+      document.getElementById("nombreStockFaible").textContent =
+        produitsFaibles.length;
+
+      zoneStock.replaceChildren();
+
+      if (produitsFaibles.length === 0) {
+        const message = document.createElement("p");
+        message.className = "muted";
+        message.textContent =
+          listeProduits.length === 0
+            ? "Aucun produit n'a été trouvé dans la table products."
+            : "Aucun produit en stock faible.";
+
+        zoneStock.appendChild(message);
+        return;
+      }
+
+      const tableauWrapper = document.createElement("div");
+      tableauWrapper.className = "table-wrapper";
+
+      const tableau = document.createElement("table");
+
+      const thead = document.createElement("thead");
+      const ligneEntete = document.createElement("tr");
+
+      ["Produit", "Stock restant", "État"].forEach(titre => {
+        const th = document.createElement("th");
+        th.textContent = titre;
+        ligneEntete.appendChild(th);
+      });
+
+      thead.appendChild(ligneEntete);
+      tableau.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+
+      produitsFaibles.forEach(produit => {
+        const ligne = document.createElement("tr");
+
+        const nomProduit =
+          produit.name ||
+          produit.nom ||
+          produit.title ||
+          produit.titre ||
+          "Produit sans nom";
+
+        const tdNom = document.createElement("td");
+        tdNom.textContent = String(nomProduit);
+
+        const tdStock = document.createElement("td");
+        tdStock.textContent = obtenirStock(produit);
+
+        const tdEtat = document.createElement("td");
+        const badge = document.createElement("span");
+
+        badge.className = "badge";
+        badge.textContent =
+          obtenirStock(produit) <= 0
+            ? "Rupture de stock"
+            : "Stock faible";
+
+        tdEtat.appendChild(badge);
+
+        ligne.append(tdNom, tdStock, tdEtat);
+        tbody.appendChild(ligne);
+      });
+
+      tableau.appendChild(tbody);
+      tableauWrapper.appendChild(tableau);
+      zoneStock.appendChild(tableauWrapper);
+    }
+
+    /*
+     * 4. Charger les commandes enregistrées dans le navigateur.
+     * Cette fonction lit la clé localStorage "vendozaCommandes".
+     */
+    function chargerCommandes() {
+      const zoneCommandes =
+        document.getElementById("commandesRecentes");
+
+      zoneCommandes.replaceChildren();
+
+      let commandes = [];
+
+      try {
+        const contenu = localStorage.getItem("vendozaCommandes");
+
+        if (contenu) {
+          const donnees = JSON.parse(contenu);
+
+          if (Array.isArray(donnees)) {
+            commandes = donnees;
+          }
+        }
+      } catch (erreur) {
+        console.error(
+          "Impossible de lire les commandes locales :",
+          erreur
+        );
+
+        afficherErreur(
+          "commandesRecentes",
+          "Les données des commandes sont illisibles dans le navigateur."
+        );
+
+        document.getElementById("totalCommandes").textContent = "—";
+        return;
+      }
+
+      document.getElementById("totalCommandes").textContent =
+        commandes.length;
+
+      if (commandes.length === 0) {
+        const message = document.createElement("p");
+        message.className = "muted";
+        message.textContent =
+          "Aucune commande enregistrée dans ce navigateur.";
+
+        zoneCommandes.appendChild(message);
+        return;
+      }
+
+      const commandesTriees = [...commandes].reverse().slice(0, 10);
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "table-wrapper";
+
+      const tableau = document.createElement("table");
+      const thead = document.createElement("thead");
+      const ligneEntete = document.createElement("tr");
+
+      [
+        "Référence",
+        "Client",
+        "Montant",
+        "Statut"
+      ].forEach(titre => {
+        const th = document.createElement("th");
+        th.textContent = titre;
+        ligneEntete.appendChild(th);
+      });
+
+      thead.appendChild(ligneEntete);
+      tableau.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+
+      commandesTriees.forEach((commande, index) => {
+        const ligne = document.createElement("tr");
+
+        const reference =
+          commande.reference ||
+          commande.numero ||
+          commande.id ||
+          `Commande ${index + 1}`;
+
+        const client =
+          commande.client ||
+          commande.nomClient ||
+          commande.customer_name ||
+          commande.nom ||
+          "Client";
+
+        const montant =
+          commande.total ??
+          commande.montant ??
+          commande.totalCommande ??
+          commande.prix ??
+          null;
+
+        const statut =
+          commande.statut ||
+          commande.status ||
+          commande.etat ||
+          "En attente";
+
+        const tdReference = document.createElement("td");
+        tdReference.textContent = String(reference);
+
+        const tdClient = document.createElement("td");
+        tdClient.textContent = String(client);
+
+        const tdMontant = document.createElement("td");
+        tdMontant.textContent =
+          montant === null
+            ? "—"
+            : formaterMontant(montant);
+
+        const tdStatut = document.createElement("td");
+        tdStatut.textContent = String(statut);
+
+        ligne.append(
+          tdReference,
+          tdClient,
+          tdMontant,
+          tdStatut
+        );
+
+        tbody.appendChild(ligne);
+      });
+
+      tableau.appendChild(tbody);
+      wrapper.appendChild(tableau);
+      zoneCommandes.appendChild(wrapper);
+    }
+
+    /*
+     * 5. Actualiser le tableau de bord.
+     */
+    async function actualiserTableauDeBord() {
+      if (actualisationEnCours) return;
+
+      actualisationEnCours = true;
+
+      try {
+        await chargerProduits();
+      } catch (erreur) {
+        console.error("Erreur de chargement des produits :", erreur);
+
+        afficherErreur(
+          "stockFaible",
+          erreur.message || "Impossible de charger les produits."
+        );
+      }
+
+      try {
+        chargerCommandes();
+      } catch (erreur) {
+        console.error("Erreur de chargement des commandes :", erreur);
+
+        afficherErreur(
+          "commandesRecentes",
+          "Impossible de charger les commandes."
+        );
+      }
+
+      afficherDate();
+
+      actualisationEnCours = false;
+    }
+
+    /*
+     * 6. Déconnexion.
+     */
+    document
+      .getElementById("btnDeconnexion")
+      .addEventListener("click", async function () {
+        const bouton = this;
+
+        bouton.disabled = true;
+        bouton.textContent = "Déconnexion...";
+
+        try {
+          const { error } = await supabase.auth.signOut();
+
+          if (error) {
+            throw error;
+          }
+
+          window.location.replace("./connexion-vendeur.html");
+
+        } catch (erreur) {
+          console.error("Erreur de déconnexion :", erreur);
+
+          afficherMessageGlobal(
+            "Impossible de se déconnecter : " + erreur.message,
+            "error"
+          );
+
+          bouton.disabled = false;
+          bouton.textContent = "Déconnexion";
+        }
+      });
+
+    /*
+     * 7. Démarrage du tableau de bord.
+     */
+    async function demarrerDashboard() {
+      try {
+        verifierConfiguration();
+
+        const autorise = await verifierAdministrateur();
+
+        if (!autorise) return;
+
+        await actualiserTableauDeBord();
+
+        afficherMessageGlobal(
+          "Connexion réussie. Le tableau de bord est prêt.",
+          "success"
+        );
+
+        /*
+         * Actualisation automatique toutes les 10 secondes.
+         */
+        setInterval(() => {
+          actualiserTableauDeBord();
+        }, 10000);
+
+        /*
+         * Actualiser les commandes si localStorage change
+         * depuis un autre onglet du même navigateur.
+         */
+        window.addEventListener("storage", function (evenement) {
+          if (evenement.key === "vendozaCommandes") {
+            chargerCommandes();
+          }
+        });
+
+      } catch (erreur) {
+        console.error(
+          "Erreur de démarrage du tableau de bord :",
+          erreur
+        );
+
+        document.getElementById("vendeurNom").textContent =
+          "Erreur de connexion";
+
+        afficherMessageGlobal(
+          erreur.message ||
+          "Une erreur est survenue au démarrage du tableau de bord.",
+          "error"
+        );
+
+        document.getElementById("etatConnexion").textContent =
+          "Vérifiez votre configuration Supabase et votre profil administrateur.";
+      }
+    }
+
+    demarrerDashboard();
+  </script>
+
 </body>
-                                            </html>
+  </html>
